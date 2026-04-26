@@ -1,0 +1,4 @@
+.env
+ragenv/
+__pycache__/
+*.pdf

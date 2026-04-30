@@ -1,0 +1,162 @@
+[
+  {
+    "question": "What dataset does the paper use to evaluate chain-of-thought prompting performance, and what accuracy does the model achieve on it?",
+    "answer": "FILL_IN: Open the paper, find the results table, note the dataset name and the specific accuracy percentage.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Results / Table",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What is the model size (number of parameters) used in the primary experiments of this paper?",
+    "answer": "FILL_IN: Check the Experimental Setup or Model section for the parameter count (e.g., 7B, 70B, 175B).",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Experimental Setup",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "According to the paper, what is the main limitation or failure mode identified for the proposed reasoning approach?",
+    "answer": "FILL_IN: Usually in Limitations or Conclusion. Look for phrases like 'fails when', 'struggles with', 'limitation'.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Limitations / Conclusion",
+    "difficulty": "medium",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What baseline method does this paper compare against, and by how many percentage points does the proposed method outperform it?",
+    "answer": "FILL_IN: Find the comparison table. Note the baseline name and the delta (e.g., '+4.2% over standard prompting').",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Results",
+    "difficulty": "medium",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What prompting strategy or technique does the paper introduce as its core contribution?",
+    "answer": "FILL_IN: Usually stated in Abstract or Introduction. Look for 'we propose', 'we introduce', 'our method'.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Abstract / Introduction",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "On which benchmark does the proposed method show the largest improvement over the prior state-of-the-art, and what is the improvement margin?",
+    "answer": "FILL_IN: Scan all result tables for the biggest delta vs. prior SOTA.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Results / Tables",
+    "difficulty": "medium",
+    "status": "needs_answer"
+  },
+  {
+    "question": "How many few-shot examples are used in the chain-of-thought prompts described in this paper?",
+    "answer": "FILL_IN: Look in the Methodology or Prompting Setup section. Often stated as 'k-shot' or 'N exemplars'.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Methodology",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What hardware configuration (GPU type and count) was used for the experiments in this paper?",
+    "answer": "FILL_IN: Check Experimental Setup or Appendix. Look for 'A100', 'V100', 'TPU', number of GPUs or GPU-hours.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Experimental Setup / Appendix",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "Does the paper report results on mathematical reasoning tasks? If so, which specific benchmark is used and what is the reported score?",
+    "answer": "FILL_IN: Look for GSM8K, MATH, SVAMP, or AQuA benchmarks in the results tables.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Results",
+    "difficulty": "medium",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What is the training objective or loss function used when fine-tuning or training the model described in this paper?",
+    "answer": "FILL_IN: Check the Training or Method section. Look for 'cross-entropy', 'RLHF', 'PPO', 'SFT', or custom loss descriptions.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Method / Training",
+    "difficulty": "hard",
+    "status": "needs_answer"
+  },
+  {
+    "question": "According to the ablation study, which component of the proposed method contributes the most to overall performance?",
+    "answer": "FILL_IN: Find the Ablation section or table. Identify which removed component causes the largest performance drop.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Ablation Study",
+    "difficulty": "hard",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What is the decoding strategy used during inference (e.g., greedy, beam search, temperature sampling), and what temperature or beam width is reported?",
+    "answer": "FILL_IN: Usually in Implementation Details or Appendix. Look for 'temperature=', 'beam size', 'greedy decoding'.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Implementation Details",
+    "difficulty": "medium",
+    "status": "needs_answer"
+  },
+  {
+    "question": "How does the paper define or measure 'reasoning steps', and what metric is used to evaluate the quality of intermediate reasoning chains?",
+    "answer": "FILL_IN: Check the Evaluation Metrics section. Look for 'step accuracy', 'process reward', 'human annotation'.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Evaluation / Metrics",
+    "difficulty": "hard",
+    "status": "needs_answer"
+  },
+  {
+    "question": "Which pre-trained language model serves as the backbone or base model for the experiments in this paper?",
+    "answer": "FILL_IN: Look in the Model or Experimental Setup section for 'GPT-4', 'LLaMA', 'PaLM', 'Gemini', 'Mistral', etc.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Experimental Setup",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "Does the paper perform human evaluation? If yes, how many annotators were used and what inter-annotator agreement score is reported?",
+    "answer": "FILL_IN: Check Human Evaluation section for annotator count and Cohen's kappa or Fleiss' kappa values.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Human Evaluation",
+    "difficulty": "medium",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What is the first sentence of the abstract of this paper?",
+    "answer": "FILL_IN: Verbatim first sentence of the abstract. Tests exact retrieval.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Abstract",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "According to Table 1 (or the first results table), what is the performance of the proposed method on the commonsense reasoning benchmark?",
+    "answer": "FILL_IN: Find the exact number from Table 1. Look for HellaSwag, CommonsenseQA, WinoGrande, or similar.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Table 1",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What future work directions does the paper identify in its conclusion section?",
+    "answer": "FILL_IN: Last paragraph of Conclusion. Look for 'future work', 'we plan to', 'promising direction'.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Conclusion",
+    "difficulty": "medium",
+    "status": "needs_answer"
+  },
+  {
+    "question": "How many total parameters does the largest model variant evaluated in this paper contain?",
+    "answer": "FILL_IN: May be in title, abstract, or experimental setup. Find the largest variant mentioned (e.g., 70B, 540B).",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Abstract / Experimental Setup",
+    "difficulty": "easy",
+    "status": "needs_answer"
+  },
+  {
+    "question": "What is the specific error category that the paper identifies as the most common failure case for the model on multi-step reasoning tasks?",
+    "answer": "FILL_IN: Check Error Analysis section. Common categories: 'calculation error', 'hallucination', 'step skipping', 'wrong premise'.",
+    "source": "FILL_IN__arxiv_id.pdf",
+    "section": "Error Analysis",
+    "difficulty": "hard",
+    "status": "needs_answer"
+  }
+]

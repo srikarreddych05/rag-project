@@ -1,0 +1,671 @@
+Large Language Models Reasoning Abilities Under Non-Ideal Conditions After
+RL-Fine-Tuning
+Chang Tian1, Matthew B. Blaschko1,
+Mingzhe Xing2, Xiuxing Li3, Yinliang Yue2, Marie-Francine Moens1
+1KU Leuven
+2Zhongguancun Lab
+3Beijing Institute of Technology
+namechangtian@163.com
+Abstract 2025). A growing body of work demonstrates that RL-
+fine-tuned LLMs outperform baselines across benchmarks
+Reinforcement learning (RL) has become a key technique like GSM8K, MATH, and commonsense evaluations (Wang
+for enhancing the reasoning abilities of large language mod-
+et al. 2024b).
+els (LLMs), with policy gradient algorithms dominating the
+However, such assessments are typically conducted un-
+post-training stage because of their efficiency and effective-
+der ideal, noise-free conditions. As a result, they primar-
+ness. However, most existing benchmarks evaluate large lan-
+ily substantiate improvements in basic reasoning abilities
+guage model reasoning under idealized settings, overlook-
+ing performance in realistic, non-ideal scenarios. We identify but fall short of validating advanced reasoning. In contrast,
+three representative non-ideal scenarios with practical rele- real-world reasoning requires advanced reasoning abilities
+vance: summary inference, fine-grained noise suppression, to summarize multiple possibilities and filter out noisy in-
+and contextual filtering. We introduce a new research direc- formation.
+tion guided by brain science findings that human reasoning Recent advances in brain science have shown that ad-
+remains reliable under imperfect inputs. We formally define vanced human reasoning involves integrating diverse infor-
+and evaluate these challenging scenarios. We fine-tune three
+mation,suppressingirrelevantsignals,andmakingcontextu-
+LLMs and a state-of-the-art large vision-language model
+ally grounded decisions. The advances are published in Na-
+(LVLM) using RL with a representative policy gradient algo-
+ture and Science (Deary, Penke, and Johnson 2010; Daume
+rithmandthentesttheirperformanceoneightpublicdatasets.
+et al. 2024; Tune et al. 2021; Paluch et al. 2025). Our results reveal that, while RL fine-tuning improves base-
+line reasoning under idealized settings, performance declines Humans apply advanced reasoning abilities daily: detec-
+significantly across all three non-ideal scenarios, exposing tivesweighalternativepossibilitiestoidentifysuspects,clin-
+critical limitations in advanced reasoning capabilities. Al- icians discern fine-grained symptom patterns to reach accu-
+though we propose a scenario-specific remediation method, rate diagnoses, and financial analysts sift extensive informa-
+our results suggest current methods leave these reasoning tion streams to isolate relevant evidence before formulating
+deficits largely unresolved. This work highlights that the rea- investment plans. As humans increasingly use large models
+soning abilities of large models (LMs) are often overstated
+for assistance (Tian et al. 2024a), it is necessary to evalu-
+and underscores the importance of evaluating models under
+ate and enhance large models’ advanced reasoning abilities
+non-ideal scenarios. All code and data will be released at
+in realistic, non-ideal scenarios so large models can provide
+https://github.com/xxxx.
+support comparable to that of human experts.
+Inspired by insights from brain science, we have designed
+Introduction three evaluation tasks to assess the reasoning abilities of
+LLMs under the non-ideal scenarios illustrated in Figure 1:
+Large language models have exhibited the attractive perfor-
+mance in reasoning tasks (Kumar et al. 2025; Li et al. 2021; • Summary Inference. Assume each candidate is correct,
+Tian et al. 2025, 2024b). Leveraging reinforcement learn- analyze accordingly, and aggregate the results into a sin-
+ing has become pivotal in refining LLM reasoning (Schul- gle conclusion.
+man et al. 2017). Recently, some research works integrate • Fine-grained Noise Suppression. Detect and remove
+Monte Carlo Tree Search (MCTS) into RL pipelines to fine-grained noise.
+enhance exploratory capacity and uncover superior rea-
+• Contextual Filtering. Discard irrelevant context to
+soning trajectories (Xie et al. 2024). Policy gradient ap-
+maintain reasoning.
+proaches, in contrast, streamline learning by directly opti-
+mizing policy parameters via reward feedback, bypassing These tasks are grounded in neuroscientific phenomena
+extensive rollout requirements (Guo et al. 2025). Owing to and aim to probe advanced reasoning abilities beyond con-
+their scalability and efficiency, policy gradient approaches ventional benchmarks.
+now dominate post-training strategies for LLMs (Du et al. To systematically investigate these scenarios, we conduct
+empirical evaluations with three RL–fine-tuned LLMs and
+Copyright © 2026, xxxx xxx. All rights reserved. one RL–fine-tuned large vision-language model (LVLM).
+5202
+guA
+6
+]IA.sc[
+1v84840.8052:viXra
+
+ReST-MCTS (Zhang et al. 2024a) employs process-level re-
+Which of the following What is the result of the Tim bought 3 beers in the
+fruits is yellow？ following calculations？ store A. OpenAI released ward estimation via MCTS to guide iterative self-training.
+（A）APPLE �� 1=3, �� 2=6, �=7, C ve h r a y t G ho P t T , , a t n h d e h w e e b a o th u e g r h w t 1 a s b eer VinePPO (Kazemnejad et al. 2024) introduces a PPO variant
+（ （ B C ） ） O ST R R A A N W G B E ERRY �� 1=4, �� 2+�� 1=? i d n i d s t T o i r m e b B u , y h o in w t o m t a a n l? y beers that replaces value networks with unbiased Monte Carlo–
+Consider the based credit assignment.
+possibilities and Distinguish the Remove
+summarize your nuances distractions Policy gradient methods have also achieved strong re-
+conclusion.
+sults in reasoning tasks (Wang et al. 2024b). PPO (Schul-
+man et al. 2017), GRPO (Guo et al. 2025), and DAPO (Yu
+Summary Inference Fine-grained Noise Contextual
+Suppression Filtering et al. 2025) have shown notable effectiveness. Xu (2025)
+proposed EM Policy Gradient, framing reasoning as an
+Figure 1: Illustration of problem settings used to evaluate
+expectation–maximization problem over rationale trajecto-
+model reasoning performance under non-ideal scenarios.
+ries. Zhang et al. (2025) introduced RPG, a KL-regularized
+policy gradient framework that stabilizes training.
+Compared to Monte Carlo methods, policy gradient ap-
+We further explore remediation strategies by introducing
+proaches avoid expensive rollouts, offering superior compu-
+variations during training and evaluation. Specifically, we
+tational efficiency (Shao et al. 2024). In this work, we adopt
+manipulate two factors: (1) Format reward, which incen-
+a policy gradient method, GRPO, to fine-tune LLMs for ad-
+tivizes the model to consider all possibilities during training;
+vanced reasoning.
+(2) Example guidance, where we provide a guided example
+duringbothtrainingandevaluationtohighlightkeyinforma-
+Assessing the Performance of LLMs
+tion and suppress distractions. This results in a spectrum of
+model variants formed by different training–evaluation stage The evaluation of LLM performance has progressed through
+combinations as shown in Figure 2. robust benchmarks and contamination-sensitive evaluations.
+Our contributions are fourfold: TheMassiveMultitaskLanguageUnderstandingbenchmark
+(MMLU) (Hendrycks et al. 2020) remains a standard for
+1. Inspired by brain science, we propose a new research
+evaluating reasoning across 57 subjects. However, concerns
+direction: examining the reasoning abilities of RL-fine-
+about data leakage have grown, with models achieving in-
+tuned large models under non-ideal scenarios, which has
+flated scores. Deng et al. (2024) investigate this contam-
+been insufficiently explored in prior work.
+ination and introduce detection methods such as retrieval-
+2. Through systematic evaluation of four RL-fine-tuned
+based overlap analysis and Testset Slot Guessing. Statistical
+LMs and their variants across eight datasets, we demon-
+approaches like ConStat (Dekoninck, Mu¨ller, and Vechev
+strate that RL-fine-tuned LMs exhibit significant perfor-
+2024) quantify contamination risks via performance differ-
+mance degradation under non-ideal scenarios, in stark
+entials across benchmark variants. To address prompt vari-
+contrast to their performance in ideal conditions.
+ability and reasoning depth, MMLU-Pro (Wang et al. 2024c)
+3. We design effective remediation strategies tailored to introduces harder questions and improved robustness.
+each scenario by manipulating the format reward and Differently, our work explores a new research direction:
+the example guidance. These strategies also suggest di- evaluating LLM reasoning under non-ideal scenarios.
+rections for future model improvements. These inter-
+ventions further confirm that RL-fine-tuned LMs pos-
+Background
+sess substantial deficits in advanced reasoning, suggest-
+ing their reasoning capabilities have been overstated in To analyze the reasoning performance of LLMs under non-
+prior literature. ideal scenarios after fine-tuning with a policy gradient al-
+gorithm, we first introduce the foundational policy gradi-
+4. We publicly release high-quality, novel evaluation
+ent method. We then present Group Relative Policy Opti-
+datasets designed to assess LM performance under
+mization (GRPO) (Guo et al. 2025), a recent and widely
+noisy conditions, including fine-grained distractors and
+adopted policy gradient variant known for its effectiveness
+irrelevant contextual information, providing valuable re-
+and GPU memory efficiency (Shao et al. 2024). In this work,
+sources for future research.
+our LLMs are fine-tuned using GRPO.
+Related Work
+Policy Gradient Algorithm
+RL for Enhancing LLM Reasoning
+The policy gradient algorithm optimizes a parameterized
+Reinforcement learning techniques for enhancing LLM rea- policy π directly, rather than learning a value function and
+θ
+soning can be categorized into two groups: Monte Carlo– extracting a policy from it (Sutton, Barto et al. 1998; Tian,
+based methods and policy gradient–based methods. Re- Yin, and Moens 2022).
+cent works have explored Monte Carlo techniques to im- For an episodic Markov Decision Process (Puterman
+prove reasoning quality (Zheng et al. 2025). Xie et al. 1990), the return from time step t is defined as G =
+t
+(2024) proposed MCTS-DPO, which integrates Monte (cid:80) γk−tr , and the optimisation target is
+k≥t k
+Carlo Tree Search (MCTS) generated step-level prefer-
+ence data into Direct Preference Optimization. Similarly, J(θ) = E [G ], (1)
+τ∼πθ 0
+
+which represents the expected discounted return under the Summary Inference
+current policy π , where τ denotes a full episode sampled
+θ As shown in the left part of Figure 2, the training process is
+from π .
+θ divided into Stage A and Stage C based on different output
+The policy-gradient theorem gives:
+formatrewards,whiletheevaluationprocessisdividedinto
+(cid:34)T−1 (cid:35) Stage B and Stage D according to the instruction require-
+(cid:88)
+∇ J(θ) = E ∇ logπ (a | s )A , (2) ments applied during evaluation.
+θ τ∼πθ θ θ t t t
+Concretely, in Stage A, we train the
+t=0
+model to place the reasoning process within
+where A t = Qπ(s t ,a t ) − b(s t ) is the advantage, b(s t ) is <reasoning>...</reasoning> tags, and to place
+any baseline function independent of the action a t , and s t is the predicted answer within <answer>...</answer>
+the environment state at time step t.
+tags. In stage C, we train the model to assume each possible
+Loss formulation. In practice, one minimises:
+answer as correct in turn, perform a brief analysis for
+(cid:34)T−1 (cid:35) each, and then perform summarizing reasoning based on
+L (θ) = −E (cid:88) logπ (a | s )A , (3) all intermediate analyses. The entire reasoning process is
+PG τ∼πθ θ t t t
+enclosed within the <reasoning>...</reasoning>
+t=0
+tags. All format checks in Stage A and Stage C are enforced
+sothatstochasticgradientdescentonL PG performsgradient using regular expressions.
+ascent on J(θ). Similarly, in the evaluation process, the instructions for
+Stage D explicitly require the model to perform a brief anal-
+Group Relative Policy Optimization
+ysis for each option followed by the summarized inference.
+GRPO is proposed as a representative variant of policy gra- In contrast, Stage B does not impose this requirement.
+dient methods (Shao et al. 2024; Guo et al. 2025), which Based on different combinations of training and evalua-
+eliminates the need for a value model, which is typically as tion stages, we present the RL-fine-tuned model and its key
+large as the policy model, and instead estimates the baseline variants as follows:
+using group scores (Vojnovic and Yun 2025). Model-StageAB: This is the standard RL-fine-tuned
+Specifically, for each question q, GRPO samples a group model commonly used in the current research community.
+of outputs {o ,o ,··· ,o } from the old policy π and
+1 2 G θold Its effectiveness is primarily evaluated based on perfor-
+then optimizes the policy model π by maximizing the fol-
+θ mance in ideal test settings (Stage B), which has led to opti-
+lowing objective:
+mistic conclusions about the benefits of RL fine-tuning.
+(cid:20) Model-StageAD: This variant applies an explicit instruc-
+J GRPO (θ) = E q∼P(Q),{oi}G
+i=1
+∼πθold (O|q) tion during evaluation (Stage D), requiring the model to con-
+sidereachoptionandsummarizetheinference.Itisdesigned
+1 (cid:88) G (cid:18) min (cid:18) π θ (o i |q) A , to assess the model’s reasoning ability under non-ideal con-
+G π (o |q) i ditions. When more information is considered, a model with
+i=1
+θold i
+advanced reasoning capabilities is expected to maintain or
+(cid:18) (cid:19) (cid:19)
+π (o |q)
+clip θ i ,1 − ϵ,1 + ϵ A improve its performance. Otherwise, performance degrada-
+π (o |q) i
+θold i tion may occur due to increased complexity and confusion.
+(cid:19)(cid:21)
+The math explanation is provided in Appendix Section Sum-
+− β D (π ∥π ) . (4)
+KL θ ref mary Inference.
+Model-StageCD: This variant serves as a remediation
+D (π ∥π ) = π ref (o i |q) − log π ref (o i |q) − 1, (5) strategy for the non-ideal scenario. The model is explicitly
+KL θ ref π (o |q) π (o |q) trained in Stage C to develop summary inference capabil-
+θ i θ i
+ities, aiming to improve robustness when evaluated under
+where ϵ and β are hyperparameters, q is a question,
+Stage D, a non-ideal setting.
+and P(Q) denotes the probability distribution over the
+set of possible questions. The term A represents the ad-
+i
+Constructing Noisy Evaluation Sets
+vantage, which is computed using a group of rewards
+{r 1 ,r 2 ,...,r G } corresponding to the outputs within each In real-world applications, noise-free environments are rare.
+group: To better assess the robustness of RL-fine-tuned models, we
+need to evaluate their reasoning abilities under noisy scenar-
+r − mean({r ,r ,··· ,r })
+A = i 1 2 G . (6) ios.
+i std({r 1 ,r 2 ,··· ,r G }) We categorize input noise into two types: fine-grained
+noise and irrelevant contextual information (see Fig-
+Method
+ure 1). To support quantitative evaluation, we construct two
+In this section, we categorize the RL-fine-tuned models and noisy test sets—FineTest and FilterTest—derived from the
+their variants into two groups, as illustrated in Figure 2. One original test sets of each dataset, as summarized in Table 2.
+group is designed to summarize inference, while the other FineTest is built from the original TestA set for each
+focuses on reasoning in noisy scenarios, which include both dataset: Math12k, MathReasoning, Mathverse, and MathVi-
+fine-grained noise and irrelevant contextual information. sion. Following the structure in Problem 2 of Figure 1, we
+
+Summary Inference Robustness to Noise
+Question: which fruit is yellow？Answer:（A) Banana（B) Apple (C) Grapes Question:××××× ×××？ Noisy Question:××××× noise ×××？Answer: 123.
+Train Rtrain = �� + �� Train Rtrain = �� + ��
+Stage A Question Stage C Question Stage E Stage G
+Question An example guidance+Question
+Model Model
+Model Model
+Answer Format check Answer
+Answer Answer
+<reasoning>
+Format check Correctness Assume answer is A, Correctness Format check Correctness Format check Correctness
+×××××.
+< r < < a h e e n r / a a e r r s n e e s a w s o a < s w e n s o / r e o i a n � n r n n i � > g n i s n g w h g > e e > r r \ e > n G a < r n < o / s a a u w n n n s ( e � s d A w � r w ) t e h e r r e u r > > r t e h: <answ B A A e a s s r s s > s < e u u a / d m m r n e s o e e × × a w n s × × a a e o � × × a n n r n � × × b s s h i w o × × w n e v . . g e e r e > e r r , < \ i i × s s n / × a C B × n , , . swer> G a < r n < o / s a a u w n n n s ( e � s d A w � r w ) t e h e r r e u r > > r t e h: < r < < a h e e n r / a a e r r s n e e s a w s o a < s w e n s o / r e o i a n � n r n n i � > g n i s n g w h g > e e > r r \ e > n G a < r n < o / s a a u w n n n 1 s e � 2 s d w � r 3 w t e h e r r e u r > > r t e h: < r < < a e n r / a a e r s n e s a w s o a s w e n s o r e o i n � n r h n i � > g n e in g r h g e > e > < r \ / e n answer> G a < r n < o / s a a u w n n n 1 s e � 2 s d w � r 3 w t e h e r r e u r > > r t e h:
+Evaluation Evaluation
+Question Question
+（a） （b）
+Instruction Model Instruction Model
+Question Noisy Question An example guidance+Noisy Question
+Answer Write the mini Answer
+Enclose the analysis for each Model Model Model
+reasoning Correctness option A—C. Then Correctness
+in <reasoning> finish the reasoning Answer Answer Answer
+< a < n / a r d n e s a t w h s e e o r n a > i n n s g w > e ta r g in s, a < n < / s a a w n n s e s w r w e h e r e r > > re p w < A r r s r o e a s a c u p s e m o e s e s v n e i a w n r n g y it t s > h h w in a e g r s i u a s m s A ： m |B a |C ry , . a < n < / s a a w n n s e s w r w e h e r e r > > re C < o a rr n e s c w tn e e r> ss Co < r a re n c s t w n e e r s > s
+</answer>tags ×××××. answer here answer here
+Ground truth: Based on above, ×××. Ground truth: </answer> </answer>
+(A) < an /r s e w a e s r o h n e in r g e > < \ / n a < ns a w ns e w r> er> (A)
+Ground truth: 123 Ground truth: 123
+Stage B Stage D Stage F Stage H
+Figure 2: Overview of the training and evaluation stages used to construct the RL-fine-tuned model and its variants. The reward
+R corresponds to a specific reward r selected from a group of G rewards, as defined in Equation 6. In the training process,
+train i
+R is defined as the sum of the output format reward R and the output correctness reward R .
+train f c
+inject synthetic distractors (e.g., x1, y) into the question text. in the presence of noise. Stage G includes such an exam-
+a
+The construction adheres to two principles: (1) only fine- ple, while Stage E does not. Similarly, the evaluation pro-
+grained distractors are inserted, and (2) the original meaning cess is divided into Stage F and Stage H: Stage H includes
+of the question must be preserved. a guiding example, while Stage F does not. Furthermore,
+FilterTest is derived from each dataset’s TestB set. As Stage F is subdivided into Stage F(a) and Stage F(b), where
+illustrated in Problem 3 of Figure 1, we prepend irrelevant Stage F(b) involves noisy input questions, and Stage F(a)
+context—such as unrelated news or weather updates—to the contains noise-free questions.
+question. For instance, a math problem about purchasing Based on different combinations of training and evalua-
+beer may begin with text about OpenAI or weather condi- tion stages, we define the following RL-fine-tuned model
+tions. Again, construction follows two principles: (1) the and its variants:
+original semantic intent of the question must remain un- Model-StageEF(a): The standard RL-fine-tuned model
+changed, and (2) only irrelevant contextual interruptions are evaluated under noise-free conditions.
+added. Model-StageEF(b): The same RL-fine-tuned model eval-
+Both FineTest and FilterTest are constructed via care- uated under noisy conditions, without any additional guid-
+fully designed crowdsourcing activities, with strict quality ance. This setup is used to assess the model’s robustness to
+control to ensure consistency and reliability across datasets. noise.
+Furtherdetailsonthecrowdsourcingprocedurecanbefound Toaddresstheperformancedegradationobservedinnoisy
+in Appendix Section Noisy Evaluation Sets. settings, we propose two remediation strategies that incor-
+porate a guiding example during training and/or evaluation.
+Robustness to Noise Details of the guiding example can be found in Appendix
+Inspired by results in brain science (Tune et al. 2021; Daume Section Robustness to Noise.
+et al. 2024), robustness to noise is a key indicator of hu- The guiding example is designed to:
+man reasoning capacity. We evaluate whether RL-fine-tuned
+1. Highlight relevant information,
+models can similarly maintain reasoning performance under
+2. Identify and isolate noisy or irrelevant content,
+noisy conditions.
+3. Demonstrate clear reasoning processes.
+As shown in the right part of Figure 2, the training process
+is divided into Stage E and Stage G depending on whether Given that large models are pre-trained on extensive
+the input prompt includes a guiding example for reasoning datasets, we assume they possess basic reasoning capabil-
+
+ities. This approach seeks to activate these capabilities and Dataset #Train #Validation #Test
+CommonsenseQA 2000 500 1000
+integrate them into a more robust and advanced reasoning Ceval-exam 700 246 400
+process. MathVision 700 200 500
+WeThink 3000 1000 2000
+Model-StageEH: This variant introduces a guiding ex-
+SciVQA 2000 400 1000
+ample during evaluation to help the RL-fine-tuned model
+reason effectively in noisy scenarios by leveraging multiple Table 1: Statistics of data samples used for Research Ques-
+basic reasoning skills. tion 1. # denotes the number of data samples.
+Model-StageGH: This variant adds the guiding exam-
+ple to both training and evaluation prompts, encouraging Dataset #Train #Val #TestA #TestB #FineTest #FilterTest
+the model to learn robust reasoning patterns throughout its Math12k 2500 500 388 745 388 745
+MathReasoning 3000 500 468 1000 468 1000
+learning process.
+Mathverse 280 90 115 114 115 114
+MathVision 1400 400 336 480 336 480
+Experiments
+Table 2: Statistics of data samples used for RQ 2 and RQ 3. #
+Research Questions To assess the reasoning performance denotes the number of samples; Val refers to the validation
+of LMs fine-tuned with RL in non-ideal scenarios, we inves- set. For RQ 2, TestA is the original test set and FineTest
+tigate the following research questions (RQs): is the corresponding noisy test set. For RQ 3, TestB is the
+1. Summary Inference: Can LMs fine-tuned with RL rea- original test set and FilterTest is the corresponding noisy test
+son over multiple possibilities and perform summary in- set.
+ference when presented with diverse information?
+2. Fine-grained Noise Suppression: Can LMs fine-tuned
+For the LVLM, the data sources include:
+with RL ignore fine-grained noise and focus on relevant
+information to reason effectively and reach correct con- • MathVision (Wang et al. 2024a): a dataset in the mathe-
+clusions? matics domain, where each sample contains an image, a
+3. Contextual Filtering: Can LMs fine-tuned with RL dis- textual description, and a question.
+regard irrelevant contextual information and reason ef- • WeThink-Multimodal-Reasoning-120K (Yang et al.
+fectively to reach valid conclusions? 2025b) (WeThink): a general-purpose multimodal rea-
+soning dataset covering multiple domains.
+Baselines We conducted extensive experiments with the
+following state-of-the-art (SOTA) models: • SciVQA1: a dataset containing questions derived from
+English scientific publications.
+• Large Vision-Language Model (LVLM):
+– Qwen 2.5-VL-7B-Instruct (Bai et al. 2025) The statistics for the data samples used in RQ1 are pre-
+sented in Table 1.
+• Large Language Models (LLMs):
+To analyze RQ 2 and 3, we use both multiple choice
+– Llama 3.1-8B-Instruct (Costarelli, Allen, and Field and open-ended questions to better reflect the real-world
+2024) question formats. To maintain objectivity, we focus on math
+– Qwen 3-14B (Yang et al. 2025a) questions as they provide fixed answers in both content and
+format.
+– Mistral-Small-24B-Instruct-2501 (Caminha et al.
+The data samples used to evaluate RQ 2 and 3 for LLMs
+2025)
+are drawn from the following sources:
+All baselines are instruction-tuned versions released by
+the open-source community. Additionally, we evaluated • Math12k2 and MathReasoning3: Datasets in the mathe-
+variants of these models to further analyze their reasoning maticsdomain,whereeachsamplehasatextualquestion.
+capabilities. For the LVLM, the data sources include:
+Datasets • Mathverse (Zhang et al. 2024b) and MathVision:
+Datasets in the mathematics domain, where each sample
+To ensure an objective evaluation, we include only data sam-
+contains an image, a textual description, and a question.
+ples with a single, explicitly defined ground-truth answer.
+To address RQ 1, we use multiple choice questions that We rely on crowdsourcing to construct two noisy evalua-
+involve multiple possibilities and require a conclusive an- tion sets: FineTest for RQ 2 and FilterTest for RQ 3. Each
+swer, aligning with the characteristics of RQ 1. derived from the original test set corresponding to its re-
+The data samples used to evaluate RQ1 for LLMs are search question. Detailed methodology is provided in Sec-
+drawn from the following sources: tion Constructing Noisy Evaluation Sets. The statistics for
+the data samples used in RQ 2 and 3 are presented in Ta-
+• CommonsenseQA (Talmor et al. 2019): a multiple
+ble 2.
+choice question dataset requiring various types of com-
+monsense knowledge to identify the correct answers. 1https://huggingface.co/datasets/katebor/SciVQA
+• Ceval-exam (Huang et al. 2023): a multiple choice 2https://huggingface.co/datasets/hiyouga/math12k
+dataset covering 52 diverse academic disciplines. 3https://huggingface.co/datasets/notbadai/math reasoning
+
+Model Commonsense Ceval-exam Model Fine-grainedNoiseSuppression
+Llama3.1 67.30 33.75 Mathverse MathVision
+Llama3.1-StageAB 69.80±0.50 49.42±0.66 Qwen2.5-VL 19.13 22.10
+Llama3.1-StageAD 64.87±0.37 39.00±0.54 Qwen2.5-VL-StageEF(a) 44.64±1.79 22.76±0.14
+Llama3.1-StageCD 69.70±0.08 49.41±0.72 Qwen2.5-VL-StageEF(b) 36.52±1.88 20.53±0.42
+Mistral 76.60 65.50 Qwen2.5-VL-StageEH 36.81±0.82 19.44±0.28
+Mistral-StageAB 78.53±0.25 67.08±0.42 Qwen2.5-VL-StageGH 43.77±2.05 21.23±0.74
+Mistral-StageAD 74.10±0.08 63.17±0.24 Model ContextualFiltering
+Mistral-StageCD 76.47±0.09 65.08±0.82 Mathverse MathVision
+Qwen3 67.40 71.50 Qwen2.5-VL 22.61 13.40
+Qwen3-StageAB 74.80±0.42 74.00±0.36 Qwen2.5-VL-StageEF(a) 43.26±0.38 20.00±0.75
+Qwen3-StageAD 75.40±0.16 70.00±0.46 Qwen2.5-VL-StageEF(b) 42.98±0.71 19.86±0.35
+Qwen2.5-VL-StageEH 39.76±1.09 20.24±0.79
+Qwen3-StageCD 77.5±0.52 69.12±0.28
+Qwen2.5-VL-StageGH 44.15±1.80 16.26±0.86
+Table 3: Evaluation accuracy (%) of RL-fine-tuned LLMs
+Table 5: Evaluation accuracy (%) of RL-fine-tuned LVLM
+and their variants on the summary inference scenario. Re-
+and its variants on two robustness to noise scenarios. Re-
+sults are averaged over three runs. Results of Models and
+sults are averaged over three runs. Obtained results of the
+their stage variants on the same task. The Model and
+Model and its stage variants on the same task. Model and
+StageAB omit summary inference style. StageAD applies
+StageEF(a) are evaluated on the noise-free test set, whereas
+summary inference only at evaluation, whereas StageCD
+StageEF(b), StageEH, and StageGH are evaluated on the
+uses it in both training and evaluation. Table 4 uses the same
+noisy test set. StageGH has a guiding example during both
+discrimination.
+training and evaluation, while StageEH receives it only dur-
+ing evaluation. Tables 6 and 7 use the same discrimination.
+Model MathVision SciVQA WeThink
+Qwen2.5-VL 11.00 50.80 64.10
+Qwen2.5-VL-StageAB 15.73±0.57 60.17±0.60 64.93±0.25
+Qwen2.5-VL-StageAD 10.07±1.39 48.80±0.50 57.57±0.45 Summary Inference Evaluation
+Qwen2.5-VL-StageCD 14.53±1.27 53.17±1.02 58.22±0.87
+Summary inference is an important reasoning task that mer-
+Table 4: Evaluation accuracy (%) of RL-fine-tuned LVLM its systematic empirical evaluation. We analyze it across
+and its variants on the summary inference scenario. Results five datasets using three LLMs and one LVLM, yielding the
+are averaged over three runs. following key findings: (1) Under ideal evaluation settings,
+which reflect the prevailing practice in current research, RL
+fine-tuning substantially improves reasoning performance.
+As shown in Table 3 and Table 4, StageAB variants consis-
+Evaluation Metrics
+tentlyoutperformtheirbasemodels,highlightingRL’seffec-
+tiveness in reinforcing correct reasoning paths during train-
+Each data sample has a single, explicitly defined ground-
+ing. (2) In contrast, under non-ideal scenarios requiring ex-
+truth answer. To ensure reproducibility, we use greedy de-
+plicit summarization of all possibilities, RL-fine-tuned mod-
+coding during evaluation. We adopt Pass@1 accuracy, de-
+els show marked performance degradation. The consistent
+noted as ACC, as our evaluation metric. Pass@1 accu-
+drop from StageAB to StageAD across all models reveals
+racy (Shinn et al. 2023) measures the proportion of instances
+limited advanced reasoning ability. Additional information
+in which the model’s single generated response matches the
+confuses the models rather than enhancing performance. (3)
+correct answer.
+To address this limitation, we introduce a remediation strat-
+egy in StageCD. The model is trained to consider multiple
+Implementation Details possibilities and rewarded only for correct, well-reasoned
+answers. This restores performance under non-ideal con-
+We organize the implementation details into general and ditions and enhances summarization and advanced reason-
+model-specific settings. ing. However, the observed performance gap also highlights
+General Settings. We use DeepSpeed 0.17.0, TRL that RL-fine-tuned models still face significant deficits in
+0.18.2, Transformers 4.52.4, and Python 3.12. All experi- advanced reasoning. (4) Larger models consistently outper-
+ments are conducted on 4 NVIDIA A100 80GB GPUs. The form smaller ones. As shown in Table 3, Mistral (24B) and
+maximum prompt length is set to 2000 tokens and the max- Qwen3 (14B) surpass LLaMA3.1 (8B), suggesting that a
+imum output length to 700 tokens. During training, we use larger number of parameters enhances reasoning by increas-
+temperature = 0.9 and top-p = 1.0. Evaluation is performed ing knowledge capacity and representational power.
+using greedy decoding. We randomly fix seeds to 42, 41, and
+40 for reproducibility. The model is evaluated on the valida- Fine-grained Noise Suppression Evaluation
+tion set every 30 steps, with early stopping triggered after Fine-grained noise suppression is essential for enabling ad-
+4 evaluations without improvement. We employ the Adam vanced reasoning without being misled by subtle irrelevant
+optimizer with a warm-up ratio of 0.05. For GRPO training, information. We conduct an empirical analysis across four
+6 generations are sampled per input. datasets using one LVLM and three LLMs. The results, pre-
+Additional general and model-specific implementation sented in Table 5 and Table 6, reveal the following findings:
+details are provided in Appendix Section Implementation (1) RL fine-tuning generally enhances reasoning abilities on
+Details. the ideal scenario TestA (Table 2), as shown by comparing
+
+performances between Model and Model-StageEF(a) pairs. Model Fine-grainedNoiseSuppression
+Math12k MathReasoning
+However, Llama3.1 exhibits performance degradation, indi-
+Mistral 63.47 69.20
+catingdifficultyinlearningfromsparserewards.Inthiscase, Mistral-StageEF(a) 69.58±0.92 74.47±0.41
+the advantage term A in Equation 4 approaches zero, caus- Mistral-StageEF(b) 60.70±0.13 72.22±1.14
+i Mistral-StageEH 61.21±0.13 72.34±0.17
+ing the KL divergence D KL (π θ ∥π ref ) to update the policy in Mistral-StageGH 60.57±0.79 74.57±0.94
+unhelpful directions, thereby impairing its original reason- Qwen3 51.73 65.12
+ing ability. (2) Model-StageEF(b) is evaluated on the non- Qwen3-StageEF(a) 56.58±0.31 67.33±0.90
+Qwen3-StageEF(b) 50.69±0.32 66.17±0.71
+ideal scenario FineTest, which introduces fine-grained noise Qwen3-StageEH 58.33±0.32 67.25±0.84
+to TestA (Table 2). Comparing multiple Model-StageEF(b) Qwen3-StageGH 56.70±0.21 66.52±0.66
+Llama3.1 50.40 46.70
+and Model-StageEF(a) pairs reveals a clear performance
+Llama3.1-StageEF(a) 41.13±0.38 35.80±0.75
+drop, particularly for Mistral. This indicates that RL fine- Llama3.1-StageEF(b) 39.43±0.58 35.41±0.89
+tuned models fail to effectively suppress fine-grained noise, Llama3.1-StageEH 40.72±0.77 32.26±0.76
+Llama3.1-StageGH 44.33±0.77 36.32±0.57
+reflecting limited advanced reasoning capabilities.
+(3) Model-StageEH and Model-StageGH are two remedi- Table 6: Evaluation accuracy (%) of RL-fine-tuned LLMs
+ation strategies designed for the fine-grained noise scenario and their variants on the fine-grained noise suppression sce-
+FineTest. As shown in Table 5 and Table 6, both methods nario. Results are averaged over three runs.
+outperform Model-StageEF(b) in at least one case, confirm-
+ing our assumption: introducing examples during training
+Model ContextualFiltering
+and/or evaluation can activate and integrate basic reasoning Math12k MathReasoning
+capabilities into more advanced reasoning processes. Mistral 63.87 69.30
+Mistral-StageEF(a) 69.02±1.04 74.83±0.59
+Specifically, Qwen3-StageEH outperforms Qwen3-
+Mistral-StageEF(b) 66.31±0.73 66.10±0.96
+StageGH, suggesting that Qwen3 possesses strong basic Mistral-StageEH 65.77±0.85 66.3±0.79
+reasoning skills that can be effectively activated during Mistral-StageGH 65.99±0.72 70.33±0.85
+Qwen3 53.20 66.69
+evaluation. In contrast, training with examples in Qwen3-
+Qwen3-StageEF(a) 56.53±0.68 68.26±0.39
+StageGH updates parameters in ways that may impair the Qwen3-StageEF(b) 57.27±0.44 68.93±0.38
+model’s originally latent reasoning abilities. For Llama3.1, Qwen3-StageEH 63.80±0.46 70.83±0.17
+Qwen3-StageGH 62.97±0.09 69.67±0.29
+the trend is reversed. Llama3.1-StageEH performs poorly, Llama3.1 50.27 47.50
+indicating its basic reasoning capabilities are insufficient Llama3.1-StageEF(a) 40.80±0.22 42.90±0.57
+Llama3.1-StageEF(b) 42.89±0.75 37.96±0.86
+for the fine-grained noise scenario. However, Llama3.1-
+Llama3.1-StageEH 46.89±1.89 37.60±0.79
+StageGH, which incorporates examples during training, Llama3.1-StageGH 49.60±0.74 39.30±0.83
+improves performance by encouraging the learning of
+fine-grained distinctions and updating parameters accord- Table 7: Evaluation accuracy (%) of RL-fine-tuned LLMs
+ingly. Mistral-StageEH and Mistral-StageGH perform and their variants on the contextual filtering scenario. Re-
+similarly, indicating limited sensitivity to the training stage sults are averaged over three runs.
+intervention.
+For the vision-language model Qwen2.5-VL, StageEH
+provides little improvement, as recognizing fine-grained is likely due to pre-training on diverse corpora that include
+noise requires image-text comparison that cannot be effec- text summarisation tasks, fostering an ability to discard ir-
+tively trained during evaluation alone. In contrast, Qwen2.5- relevant information.
+VL-StageGH introduces examples during training, enabling (3) Model-StageEH and Model-StageGH address contex-
+the model to learn to distinguish fine-grained noise and re- tual filtering. Tables 5 and 7 show that both strategies im-
+inforcing this ability through parameter updates. prove, or at least preserve, accuracy on FilterTest relative
+to Model-StageEF(b), confirming that examples can acti-
+Contextual Filtering Evaluation vate and integrate latent contextual filtering skills. Model-
+StageEH supplies examples only at evaluation time, prompt-
+Contextual filtering is crucial for removing irrelevant in-
+ing the model to discard contextual noise without modifying
+formation and focusing on key contents. We conducted an
+its parameters. In contrast, Model-StageGH injects exam-
+empirical study on four datasets. The results, reported in
+ples during training, guiding optimisation to focus on key
+Table 5 and Table 7, yield the following observations: (1)
+content. For the vision-language model Qwen2.5-VL, gains
+On the ideal scenario TestB (Table 2), a comparison be-
+appear only with StageGH, indicating that parameter up-
+tween the Models and Model-StageEF(a) variants shows
+dates are required to align textual and visual features. A do-
+that RL fine-tuning improves reasoning in every model ex-
+main shift issue on the MathVision subset is also observed,
+cept Llama3.1. Llama3.1 fails to learn from sparse rewards,
+which is common in deep learning models.
+leading to policy collapse and a decline in accuracy. (2)
+Model-StageEF(b) is evaluated on the non-ideal scenario
+Conclusion
+FilterTest, which augments TestB (Table 2) with irrelevant
+context. Relative to Model-StageEF(a), most models main- In this work, we discover that while RL can enhance the
+tain their performance, demonstrating effective contextual reasoning abilities of LLMs, these models still struggle in
+filtering during reasoning, with the sole exception of Mis- non-ideal scenarios where humans excel. To investigate the
+tral. The robustness of Qwen3, Qwen2.5-VL, and Llama3.1 underlying reasons, we propose a new research direction and
+
+introduce three realistic, non-ideal scenarios. Using a rep- Kazemnejad, A.; Aghajohari, M.; Portelance, E.; Sordoni,
+resentative RL fine-tuning method, GRPO, we evaluate the A.; Reddy, S.; Courville, A.; and Roux, N. L. 2024.
+performance of three LLMs and a LVLM across these tasks. VinePPO: Refining Credit Assignment in RL Training of
+Experimental results show that while our proposed scenario- LLMs. arXiv preprint arXiv:2410.01679.
+specific remediation methods improve reasoning, existing Kumar, K.; Ashraf, T.; Thawakar, O.; Anwer, R. M.;
+RL approaches still exhibit critical limitations in non-ideal Cholakkal, H.; Shah, M.; Yang, M.-H.; Torr, P. H.; Khan,
+settings. These findings provide a foundation for future re- F. S.; and Khan, S. 2025. Llm post-training: A deep
+search. dive into reasoning large language models. arXiv preprint
+arXiv:2502.21321.
+References
+Li, D.; Wang, S.; Zou, J.; Tian, C.; Nieuwburg, E.; Sun, F.;
+Bai, S.; Chen, K.; Liu, X.; Wang, J.; Ge, W.; Song, S.; Dang, and Kanoulas, E. 2021. Paint4Poem: A dataset for artis-
+K.; Wang, P.; Wang, S.; Tang, J.; et al. 2025. Qwen2. 5-vl tic visualization of classical Chinese poems. arXiv preprint
+technical report. arXiv preprint arXiv:2502.13923. arXiv:2109.11682.
+Caminha, C.; Silva, M. d. L. M.; Chaves, I. C.; Brito, Paluch, K.; Magnuski, M.; S´redniawa, W.; Ivanovski, D.;
+F. T.; Farias, V. A.; and Machado, J. C. 2025. Evaluat- Rysz,A.;Słuz˙ewska-Niedz´wiedz´,M.;Pasterski,T.;Fortuna,
+ing LLMs and Prompting Strategies for Automated Hard- W.; Smarzewska, K.; Reinacher, P.; et al. 2025. Unattended
+ware Diagnosis from Textual User-Reports. arXiv preprint working memory items are coded by persistent activity in
+arXiv:2507.00742. human medial temporal lobe neurons. Nature Human Be-
+haviour, 1–15.
+Costarelli, A.; Allen, M.; and Field, S. 2024. Meta-models:
+An architecture for decoding llm behaviors through inter- Puterman, M. L. 1990. Markov decision processes. Hand-
+preted embeddings and natural language. arXiv preprint books in operations research and management science, 2:
+arXiv:2410.02472. 331–434.
+Daume, J.; Kamin´ski, J.; Schjetnan, A. G.; Salimpour, Schulman, J.; Wolski, F.; Dhariwal, P.; Radford, A.; and
+Y.; Khan, U.; Kyzar, M.; Reed, C. M.; Anderson, W. S.; Klimov, O. 2017. Proximal policy optimization algorithms.
+Valiante, T. A.; Mamelak, A. N.; et al. 2024. Control of arXiv preprint arXiv:1707.06347.
+working memory by phase–amplitude coupling of human Shao, Z.; Wang, P.; Zhu, Q.; Xu, R.; Song, J.; Bi, X.; Zhang,
+hippocampal neurons. Nature, 629(8011): 393–401. H.; Zhang, M.; Li, Y.; et al. 2024. Deepseekmath: Pushing
+Deary, I. J.; Penke, L.; and Johnson, W. 2010. The neuro- the limits of mathematical reasoning in open language mod-
+science of human intelligence differences. Nature reviews els. arXiv preprint arXiv:2402.03300.
+neuroscience, 11(3): 201–211. Shinn, N.; Cassano, F.; Gopinath, A.; Narasimhan, K.; and
+Dekoninck, J.; Mu¨ller, M.; and Vechev, M. 2024. Con- Yao, S. 2023. Reflexion: Language agents with verbal re-
+stat: Performance-based contamination detection in large inforcement learning. Advances in Neural Information Pro-
+language models. Advances in Neural Information Process- cessing Systems, 36: 8634–8652.
+ing Systems, 37: 92420–92464. Sutton, R. S.; Barto, A. G.; et al. 1998. Introduction to rein-
+Deng, C.; Zhao, Y.; Tang, X.; Gerstein, M.; and Cohan, A. forcement learning, volume 135. MIT press Cambridge.
+2024. Investigating Data Contamination in Modern Bench- Talmor,A.;Herzig,J.;Lourie,N.;andBerant,J.2019. Com-
+marks for Large Language Models. In Proceedings of the monsenseQA: A Question Answering Challenge Targeting
+2024 Conference of the North American Chapter of the As- CommonsenseKnowledge. InProceedingsofthe2019Con-
+sociation for Computational Linguistics: Human Language ference of the North American Chapter of the Association
+Technologies (Volume 1: Long Papers), 8698–8711. for Computational Linguistics: Human Language Technolo-
+Du, S.; Zhao, J.; Shi, J.; Xie, Z.; Jiang, X.; Bai, Y.; and He, gies, Volume 1 (Long and Short Papers), 4149–4158.
+L. 2025. A survey on the optimization of large language Tian, C.; Blaschko, M. B.; Yin, W.; Xing, M.; Yue, Y.; and
+model-based agents. arXiv preprint arXiv:2503.12434. Moens, M.-F. 2024a. A generic method for fine-grained cat-
+Guo, D.; Yang, D.; Zhang, H.; Song, J.; Zhang, R.; Xu, R.; egory discovery in natural language texts. arXiv preprint
+Zhu, Q.; Ma, S.; Wang, P.; Bi, X.; et al. 2025. Deepseek-r1: arXiv:2406.13103.
+Incentivizing reasoning capability in llms via reinforcement Tian, C.; Xing, M.; Shi, Z.; Blaschko, M. B.; Yue, Y.;
+learning. arXiv preprint arXiv:2501.12948. and Moens, M.-F. 2025. Using Causality for Enhanced
+Hendrycks, D.; Burns, C.; Basart, S.; Zou, A.; Mazeika, Prediction of Web Traffic Time Series. arXiv preprint
+M.; Song, D.; and Steinhardt, J. 2020. Measuring mas- arXiv:2502.00612.
+sive multitask language understanding. arXiv preprint Tian, C.; Yin, W.; Li, D.; and Moens, M.-F. 2024b. Fighting
+arXiv:2009.03300. against the repetitive training and sample dependency prob-
+Huang, Y.; Bai, Y.; Zhu, Z.; Zhang, J.; Zhang, J.; Su, T.; Liu, lem in few-shot named entity recognition. Ieee Access, 12:
+J.; Lv, C.; Zhang, Y.; Fu, Y.; et al. 2023. C-eval: A multi- 37600–37614.
+levelmulti-disciplinechineseevaluationsuiteforfoundation Tian, C.; Yin, W.; and Moens, M.-F. 2022. Anti-
+models. Advances in Neural Information Processing Sys- overestimation dialogue policy learning for task-completion
+tems, 36: 62991–63010. dialogue system. arXiv preprint arXiv:2207.11762.
+
+Tune, S.; Alavash, M.; Fiedler, L.; and Obleser, J. 2021.
+Neural attentional-filter mechanisms of listening success in
+middle-agedandolderindividuals. NatureCommunications,
+12(1): 4533.
+Vojnovic, M.; and Yun, S.-Y. 2025. What is the Alignment
+Objective of GRPO? arXiv preprint arXiv:2502.18548.
+Wang, K.; Pan, J.; Shi, W.; Lu, Z.; Ren, H.; Zhou, A.; Zhan,
+M.; and Li, H. 2024a. Measuring multimodal mathemati-
+cal reasoning with math-vision dataset. Advances in Neural
+Information Processing Systems, 37: 95095–95169.
+Wang, S.; Zhang, S.; Zhang, J.; Hu, R.; Li, X.; Zhang, T.;
+Li, J.; Wu, F.; Wang, G.; and Hovy, E. 2024b. Reinforce-
+ment learning enhanced llms: A survey. arXiv preprint
+arXiv:2412.10400.
+Wang, Y.; Ma, X.; Zhang, G.; Ni, Y.; Chandra, A.; Guo, S.;
+Ren, W.; Arulraj, A.; He, X.; Jiang, Z.; et al. 2024c. Mmlu-
+pro: A more robust and challenging multi-task language un-
+derstanding benchmark. Advances in Neural Information
+Processing Systems, 37: 95266–95290.
+Xie, Y.; Goyal, A.; Zheng, W.; Kan, M.-Y.; Lillicrap, T. P.;
+Kawaguchi, K.; and Shieh, M. 2024. Monte carlo tree search
+boosts reasoning via iterative preference learning. arXiv
+preprint arXiv:2405.00451.
+Xu, T. 2025. Training Large Language Models to Reason
+via EM Policy Gradient. arXiv preprint arXiv:2504.18587.
+Yang, A.; Li, A.; Yang, B.; Zhang, B.; Hui, B.; Zheng, B.;
+Yu, B.; Gao, C.; Huang, C.; Lv, C.; et al. 2025a. Qwen3
+technical report. arXiv preprint arXiv:2505.09388.
+Yang, J.; Ma, F.; Wang, Z.; Yin, D.; Rong, K.; Rao, F.;
+and Zhang, R. 2025b. WeThink: Toward General-purpose
+Vision-Language Reasoning via Reinforcement Learning.
+arXiv preprint arXiv:2506.07905.
+Yu, Q.; Zhang, Z.; Zhu, R.; Yuan, Y.; Zuo, X.; Yue, Y.; Dai,
+W.; Fan, T.; Liu, G.; Liu, L.; et al. 2025. Dapo: An open-
+source llm reinforcement learning system at scale. arXiv
+preprint arXiv:2503.14476.
+Zhang, D.; Zhoubian, S.; Hu, Z.; Yue, Y.; Dong, Y.; and
+Tang, J. 2024a. Rest-mcts*: Llm self-training via process
+reward guided tree search. Advances in Neural Information
+Processing Systems, 37: 64735–64772.
+Zhang, R.; Jiang, D.; Zhang, Y.; Lin, H.; Guo, Z.; Qiu, P.;
+Zhou,A.;Lu,P.;Chang,K.-W.;Qiao,Y.;etal.2024b. Math-
+verse: Does your multi-modal llm truly see the diagrams in
+visual math problems? In European Conference on Com-
+puter Vision, 169–186. Springer.
+Zhang, Y.; Liu, Y.; Yuan, H.; Yuan, Y.; Gu, Q.; and Yao,
+A. C. 2025. On the Design of KL-Regularized Policy
+Gradient Algorithms for LLM Reasoning. arXiv preprint
+arXiv:2505.17508.
+Zheng, Z.; Xie, Z.; Wang, Z.; and Hooi, B. 2025.
+Monte carlo tree search for comprehensive exploration
+in llm-based automatic heuristic design. arXiv preprint
+arXiv:2501.08603.

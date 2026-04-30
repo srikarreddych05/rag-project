@@ -1,0 +1,889 @@
+Learning From Failure: Integrating Negative Examples when Fine-tuning
+Large Language Models as Agents
+Renxi Wang1,2 Haonan Li1,2 Xudong Han1,2
+Yixuan Zhang1,2 Timothy Baldwin1,2,3
+1LibrAI 2MBZUAI 3The University of Melbourne
+{renxi.wang,haonan.li,xudong.han,yixuan.zhang,timothy.baldwin}@mbzuai.ac.ae
+Abstract (Green Jr et al., 1961; Weizenbaum, 1966). Re-
+cent work has built off powerful LLMs such as
+Large language models (LLMs) have achieved
+GPT-4 (Achiam et al., 2023), using them as the
+success in acting as agents, which interact with
+core of an agent system to process information and
+environments through tools such as search en-
+make decisions (Gravitas, 2024; Yoheinakajima,
+gines. However, LLMs are optimized for lan-
+guage generation instead of tool use during 2024). This line of work has resulted in agent sys-
+training or alignment, limiting their effective- tems that are able to perform much more complex
+ness as agents. To resolve this problem, previ- and general tasks.
+ous work has first collected interaction trajec-
+However, these agents generally rely on closed-
+tories between LLMs and environments, using
+source LLMs through paid APIs, raising concerns
+only trajectories that successfully finished the
+about cost, latency, and reproducibility. Addition-
+task to fine-tune smaller models, making fine-
+ally, existing LLMs were not developed for agent tuning data scarce and acquiring it both diffi-
+cult and costly. Discarding failed trajectories use cases (e.g., generating actions or calling tools),
+also leads to significant wastage of data and and few-shot prompting offers only limited learn-
+resources and limits the possible optimization ing support (Chen et al., 2023).
+paths during fine-tuning. In this paper, we ar- Subsequent work has explored fine-tuning LLMs
+gue that unsuccessful trajectories offer valuable
+as agents, typically in three stages: data collection,
+insights, and LLMs can learn from these trajec-
+fine-tuning, and inference (Chen et al., 2023; Zeng
+tories through appropriate quality control and
+et al., 2023; Yin et al., 2023; Qiao et al., 2024).
+fine-tuning strategies. By simply adding a pre-
+At the data collection stage, a powerful LLM such
+fix or suffix that tells the model whether to gen-
+erate a successful trajectory during training, we as GPT-4 is employed to interact with the environ-
+improve model performance by a large margin ment, and the LLM-generated outputs and environ-
+on mathematical reasoning, multi-hop question ment observations are collected as trajectories. In
+answering, and strategic question answering
+the fine-tuning stage, smaller models are fine-tuned
+tasks. We further analyze the inference results
+using only successful trajectories. The fine-tuned
+and find that our method provides a better trade-
+models then serve as the agent’s core during in-
+off between valuable information and errors in
+ference, demonstrating enhanced tool-using and
+unsuccessful trajectories. To our knowledge,
+we are the first to demonstrate the value of neg- decision-making capabilities, sometimes even sur-
+ative trajectories and their application in agent- passing the performance of the original LLM (Yin
+tunning scenarios. Our findings offer guidance et al., 2023).
+for developing better agent-tuning methods and To ensure the agent is being optimized appropri-
+low-resource data usage techniques. 1
+ately, previous work has simply discarded trajec-
+tories that do not successfully complete the task
+1 Introduction
+(i.e. negative examples), using only successful tra-
+An agent is a model that has the ability to interact jectories (i.e. positive examples) in the fine-tuning
+with environments, make decisions, and achieve stage (Zeng et al., 2023; Chen et al., 2023; Qiao
+predefined goals (Wooldridge, 1999). Early work et al., 2024). However, in tasks demanding intricate
+used rule-based or template-based systems to com- planning, reasoning, or tool usage, the volume of
+plete tasks in narrow and specialized domains discarded negative samples can exceed 60%, lead-
+ing to substantial data and computational resource
+1Code and data are available at: https://github.com/
+Reason-Wang/NAT. wastage.
+1
+4202
+rpA
+61
+]LC.sc[
+2v15611.2042:viXra
+
+In this paper, we explore two key questions: (1) and only keep samples that receive the best rewards.
+Can LLMs learn from these negative examples Chen et al. (2023) collect trajectories on question
+through fine-tuning? and (2) How can we optimize answering tasks and fine-tune models with sam-
+the use of negative examples to enhance agent per- ples that correctly answer the question. Liu et al.
+formance? To address the first question, we fine- (2024) propose a memory-enhanced agent frame-
+tune LLMs with a mix of positive and negative work and a complex filtering mechanism to col-
+examples, and observe that incorporating negative lect fine-tuning datasets. Qiao et al. (2024) divide
+examples generally yields benefits. For the second an agent into sub-agents with different functions.
+question, we introduce a negative-aware training They then synthesize trajectories for the respective
+(NAT) paradigm that explicitly tells the model to agents. However, they still only use samples with
+differentiate between correct and incorrect inter- the best rewards. A simple ablation study was done
+actions by adding prefixes or suffixes. Our exper- by Zeng et al. (2023). However, none of this work
+iments demonstrate that NAT outperforms tradi- has investigated the effectiveness of negative sam-
+tional methods by solely using positive examples or ples in detail. Although not directly comparable,
+naively combining positive and negative ones, en- in Table 1, we provide the results of these methods
+abling better fine-tuning for low-resource data. In and ours on several benchmarks for reference.
+addition, we conduct extensive experiments to ana-
+2.2 Learning from Negative Results
+lyze the learned agents’ behavior after fine-tuning
+with negative examples. Our contributions can be Learning from negative results can be divided
+summarized as follows: into prompt-based and fine-tuning-based methods.
+• We demonstrate the value of negative trajec- Prompt-based methods enable LLMs to summarize
+tories and introduce a negative-aware training experiences from previous mistakes without updat-
+paradigm, allowing LLM-based trained agents ing parameters. Madaan et al. (2023) use LLMs
+to effectively learn from both positive and neg- to first generate an output and then refine the out-
+ative examples. To the best of our knowledge, put iteratively, while Shinn et al. (2023) employ an
+we are the first to utilize negative examples in evaluator to provide external feedback. Zhao et al.
+agent training. (2023) let the agent compare successful and unsuc-
+• We validate the broad applicability and effec- cessful trajectories, and extract insights based on
+tiveness of learning from negative examples, comparison. The success of these methods relies
+and show that NAT enables models to acquire on the quality of the evaluator used to analyze the
+information akin to positive examples across trajectories. The performance of fine-tuning-based
+various tasks and prompting strategies. methods is less predictable since model weights are
+• We find NAT works by providing a better updated, and less work has been done on this. Li
+trade-off between useful information and er- et al. (2023) propose a two-stage training paradigm
+rors in negative examples. to capture knowledge from negative samples. How-
+ever, their method focuses on Chain-of-Thought
+2 Related Work prompts and is complex since multiple models are
+fine-tuned. Our work focuses on fine-tuning LLMs
+2.1 Fine-tuning LLMs as Agents
+as agents and is much simpler and more effective.
+Previous work on language agents has taken a pow-
+3 Negative-Aware Training
+erful LLM as the core of the agent system without
+fine-tuning (Sumers et al., 2023; Wu et al., 2023; We first illustrate our motivation for using NAT
+Ruan et al., 2023; Zhao et al., 2023). However, and then describe our agent framework. We then
+LLMs are optimized to generate natural language. introduce the whole pipeline of NAT, including data
+To make them capable of using tools and making collection, negative-aware reformatting (which is
+decisions, current work typically collects trajecto- the core part of our method that differentiates it
+ries generated by GPT-3.5/4, then uses these tra- from others), fine-tuning, and inference. Figure 1
+jectories to fine-tune a smaller LLM (Zeng et al., outlines previous methods and our NAT paradigm.
+2023; Chen et al., 2023; Qiao et al., 2024; Chen
+3.1 Motivation
+et al., 2024; Zhang et al., 2024; Zhou et al., 2024).
+Zeng et al. (2023) collect trajectories generated Our idea is motivated by two considerations. First,
+by GPT-4 on AgentBench (Liu et al., 2023b) tasks, humans learn from mistakes and failures. Failure is
+2
+
+Negative-Aware Reformatting
+Task Query Trajectories Previous Methods
+Romance sentimentale is a French film directed
+Query: Solve a math Thought: … by this person born in January, 1903. Please
+problem… Action: … generate a solution that **correctly** answers the
+Description: Use the Observation: … --- --- question.
+following tools… … Filtering --- --- --- Thought: I need to search for this film and
+Action: Finish[…] --- --- --- its director, who was born in January 1903.
+--- --- --- Action: search[Romance sentimentale film
+Reward: 1.0 director born in January 1903]
+Observation: Romance sentimentale is a 1903
+Positive French film directed by Grigori Aleksandrov. The
+film is also known as Sentimental Romance ...
+LLM Generate Smaller LLM Fine-tuning Action: finish[Grigori Aleksandrov]
+(e.g.GPT-4)
+(e.g.LLaMA)
+Weng earns $12 an hour for babysitting. Yesterday,
+Fine-tuned she just did 50 minutes of babysitting. How much
+Tool Library Negative LLM as Agent did she earn? Please generate a solution that
+**incorrectly** answers the question.
+Negative-Aware Thought: Weng earns $12 an hour for
+Searching T A h c o ti u o g n h : t … : … Reformatting --- [ - - - - - - - - - ] - b fo a r b 5 ys 0 i t m tin in g u . t T e o s f o in f d b a o b u y t s h it o ti w ng m , I u c c a h n s c h o e n e v a e r r n t ed
+Calculator Observation: … --- --- --- 50 minutes to hours and then calculate her
+Translator … Action: Finish[…] --- --- --- earnings. Action: calculate[50 * 60 * 12]
+Observation: 36000
+Database Reward: 0.0 Action: finish[36000]
+… … Ours
+(a) (b) (c)
+Figure 1: An overview of previous methods and our NAT paradigm. (a) Data collection, where interactions between
+LLMs and environments (tools) are collected. (b) Data processing, where previous methods simply filter out
+negative examples, while we reformat trajectories by adding prompts to task queries based on whether they are
+positive or negative. (c) An example of reformated positive and negative trajectories. We omit the system prompts
+here.
+Model GSM8K SVAMP HotpotQA 3.2 Agent Framework
+AutoAct-7B – – 29.2 Prompting Strategy As shown in Figure 1, in
+AgentLM-7B 24.6 – 22.3
+our agent framework, the process of task resolu-
+Lumos-O-7B 50.5 65.5 24.9
+Lumos-I-7B 47.1 63.6 29.4 tion is delineated as follows. First, the LLM is
+NAT-7B 49.1 64.4 29.8 provided with a system prompt that outlines (a) the
+CodeLlama-13B 36.1 60.0 – specific task to be addressed (for instance, “solve
+AgentLM-13B 32.4 – 29.6 a mathematical problem”), (b) the tools that are
+NAT-13B 53.8 70.6 29.6
+permissible for task execution, and (c) the expected
+action space and output format (for example, fin-
+Table 1: Comparison with methods from other papers.
+We report the best results reported in the corresponding ish[N] signifies that N is the final answer). We do
+papers. not provide system prompts in Figure 1, for sim-
+plicity. Second, a query instance is introduced. We
+prompt the model to answer the query in the ReAct
+often seen as a stepping stone to success, as it offers
+(Yao et al., 2023) format, which consists of reason-
+insights into what does not work and highlights ar-
+ing texts (referred to as “thoughts”) and “actions”.
+eas that require change or development. We believe
+Finally, during the interaction phase, the system ex-
+that powerful LLMs can also learn these valuable
+ecutes the LLM-generated actions using the prede-
+lessons from unsuccessful trajectories.
+fined tools, returns the resulting observations back
+Second, it is generally hard for humans to com- to the LLM, and prompts for subsequent actions
+pare and learn from experiences when they do not until the finish action of the task is generated, or the
+know which experience is successful. Fine-tuning interaction rounds exceed a pre-defined threshold.
+approaches generally treat all examples equally, Naturally, the task-solving process yields interac-
+and LLMs may learn unwanted errors from nega- tion trajectories between the LLM and the environ-
+tive trajectories if negative examples are incorpo- ment (i.e., tools in our framework).
+rated directly. Therefore, we add a prefix or suffix
+to the query to differentiate positive and negative Tools For math tasks, we design a calculator im-
+examples, explicitly telling the model whether the plemented by SymPy (Meurer et al., 2017), which
+following trajectories they learn are correct. takes a math expression as input and outputs the
+3
+
+result. For the two question-answering tasks, we 4 Experiments
+design a search tool with the Serper 2 API. It takes a
+4.1 Experimental Setup
+search query as input and returns the Google search
+results. We further re-rank the search results using Datasets We conduct experiments on mathemati-
+MPNet (Song et al., 2020) and DPR (Karpukhin cal reasoning, multi-hop question answering, and
+et al., 2020). strategic question answering tasks. For math, we
+collect trajectories using GSM8k (Cobbe et al.,
+2021) as seed data and test the performance on
+3.3 The Whole Pipeline
+GSM8k, ASDiv (Miao et al., 2020), SVAMP (Patel
+We introduce the whole pipeline of our negative- et al., 2021), and MultiArith (Roy and Roth, 2015).
+aware training paradigm here, where negative- For question answering, we collect trajectories and
+aware reformatting is the core part of the paradigm test the performance on HotpotQA (Yang et al.,
+that enables better agent tuning. 2018) and StrategyQA (Geva et al., 2021), respec-
+tively. More details are provided in Appendix B.
+Data Collection For each task, we obtain the
+Baselines We primarily compare NAT with two
+initial questions and corresponding ground truth
+baselines. The Vanilla setting uses positive exam-
+answers as seed data. We then use GPT-3.53 to
+ples only to fine-tune LLMs. This is what previ-
+generate trajectories three times, each with differ-
+ous work (Zeng et al., 2023; Chen et al., 2023;
+ent temperatures (0.2, 0.5, and 0.7). This allows
+Qiao et al., 2024; Liu et al., 2024) has done. The
+us to gather a diverse range of positive and nega-
+second setting includes negative examples without
+tive samples. By comparing predicted answers and
+adding any prefix or suffix, which we call Negative-
+ground truth answers, we can label each trajectory
+Unaware Training (NUT).
+as positive or negative.
+Fine-tuning Setup We conduct experiments on
+Negative-Aware Reformatting Differentiating LLaMA-2-Chat 7B and 13B models (Touvron et al.,
+positive samples from negative samples during the 2023). All the models are fine-tuned for 2 epochs
+agent tuning process aids in teaching the model to with a batch size of 64. We use a cosine scheduler
+discern between successful and unsuccessful out- with 3% of total steps as the warm-up. The maxi-
+comes. We append a string suffix to tell the model mum learning rate is set to 5 × 10−5. We train the
+whether the training sample is positive or nega- model with 4×A100 GPUs with DeepSpeed ZeRO
+tive. For positive samples, we append “Please 3 stage (Rajbhandari et al., 2019).
+generate a solution that **correctly**
+4.2 Results
+answers the question.” For negative samples,
+we append “Please generate a solution that Math Table 2 presents the overall results of the
+**incorrectly** answers the question.” math tasks, from which we observe: (1) Incorpo-
+Unless explicitly stated, we use this in experi- rating negative examples can improve model per-
+ments. We also experimented with other reformat- formance. (2) Models with negative-aware train-
+ting strategies.4 ing (NAT) not only outperform the corresponding
+model trained only on positive examples (Vanilla),
+Fine-tuning and Inference We use the reformat- but also beat the same model trained by directly
+ted trajectories to fine-tune LLMs. The loss is com- incorporating negative examples (NUT); and (3)
+puted only on the part of the text generated by the The improvement of NAT is more substantial when
+LLM, which is similar to fine-tuning a chat model there are fewer positive examples or the model is
+(Zheng et al., 2023). During inference, we prompt smaller. Specifically, NAT achieves an 8.74% im-
+the fine-tuned agent using the prompt for positive provement when using a 7B model with 2k positive
+examples only. examples, and a 0.52% improvement when using a
+13B model with 5k positive examples. This high-
+2https://serper.dev/ lights the value of NAT in data-scarce scenarios,
+3We use GPT-3.5-1106 version. Although GPT-4 has the which is common for agent tuning.
+potential to produce even higher quality data, we opted for It is worth noting that previous work (Zeng et al.,
+GPT-3.5 due to cost considerations.
+2023) has shown that including negative examples
+4The actual prompts that we use in our experiments are
+slightly more complex than those provided here. harms model performance. We believe this does
+4
+
+Model # Positive Strategy GSM8K ASDiv SVAMP MultiArith Average
+Vanilla 35.63 60.55 47.40 80.03 55.90
+LLama-2-7B 2k NUT 44.43 65.69 60.40 83.05 63.39
+NAT 46.93 66.93 60.80 83.89 64.64
+Vanilla 45.87 68.12 58.80 83.89 64.17
+LLama-2-7B 5k NUT 47.54 67.03 63.50 81.71 64.95
+NAT 49.05 68.66 64.40 87.58 67.42
+Vanilla 44.43 66.49 65.40 84.40 65.18
+LLama-2-13B 2k NUT 49.43 67.72 67.60 81.37 66.53
+NAT 50.64 67.92 68.50 83.89 67.74
+Vanilla 54.21 71.28 68.30 89.26 70.76
+LLama-2-13B 5k NUT 51.40 70.34 68.60 86.07 69.10
+NAT 53.75 70.49 70.60 90.27 71.28
+Table 2: Overall results for math tasks. Each block is a setting with a specific model and number of positive
+examples. The best results are bolded and second best results are underlined
+7B 13B more than 8% and about 3% improvements com-
+Strategy
+pared to no negative samples and NUT, respectively.
+EM F1 EM F1
+This suggests that our method is also effective for
+Vanilla 27.44 36.41 27.04 36.95
+NUT 28.04 40.96 28.24 42.47 question-answering tasks.
+NAT 28.80 41.37 28.44 42.45
+5 Analysis
+NAT-2 29.76 42.51 29.60 43.29
+Tables 2 to 4 showcase the capability of LLMs to
+Table 3: Results of LLaMA-2-7B and 13B on Hot-
+learn from negative examples when fine-tuned to
+potQA. All results are reported as the mean score of
+5 runs. For the 7B model, we report results using 1,500 function as agents. Here, we delve into various
+negative samples; for the 13B models, we use 2k nega- factors that could influence the effectiveness of
+tive samples. NAT-2 means we divide negative samples negative-aware training. Specifically, we seek to
+into 2 classes based on quality. We discuss this in Sec- address the following questions: (1) Given a fixed
+tion 6.1.
+number of positive examples, how much negative
+data should be used? (2) What insights does the
+Strategy 7B 13B
+model gain from negative trajectories? (3) Are
+Vanilla 55.40 53.40 all types of negative examples beneficial? and (4)
+NUT 62.40 61.80
+What factors contribute to negative-aware training
+NAT 65.80 64.60
+(NAT) outperforming negative-unaware training
+Table 4: Results of LLaMA-2-7B and 13B on Strat- (NUT)? Since only the math task contains enough
+egyQA with 1000 positive samples and 500 negative data for our experiments, the analysis is done on
+samples. the math task.
+5.1 Impact of Training Sample Quantity
+not contradict our findings: as we discuss in Sec-
+Our initial analysis focuses on the influence of neg-
+tions 5.1 and 5.2, performance is determined by
+ative sample quantity. We maintain a constant num-
+both the quantity and quality of the negative data.
+ber of positive samples at 2k and 5k, while ad-
+Question Answering Tables 3 and 4 show the justing the negative samples from 0 to 12k. The
+results on HotpotQA and StrategyQA. Here, NAT-2 results, depicted in Figure 2, illustrate the relation-
+is a variant of NAT, where we divide negative data ship between the quantity of negative data and av-
+into two classes and use different prompts for each, erage math task performance. We observe a perfor-
+as detailed in Section 6.1. On HotpotQA, NAT-2 mance enhancement with an increase in negative
+improves performance by more than 2% in EM and data, which plateaus when the volume of negative
+6% in f1 score compared to no negative samples. samples is about 11k in both cases. Due to data
+Compared with NUT, NAT is still about 1% bet- availability, we did not experiment with more neg-
+ter on EM and f1. On StrategyQA, NAT achieves atives.
+5
+
+70
+65
+60
+55
+0 1000 2000 3000 4000 5000 6000 7000 8000 9000 100001100012000
+# Negatives
+ycaruccA
+egarevA
+5000 Positives: w/o Negative NUT NAT
+2000 Positives: w/o Negative NUT NAT
+Figure 2: Performance of LLaMA-2-7B for a fixed
+number of positive samples and variable number of
+negative samples.
+70
+60
+50
+40
+30 0 500 1000 1500 2000 2500 3000 3500 4000 4500 5000
+# Positives
+ycaruccA
+egarevA
+Data GSM8K ASDiv SVAMP MArith Avg.
+2K positive samples
+Vanilla 35.63 60.55 47.40 80.03 55.90
+NAT-low 32.98 58.72 47.60 71.64 52.74
+NAT-high 46.93 66.93 60.80 83.89 64.64
+5K positive samples
+Vanilla 45.87 68.12 58.80 83.89 64.17
+NAT-low 38.59 62.28 52.50 78.52 57.97
+NAT-high 49.05 68.66 64.40 87.58 67.42
+Table 5: LLaMA-2 7B model results trained with differ-
+ent quality negative data. We use 10k negative samples
+and experiment with 2k or 5k positive samples.
+10000 Negatives w/o Negatives 1.30
+1.25
+1.20
+1.15
+1.10
+0 1000 2000 3000 4000 5000 6000 7000 8000 9000 100001100012000
+# Negatives
+Figure 3: Performance for a fixed number of negative
+samples (10k) and variable number of positive samples.
+Based on insights from Table 2 and Figure 2, we
+hypothesize that the ideal ratio of negative samples
+is not fixed. Instead, it is influenced by two main
+factors: (1) the number of positive samples, as the
+improvements are larger for fewer positive samples;
+and (2) the intrinsic quality of the negative samples.
+Regarding the first point, we hypothesize that
+the marginal utility of negative samples diminishes
+as the quantity of positive samples increases. To
+test this point, we maintain a constant number of
+negative samples while varying the quantity of pos-
+itive samples from 0 to 5k. As depicted in Figure 3,
+there is a diminishing return on the performance
+added by negative samples as the count of positive
+samples rises. For the second point, we investigate
+the effects of negative data quality in Section 5.2.
+5.2 Data Quality Matters
+We sourced negative data from various models to
+investigate the impact of negative data quality in
+NAT. Specifically, we consider the data from GPT-
+3.5 as high-quality examples. In contrast, we gen-
+erated 10k negative examples using a fine-tuned
+LLaMA-2-7B (Touvron et al., 2023) model to rep-
+ytixelpreP
+NAT w/ 2000 Positives
+Positive only: 3000 4000 5000
+Figure 4: Perplexity for the model trained with 2k posi-
+tive samples and differing numbers of negative samples.
+The three dashed lines are perplexity computed on mod-
+els tuned with differing numbers of positive trajectories
+(without negatives).
+resent low-quality data. For experiments, we paired
+2k positive examples with 10k negative examples.
+The outcomes presented in Table 5 underscore the
+critical role of data quality in NAT. In the 2k posi-
+tive sample setting, the improvement is −3.16 for
+low quality compared to +8.74 for high-quality
+negative examples. Similarly in the 5k positive
+sample setting, the improvements are −6.20 and
++3.25, respectively.
+5.3 What does the Model Learn with NAT?
+Learning Reasoning Rather Than Acting The
+learnable part in trajectories are thoughts and ac-
+tions, where thoughts are the reasoning on the cur-
+rent situation and planning for what to do next.
+Actions are which tool to call and the input to the
+tool. We analyze the trajectories of the GSM8K
+(Cobbe et al., 2021) test set generated by LLaMA-2-
+7B trained with positive examples (Vanilla), NUT,
+and NAT respectively. Table 6 shows the accuracy,
+action error (the percent of incorrectly calling a
+tool), and average turns (the average number of
+6
+
+Strategy Accuracy Action Error #Avg. Turns Positive Negative Average
+Vanilla 35.63 3.58% 3.12 Correct Incorrect 63.55
+NUT 44.43 10.47% 3.92 Incorrect Correct 63.33
+NAT 46.93 7.90% 3.71 Good Bad 63.91
+A B 63.15
+Table 6: Accuracy, action error rate, and number of av- Random string 1 Random string 2 64.04
+erage turns for models with different training strategies.
+For Vanilla, the action error in training data is 4.01%. Table 7: Results for models trained on prompts with and
+For NUT and NAT, it is 15.33%. without interpretability. Strings in the Positive/Negative
+column represent prompts (prefixes or suffixes) we use
+for positive/negative trajectories.
+steps needed to solve a question). Incorporating
+negative examples also introduces more action er-
+rors, which can result in fine-tuned models with 50
+more action errors compared to Vanilla. However,
+after incorporating negative examples, both the ac-
+40
+curacy of NUT and NAT increase. This indicates
+that negative examples mainly work by teaching
+30
+models with better “thoughts” (i.e. reasoning and
+planning). Compared to NUT, NAT achieves sig-
+nificantly fewer action errors and, therefore, bet- 20 Positive only #500 Negative #1000 Negative
+ter accuracy. This demonstrates that our method
+works by providing a better trade-off between bet-
+ter “thoughts” and more action errors.
+Negative Samples Play a Similar Role as Positive
+Samples To further explore whether models learn
+from negative trajectories in the same manner as
+they learn from positive trajectories, we randomly
+sample 100 successful trajectories from the train-
+ing set (as a dev set) and measure the perplexity
+of models trained with 2k positive examples (not
+overlapping with the dev set) and varying numbers
+of negative examples. Figure 4 shows the change
+in perplexity as the number of negative data in-
+creases. The perplexity decreases as more negative
+data is included, which indicates the model learns
+to fit successful trajectories with knowledge from
+failed trajectories. However, this curve seems to
+be horizontal at the end, and there is still a large
+gap between the curve with 4k and 5k positives,
+which shows that some properties or knowledge
+from successful trajectories can never be learned
+from failed trajectories.
+5.4 Selection of Added Prompts
+It has variously been shown that prompts are vi-
+tal for LLM performance (Brown et al., 2020; Liu
+et al., 2023a; Sclar et al., 2024). Here, we explore
+the interpretability of added prompts. More specifi-
+cally, does the content of the prompt enable LLMs
+to learn differently from successful and failed tra-
+jectories, or simply differentiate these trajectories?
+We propose two sets of prompts. One set is prompts
+erocS
+EM F1 NUT NAT -1 NAT-2
+Figure 5: Performance of LLaMA-2-7B on HotpotQA
+with 500 positive examples and varying numbers of
+negative examples.
+with interpretability, such as having the model gen-
+erate a correct or incorrect trajectory. Another set
+is prompts without interpretability. For example,
+different letters can be added as prefixes for queries.
+Table 7 shows the results of models trained with in-
+terpretable and uninterpretable prompts. Different
+prompts do not show a large difference in perfor-
+mance, indicating that the performance boost of
+NAT comes from simply differentiating positive
+and negative data.
+6 Applications
+In this section, we explore some other applications
+with our NAT method, showcasing its potential and
+broad applicability.
+6.1 Fine-grained NAT
+Different negative trajectories contain different de-
+grees of errors. Intuitively, this information also
+helps models to learn. Therefore, we further pro-
+pose fine-grained NAT, which divides negative tra-
+jectories into different groups based on their quality.
+During training, different groups will be reformat-
+ted with different prompts. For HotpotQA, in ad-
+dition to the EM score, each trajectory has an f1
+score, measuring the overlap between the predicted
+and gold answers. We take this as a fine-grained
+7
+
+Strategy GSM8K ASDiv SVAMP MArith Avg steps with three in-context learning (Brown et al.,
+Vanilla 29.04 55.26 45.60 80.87 52.69 2020) examples on the GSM8k dataset. We then
+NUT 33.50 61.69 52.20 86.41 58.45 train the model with NAT. Table 8 shows the results
+NAT 36.24 61.10 53.90 86.24 59.37 with CoT prompting. NAT achieves a 6.68% im-
+provement compared to no negative data training
+Table 8: LLaMA-2-7B model CoT results fine-tuned
+(Vanilla). NAT is still about 1% higher compared
+using 2k positive samples and 1.6k negative samples.
+to directly including negative samples (NUT). The
+results demonstrate that NAT is also applicable and
+measurement of data quality, where a trajectory effective for CoT training, showing its broad appli-
+with a higher f1 score has better quality. In this cability.
+way, we can differentiate trajectories based on qual-
+ity by assigning different prompts. For example, 7 Conclusion
+the trajectory is prepended “almost wrong” if its
+In this paper, we first demonstrated that LLMs can
+f1 score is smaller than 0.1, and another trajectory
+learn from failures when fine-tuned as an agent. On
+is “mostly correct” with an f1 score of 0.9. We
+the basis of this finding, we propose NAT, a simple
+denote this NAT with different prompting strategies
+and effective method for integrating failed trajecto-
+as NAT-k, where k represents how many classes
+ries in fine-tuning agents. We conduct experiments
+we divide the negative data into based on quality.
+on math and question-answering tasks, and show
+Fine-grained NAT learns more from negative the superior performance of our method compared
+samples For NAT-2, we take trajectories with f1 to training directly with positive or negative trajec-
+scores equal to 1.0 as positive and assign different tories across tasks and model sizes.
+prompts for trajectories with f1 scores less than 0.4 We are the first to demonstrate the value of nega-
+and with f1 scores greater than 0.4 less than 1.0. tive trajectories in fine-tuning LLMs as agents. Our
+It can be seen from Table 3 that the NAT-2 consis- analysis finds that the quality of negative data is
+tently outperforms NAT in all settings, indicating the key to the success of NAT, and models learn
+that negative samples associated with finer-grained similar knowledge to that of positive data (which
+info are more informative. We investigate how is much more expensive to attain). NAT is superior
+the performance changes with differing numbers because it better utilizes valuable information while
+of negative samples in Figure 5. When adding restraining learning errors from negative examples.
+negative samples, the performance increases by a Negative-aware training is designed to be both
+margin, consistent with Table 3. However, NAT agent-agnostic and reasoning strategy-agnostic,
+achieves the best performance with only 500 nega- making it compatible with various agent strategies,
+tive samples, and its performance decreases when including self-refinement (Madaan et al., 2023),
+adding more negative samples. NAT-2, on the other reflection (Shinn et al., 2023), and other agent-
+hand, achieves the best performance with 1k neg- tuning frameworks. At the end of this paper, we
+ative samples, consistent with our hypothesis that demonstrated the effectiveness of NAT on Chain-
+fine-grained NAT is more beneficial to model train- of-Thought (COT) reasoning in mathematical tasks.
+ing. Moving forward, we aim to assess the applicability
+and effectiveness of NAT across a broader spectrum
+6.2 Chain-of-Thought Prompting of agent frameworks, strategies, and tasks.
+So far we have conducted all experiments on agent
+8 Limitations
+scenarios with the ReAct (Yao et al., 2023) prompt-
+ing strategy. In this section, we conduct prelimi- Although we have conducted extensive experi-
+nary experiments to explore whether NAT works ments to illustrate the effectiveness of our method,
+well with Chain-of-Thought (CoT) prompting (Wei there are still limitations. First, similar to previ-
+et al., 2022). The key difference is that the agent ous work in agent tuning, our approach requires
+takes an action and receives an observation from the ground truth label of the data, which limits its
+the environment iteratively, while CoT generates application. Second, we do not experiment with
+reasoning steps without taking actions or receiving fine-tuning our method on more diverse and power-
+observations. ful models (e.g. GPT-3.5) due to time and budget
+We use GPT-3.5-0125 to generate CoT reasoning limits.
+8
+
+References Yiwei Li, Peiwen Yuan, Shaoxiong Feng, Boyuan Pan,
+Bin Sun, Xinglin Wang, Heda Wang, and Kan Li.
+Josh Achiam, Steven Adler, Sandhini Agarwal, Lama
+2023. Turning dust into gold: Distilling complex rea-
+Ahmad, Ilge Akkaya, Florencia Leoni Aleman,
+soning capabilities from llms by leveraging negative
+Diogo Almeida, Janko Altenschmidt, Sam Altman,
+data. AAAI 2024.
+Shyamal Anadkat, et al. 2023. Gpt-4 technical report.
+arXiv preprint arXiv:2303.08774. Na Liu, Liangyu Chen, Xiaoyu Tian, Wei Zou, Kai-
+jiang Chen, and Ming Cui. 2024. From llm to con-
+Tom Brown, Benjamin Mann, Nick Ryder, Melanie versational agent: A memory enhanced architecture
+Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind with fine-tuning of large language models. ArXiv,
+Neelakantan, Pranav Shyam, Girish Sastry, Amanda abs/2401.02777.
+Askell, et al. 2020. Language models are few-shot
+learners. Advances in neural information processing Pengfei Liu, Weizhe Yuan, Jinlan Fu, Zhengbao Jiang,
+systems, 33:1877–1901. Hiroaki Hayashi, and Graham Neubig. 2023a. Pre-
+train, prompt, and predict: A systematic survey of
+Baian Chen, Chang Shu, Ehsan Shareghi, Nigel Col- prompting methods in natural language processing.
+lier, Karthik Narasimhan, and Shunyu Yao. 2023. ACM Computing Surveys, 55(9):1–35.
+Fireact: Toward language agent fine-tuning. ArXiv,
+Xiao Liu, Hao Yu, Hanchen Zhang, Yifan Xu, Xu-
+abs/2310.05915.
+anyu Lei, Hanyu Lai, Yu Gu, Yuxian Gu, Hangliang
+Ding, Kai Men, Kejuan Yang, Shudan Zhang, Xi-
+Zehui Chen, Kuikun Liu, Qiuchen Wang, Wenwei
+ang Deng, Aohan Zeng, Zhengxiao Du, Chenhui
+Zhang, Jiangning Liu, Dahua Lin, Kai Chen, and
+Zhang, Shengqi Shen, Tianjun Zhang, Yu Su, Huan
+Feng Zhao. 2024. Agent-flan: Designing data and
+Sun, Minlie Huang, Yuxiao Dong, and Jie Tang.
+methods of effective agent tuning for large language
+models. ArXiv, abs/2403.12881. 2023b. Agentbench: Evaluating llms as agents.
+ArXiv, abs/2308.03688.
+Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian,
+Aman Madaan, Niket Tandon, Prakhar Gupta, Skyler
+Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias
+Hallinan, Luyu Gao, Sarah Wiegreffe, Uri Alon,
+Plappert, Jerry Tworek, Jacob Hilton, Reiichiro
+Nouha Dziri, Shrimai Prabhumoye, Yiming Yang,
+Nakano, Christopher Hesse, and John Schulman.
+Sean Welleck, Bodhisattwa Prasad Majumder,
+2021. Training verifiers to solve math word prob-
+Shashank Gupta, Amir Yazdanbakhsh, and Peter
+lems. arXiv preprint arXiv:2110.14168.
+Clark. 2023. Self-refine: Iterative refinement with
+self-feedback. ArXiv, abs/2303.17651.
+Mor Geva, Daniel Khashabi, Elad Segal, Tushar Khot,
+Dan Roth, and Jonathan Berant. 2021. Did aristotle
+Aaron Meurer, Christopher P. Smith, Mateusz Pa-
+use a laptop? a question answering benchmark with procki, Ondˇrej Cˇertík, Sergey B. Kirpichev, Matthew
+implicit reasoning strategies. Transactions of the
+Rocklin, Amit Kumar, Sergiu Ivanov, Jason K.
+Association for Computational Linguistics, 9:346–
+Moore, Sartaj Singh, Thilina Rathnayake, Sean Vig,
+361.
+Brian E. Granger, Richard P. Muller, Francesco
+Bonazzi, Harsh Gupta, Shivam Vats, Fredrik Johans-
+Significant Gravitas. 2024. Autogpt. https://github.
+son, Fabian Pedregosa, Matthew J. Curry, Andy R.
+com/Significant-Gravitas/AutoGPT.
+Terrel, Šteˇpán Roucˇka, Ashutosh Saboo, Isuru Fer-
+nando, Sumith Kulal, Robert Cimrman, and Anthony
+Bert F Green Jr, Alice K Wolf, Carol Chomsky, and
+Scopatz. 2017. Sympy: symbolic computing in
+Kenneth Laughery. 1961. Baseball: an automatic
+python. PeerJ Computer Science, 3:e103.
+question-answerer. In Papers presented at the May
+9-11, 1961, western joint IRE-AIEE-ACM computer
+Shen-yun Miao, Chao-Chun Liang, and Keh-Yih Su.
+conference, pages 219–224.
+2020. A diverse corpus for evaluating and developing
+english math word problem solvers. In Proceedings
+Vladimir Karpukhin, Barlas Oguz, Sewon Min, Patrick
+of the 58th Annual Meeting of the Association for
+Lewis, Ledell Wu, Sergey Edunov, Danqi Chen, and
+Computational Linguistics, pages 975–984.
+Wen-tau Yih. 2020. Dense passage retrieval for open-
+domain question answering. In Proceedings of the Arkil Patel, Satwik Bhattamishra, and Navin Goyal.
+2020 Conference on Empirical Methods in Natural 2021. Are NLP models really able to solve simple
+Language Processing (EMNLP), pages 6769–6781, math word problems? In Proceedings of the 2021
+Online. Association for Computational Linguistics. Conference of the North American Chapter of the
+Association for Computational Linguistics: Human
+Rik Koncel-Kedziorski, Subhro Roy, Aida Amini, Nate Language Technologies, pages 2080–2094, Online.
+Kushman, and Hannaneh Hajishirzi. 2016. MAWPS: Association for Computational Linguistics.
+A math word problem repository. In Proceedings of
+the 2016 Conference of the North American Chapter Shuofei Qiao, Ningyu Zhang, Runnan Fang, Yujie Luo,
+oftheAssociationforComputationalLinguistics: Hu- Wangchunshu Zhou, Yuchen Eleanor Jiang, Chengfei
+man Language Technologies, pages 1152–1157, San Lv, and Huajun Chen. 2024. Autoact: Automatic
+Diego, California. Association for Computational agent learning from scratch via self-planning. ArXiv,
+Linguistics. abs/2401.05268.
+9
+
+Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, Qingyun Wu, Gagan Bansal, Jieyu Zhang, Yiran Wu,
+and Yuxiong He. 2019. Zero: Memory optimizations Shaokun Zhang, Erkang Zhu, Beibin Li, Li Jiang,
+toward training trillion parameter models. SC20: In- Xiaoyun Zhang, and Chi Wang. 2023. Auto-
+ternational Conference for High Performance Com- gen: Enabling next-gen llm applications via multi-
+puting, Networking, Storage and Analysis, pages 1– agent conversation framework. arXiv preprint
+16. arXiv:2308.08155.
+Subhro Roy and Dan Roth. 2015. Solving general arith- Zhilin Yang, Peng Qi, Saizheng Zhang, Yoshua Bengio,
+metic word problems. In Proceedings of the 2015 William Cohen, Ruslan Salakhutdinov, and Christo-
+Conference on Empirical Methods in Natural Lan- pher D. Manning. 2018. HotpotQA: A dataset for
+guage Processing, EMNLP 2015, Lisbon, Portugal, diverse, explainable multi-hop question answering.
+September 17-21, 2015, pages 1743–1752. The As- In Proceedings of the 2018 Conference on Empiri-
+sociation for Computational Linguistics. cal Methods in Natural Language Processing, pages
+2369–2380, Brussels, Belgium. Association for Com-
+Yangjun Ruan, Honghua Dong, Andrew Wang, Sil- putational Linguistics.
+viu Pitis, Yongchao Zhou, Jimmy Ba, Yann Dubois,
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak
+Chris J. Maddison, and Tatsunori Hashimoto. 2023.
+Shafran, Karthik Narasimhan, and Yuan Cao. 2023.
+Identifying the risks of lm agents with an lm-
+ReAct: Synergizing reasoning and acting in language
+emulated sandbox. ArXiv, abs/2309.15817.
+models. In International Conference on Learning
+Representations (ICLR).
+Melanie Sclar, Yejin Choi, Yulia Tsvetkov, and Alane
+Suhr. 2024. Quantifying language models’ sensitiv-
+Da Yin, Faeze Brahman, Abhilasha Ravichander, Khy-
+ity to spurious features in prompt design or: How i
+athi Raghavi Chandu, Kai-Wei Chang, Yejin Choi,
+learned to start worrying about prompt formatting.
+and Bill Yuchen Lin. 2023. Lumos: Learning agents
+International Conference on Learning Representa-
+with unified data, modular design, and open-source
+tions.
+llms. ArXiv, abs/2311.05657.
+Noah Shinn, Federico Cassano, Beck Labash, Ash- Yoheinakajima. 2024. Babyagi. https://github.
+win Gopinath, Karthik Narasimhan, and Shunyu com/Significant-Gravitas/AutoGPT.
+Yao. 2023. Reflexion: Language agents with
+verbal reinforcement learning. https://api. Aohan Zeng, Mingdao Liu, Rui Lu, Bowen Wang, Xiao
+semanticscholar.org/CorpusID:258833055. Liu, Yuxiao Dong, and Jie Tang. 2023. Agenttuning:
+Enabling generalized agent abilities for llms. ArXiv,
+Kaitao Song, Xu Tan, Tao Qin, Jianfeng Lu, and Tie- abs/2310.12823.
+Yan Liu. 2020. Mpnet: Masked and permuted pre-
+training for language understanding. arXiv preprint Jianguo Zhang, Tian Lan, Rithesh Murthy, Zhiwei
+arXiv:2004.09297. Liu, Weiran Yao, Juntao Tan, Thai Hoang, Liangwei
+Yang, Yihao Feng, Zuxin Liu, Tulika Awalgaonkar,
+Theodore R Sumers, Shunyu Yao, Karthik Narasimhan, Juan Carlos Niebles, Silvio Savarese, Shelby Hei-
+and Thomas L Griffiths. 2023. Cognitive ar- necke, Huan Wang, and Caiming Xiong. 2024. Agen-
+chitectures for language agents. arXiv preprint tohana: Design unified data and training pipeline for
+arXiv:2309.02427. effective agent learning. ArXiv, abs/2402.15506.
+Hugo Touvron, Louis Martin, Kevin Stone, Peter Al- AndrewZhao, DanielHuang, QuentinXu, MatthieuLin,
+bert, Amjad Almahairi, Yasmine Babaei, Nikolay Y. Liu, and Gao Huang. 2023. Expel: Llm agents are
+Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti experiential learners. ArXiv, abs/2308.10144.
+Bhosale, et al. 2023. Llama 2: Open founda-
+Lianmin Zheng, Wei-Lin Chiang, Ying Sheng, Siyuan
+tion and fine-tuned chat models. arXiv preprint
+Zhuang, Zhanghao Wu, Yonghao Zhuang, Zi Lin,
+arXiv:2307.09288.
+Zhuohan Li, Dacheng Li, Eric. P Xing, Hao Zhang,
+Joseph E. Gonzalez, and Ion Stoica. 2023. Judging
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten
+llm-as-a-judge with mt-bench and chatbot arena.
+Bosma, Fei Xia, Ed H Chi, Quoc V Le, Denny Zhou,
+et al. 2022. Chain-of-thought prompting elicits rea-
+Qinhao Zhou, Zihan Zhang, Xiang Xiang, Ke Wang,
+soning in large language models. In Advances in
+Yuchuan Wu, and Yongbin Li. 2024. Enhancing
+Neural Information Processing Systems.
+the general agent capabilities of low-parameter llms
+through tuning and multi-branch reasoning. ArXiv,
+Joseph Weizenbaum. 1966. Eliza—a computer program
+abs/2403.19962.
+for the study of natural language communication be-
+tween man and machine. Communications of the
+A Example
+ACM, 9(1):36–45.
+Figure 6 shows examples trajectories generated by
+Michael Wooldridge. 1999. Intelligent agents. Mul-
+GPT-3.5. The first turn of each trajectory is the
+tiagent systems: A modern approach to distributed
+artificial intelligence, 1:27–73. system prompt. Figure 7 shows example inference
+10
+
+results of models trained with different settings for samples. However, we find that 2k examples are
+the same query. enough for performance to saturate and that adding
+more negative samples causes a performance drop.
+B Datasets Therefore, we set the number of HotpotQA positive
+examples to 500 in the following experiments.
+For mathematical reasoning tasks, we use a dataset
+of approximately 7k instances from the GSM8K
+training set as initial seed data, and generate three
+trajectories with GPT-3.5, as mentioned in Section
+3.3. This process results in a collection of around
+9k positive examples and 12k negative examples.
+Among the positive examples, 5k are unique, indi-
+cating that despite multiple attempts, GPT-3.5 fails
+to solve 2k out of the 7k original questions.
+For our experiments, we incorporate 5k unique
+positive examples from GSM8K to emulate all
+available positive examples having been generated
+by GPT-3.5. Additionally, we created a simulated
+limited dataset using the 2k positive examples gen-
+erated by ChatGPT. In both scenarios, we include
+10k negative examples.
+We evaluate different models and training strate-
+gies on four test datasets: GSM8K (Cobbe et al.,
+2021), a high-quality school math word problem
+dataset containing 1,319 examples (test set), each
+requiring 2–8 steps to solve; ASDiv (Miao et al.,
+2020), a math word problem dataset that contains
+2,023 examples with diverse language patterns and
+problem types. SVAMP (Patel et al., 2021), a chal-
+lenge set of math word problems with 1k examples
+based on perturbing existing datasets (Miao et al.,
+2020; Koncel-Kedziorski et al., 2016). MultiArith
+(Roy and Roth, 2015), a multi-step arithmetic prob-
+lem dataset with 596 examples.
+For question-answering tasks, we collected tra-
+jectories based on HotpotQA (Yang et al., 2018)
+and StrategyQA (Geva et al., 2021). HotpotQA
+is a Wikipedia-based question-answering dataset
+where each question requires several steps of rea-
+soning with supporting passages. We use 4k exam-
+ples from the training set to generate trajectories.
+StrategyQA is also a multi-step question-answering
+dataset but the reasoning steps are implicit. The
+answer to its question is either yes or no. It consists
+of 2,780 examples, of which 1k is the training set.
+Similar to math tasks, we generate three QA tra-
+jectories. As discussed in Section 5, the quality of
+negative samples is important for the effectiveness
+of NAT. For HotpotQA, we filter out trajectories
+that do not give an answer within a certain num-
+ber of turns or with a zero f1 score. Finally, we
+obtain 2k unique positive samples and 2k negative
+11
+
+Math
+Solve a math problem with interleaving Thought, Action, Observation steps. Thought can reason about the
+current situation, and Action can be two types:
+(1) calculate[expression], which calculates the expression and returns the answer.
+(2) finish[answer], which returns the answer and finishes the task.
+Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did
+Natalia sell altogether in April and May?
+Thought: To find the total number of clips Natalia sold in April and May, I need to calculate the number of clips
+sold in May and then add it to the number sold in April. Action: calculate[48 / 2]
+Observation: 24
+Thought: Now, I need to add the number of clips sold in April to the number sold in May to find the total
+number of clips sold altogether.\nAction: calculate[48 + 24]
+Observation: 72
+Thought: The total number of clips Natalia sold altogether in April and May is 72. Action: finish[72]
+HotpotQA
+Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason
+about the current situation, and Action can be two types:
+(1) search[query], which searches a query on google and returns a short snippet containing the answer. Note
+that sometimes the snippet does not contain the answer, and some alternative search might be needed.
+(2) finish[answer], which returns the answer and finishes the task.
+Forestville Commonwealth is an example of which 19th century socialist philosophy?
+Thought: To answer this question, I need to search for information about Forestville Commonwealth and
+its association with 19th-century socialist philosophy. Action: search[Forestville Commonwealth 19th
+century socialist philosophy]
+Observation: Owenism is the utopian socialist philosophy of the 19th century social ... Forestville
+Commonwealth, Lapham's Mills, Coxsackie, Greene County, New York (1826 ... Communitarian Socialism in
+America: 1663-1829 (Philadelphia, 1950), 62-63. 5. Robert Owen's teachings were the basis for all of the
+Owenite societies, ...
+Thought: The observation suggests that Forestville Commonwealth is associated with Owenism, a utopian
+socialist philosophy of the 19th century. Action: finish[Owenism]
+StrategyQA
+Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason
+about the current situation, and Action can be two types:
+(1) search[query], which searches a query on google and returns a short snippet containing the answer.
+Note that sometimes the snippet does not contain the answer, and some alternative search might be needed.
+(2) finish[answer], which returns the answer and finishes the task. Remember you should answer Yes or No.
+If you were on a diet, would you have to skip lunch at McDonald's?
+Thought: Whether someone on a diet would have to skip lunch at McDonald's depends on their specific
+dietary restrictions and goals. McDonald's offers a variety of menu items, including salads and other healthier
+options, so it is possible to make a suitable choice while still adhering to a diet plan. Action: search[healthy
+options for lunch at McDonald's]
+Observation: 1. Side Salad: McDonald's offers a side salad that is typically low in calories and fat. 2. Grilled
+Chicken Sandwich: Opting for a grilled ...
+Thought: The observation provides several low-calorie and healthier options available at McDonald's,
+including salads and grilled chicken sandwiches. This indicates that someone on a diet could indeed find
+suitable lunch options at McDonald's without having to skip lunch altogether. Action: finish[No]
+Figure 6: Example trajectories of GSM8k, HotpotQA, and StrategyQA generated by GPT-3.5.
+12
+
+Vanilla
+Each solid 10-foot section of a redwood tree weighs 400 pounds. Termites ate 30% of this redwood's wood.
+If the redwood is 200 feet tall, how much does it weigh? Please generate a solution path.
+Thought: To find the total weight of the redwood tree, I need to calculate the weight of the wood that was
+not eaten by the termites and then add the weight of the wood that was eaten. Action: calculate[200 * 10
+* 400 - (200 * 10 * 400 * 0.3)]
+Observation: 560000
+Action: finish[560000]
+NUT
+Each solid 10-foot section of a redwood tree weighs 400 pounds. Termites ate 30% of this redwood's wood.
+If the redwood is 200 feet tall, how much does it weigh? Please generate a solution path.
+Thought: To find the weight of the redwood tree, I need to calculate the weight of the wood that was eaten
+by the termites and then subtract that from the total weight of the wood. Action: calculate[30% of 400
+pounds per foot]
+Observation: Error: Sympify of expression 'could not parse '30% of 400 pounds per foot'' failed, because of
+exception being raised: SyntaxError: invalid syntax (<string>, line 1)
+NAT
+Each solid 10-foot section of a redwood tree weighs 400 pounds. Termites ate 30% of this redwood's wood.
+If the redwood is 200 feet tall, how much does it weigh? Please generate a **correct** solution path.
+Thought: Thought: To find the weight of the redwood tree, I need to calculate the weight of one 10-foot
+section and then multiply it by the total number of sections in the tree. First, I need to calculate the weight
+of one 10-foot section after the termites ate 30% of the wood. Action: calculate[400 * 0.7]
+Observation: 280
+Thought: Now, I need to calculate the total weight of the redwood tree by multiplying the weight of one
+10-foot section by the total number of sections in the tree. Action: calculate[280 * 200 / 10]
+Observation: 5600
+Thought: The total weight of the redwood tree is 5600 pounds. I have finished the task. Action:
+finish[5600]
+Figure 7: Inference results of models trained with different settings, where Vanilla model gets wrong because of
+reasoning error, NUT model gets wrong because of action error, and NAT gets correct.
+13

@@ -1,0 +1,40 @@
+[download_papers] query='large language model reasoning chain-of-thought'  max=18
+  [ERR]  Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf: <urlopen error retrieval incomplete: got only 1048576 out of 6695687 bytes>
+  [OK]   Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf
+  [ERR]  Understanding_Reasoning_in_ChainofThought_from_the_Hopfieldi__2410.03595v1.pdf: HTTP Error 429: Unknown Error
+  [ERR]  DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf: <urlopen error retrieval incomplete: got only 1048576 out of 1232052 bytes>
+  [OK]   Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf
+  [OK]   ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf
+  [ERR]  Effectiveness_of_ChainofThought_in_Distilling_Reasoning_Capa__2511.05184v1.pdf: HTTP Error 429: Unknown Error
+  [OK]   CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf
+  [OK]   Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf
+  [OK]   ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf
+  [ERR]  ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large_Reaso__2510.00071v2.pdf: HTTP Error 429: Unknown Error
+  [OK]   Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf
+  [ERR]  Hierarchical_Multiagent_Large_Language_Model_Reasoning_for_A__2512.13930v1.pdf: HTTP Error 429: Unknown Error
+  [OK]   Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf
+  [OK]   Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf
+  [OK]   Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf
+  [ERR]  Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf: <urlopen error retrieval incomplete: got only 2097152 out of 4395376 bytes>
+  [ERR]  A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf: HTTP Error 429: Unknown Error
+[download_papers] query='large language model reasoning chain-of-thought'  max=18
+  [SKIP] Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf
+  [SKIP] Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf
+  [ERR]  Understanding_Reasoning_in_ChainofThought_from_the_Hopfieldi__2410.03595v1.pdf: HTTP Error 429: Unknown Error
+  [SKIP] DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf
+  [SKIP] Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf
+  [SKIP] ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf
+  [ERR]  Effectiveness_of_ChainofThought_in_Distilling_Reasoning_Capa__2511.05184v1.pdf: HTTP Error 429: Unknown Error
+  [SKIP] CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf
+  [SKIP] Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf
+  [SKIP] ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf
+  [ERR]  ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large_Reaso__2510.00071v2.pdf: HTTP Error 429: Unknown Error
+  [SKIP] Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf
+  [ERR]  Hierarchical_Multiagent_Large_Language_Model_Reasoning_for_A__2512.13930v1.pdf: <urlopen error retrieval incomplete: got only 2097152 out of 3997428 bytes>
+  [SKIP] Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf
+  [SKIP] Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf
+  [SKIP] Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf
+  [SKIP] Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf
+  [OK]   A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf
+
+[download_papers] Done. 1 new files. metadata → C:\Users\srika\rag-project\data\metadata.json

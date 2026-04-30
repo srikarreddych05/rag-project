@@ -1,0 +1,446 @@
+A Critical Review of Causal Reasoning Benchmarks for Large Language Models
+Linying Yang1, Vik Shirvaikar1, Oscar Clivio1, Fabian Falck1
+1Department of Statistics, University of Oxford
+Corresponding author: linying.yang@stats.ox.ac.uk
+Abstract • Type 2: “Discovering new knowledge from data.”
+Example: Here are outcomes for our business if we tried
+Numerous benchmarks aim to evaluate the capabilities of
+strategy A vs. strategy B: [text about outcomes]. Which
+LargeLanguageModels(LLMs)forcausalinferenceandrea-
+one leads to greater success?
+soning. However, many of them can likely be solved through
+the retrieval of domain knowledge, questioning whether they • Type 3: “Quantitatively estimating the consequences of
+achieve their purpose. In this review, we present a compre- actions.”
+hensiveoverviewofLLMbenchmarksforcausality.Wehigh-
+Example: The patient got doses X and Y of certain
+light how recent benchmarks move towards a more thorough
+medicines last time and reported a 40% decrease in blood
+definition of causal reasoning by incorporating interventional
+pressure. What dose Z should I give the patient this time?
+or counterfactual reasoning. We derive a set of criteria that a
+useful benchmark or set of benchmarks should aim to satisfy. Current LLMs can generally answer Type 1 questions effec-
+Wehopethisworkwillpavethewaytowardsageneralframe-
+tively due to their large repository of world knowledge, but
+workfortheassessmentofcausalunderstandinginLLMsand
+struggle to answer Type 2 and Type 3 questions, or can only
+the design of novel benchmarks.
+do so with extensive additional prompting strategies (Zhang
+et al. 2023).
+Introduction
+The ladder of causation (Pearl and Mackenzie 2018) di-
+TherecentexplosioninLargeLanguageModels(LLMs)has vides baseline-level causal reasoning into three rungs:
+led to widespread consideration of their capabilities across a
+• Rung 1: “seeing” - describing basic statistical associa-
+spectrum of human endeavors (Srivastava et al. 2022). One
+tions, as defined by joint and conditional distributions
+of these areas is causal inference, where multiple bench-
+within the data.
+marks and tasks have been proposed in an attempt to gauge
+Example: What is the relationship between this and that?
+LLM performance (Zecˇevic´ et al. 2023; Zhang et al. 2023;
+Gao et al. 2023). In this paper, we present a critical review • Rung 2: “doing” - formalizing the concept of interven-
+of these benchmarks. Building on existing “causal hierar- tions, traditionally phrased in terms of do-calculus.
+chies” (Pearl and Mackenzie 2018), we taxonomise exist- Example: If I do this, what will happen?
+ing tasks into this hierarchy, highlighting how many of these
+• Rung 3: “imagining” - reasoning about alternative or
+tasks only address the lowest level of ‘causal’ reasoning. We
+counterfactual scenarios, which may contradict what ac-
+then propose a set of criteria that a benchmark should fulfill
+tually happened.
+in order to be useful for evaluating an LLM’s causal reason-
+Example: If I had done this, what would have happened?
+ing capabilities.
+Causal hierarchies. In this review, our goal is to propose Again, many existing tasks only reach the first rung on the
+criteria that make a benchmark task suitable for evaluating ladder: they measure an LLM’s ability to identify associa-
+causal reasoning. We guide this by drawing upon existing tions, but do not introduce the higher-level concepts of Rung
+taxonomies and hierarchies of causal reasoning in the litera- 2 and Rung 3 (Zecˇevic´ et al. 2023). The ladder of causa-
+ture. tion aligns with the hierarchy from Zhang et al. (2023), and
+Zhang et al. (2023) propose a three-level hierarchy for as- both of them serve as a solid foundation for the discussion
+sessing the causal capabilities of an LLM: of causal reasoning.
+• Type 1: “Identifying causal relationships using domain
+knowledge.” Review of existing work, datasets and tasks
+Example: Person: I am balancing a glass of water on my
+We surveyed the literature and explored repositories and
+head. Suppose I take a quick step to the right. What will
+websites that host datasets relevant to causal reasoning in
+happen to the glass?
+large language models. Starting with review papers such as
+Copyright © 2024, Association for the Advancement of Artificial Zecˇevic´ et al. (2023) and Srivastava et al. (2022), we col-
+Intelligence (www.aaai.org). All rights reserved. lected a comprehensive list of existing datasets and tasks (39
+4202
+luJ
+01
+]GL.sc[
+1v92080.7042:viXra
+
+in total) used to assess LLM performance in causal reason- Overall,suchtasksconstrainthespaceofcausalreasoning
+ing. All benchmarks can be found on this Github repository: that the LLM has to act in, neglecting other types of causal
+https://github.com/linyingyang/CausalReasoningLLM. relations (e.g., temporal or spacial, correlative, counterfac-
+tual,etc.),allowingtargetedtrainingforthesehighlyspecific
+Benchmarks for lower levels of causal reasoning contexts,ratherthanageneralcausalreasoningabilitywhich
+we are interested in. Furthermore, since the LLMs are forced
+We find that a significant proportion of existing tasks are to make a selection, they tend to assume causal relationships
+benchmarking ‘causal parrots’, failing to evaluate how well between events regardless of whether those relationships ac-
+LLMs are capable of causal reasoning and resorting to pre- tuallyexist,thusnotbeingabletoidentify‘causalratherthan
+existing knowledge. correlative” relationships which is crucial in causal reason-
+In-context causal relation identification and extrac- ing tasks.
+tion. The first group of datasets used for assessing causal Commonsense knowledge: a necessary but not suffi-
+reasoning capabilities consists of human-annotated causal cient condition for causal reasoning. Another commonly
+relations. In tasks built on these datasets, a context of facts seengroupofdatasetsandtasksallowanddonotexcludethe
+(such as real life events) or fantasy elements is provided. possibility of knowledge retrieval, for example, com2sense
+Along with it, multiple choices of causal relations are pre- (Singhetal.2021),winowhy(Zhang,Zhao,andSong2020),
+sentedtotheLLM,ortheLLMisaskedtoidentifyandselect tellmewhy (Lal et al. 2021), Neuropathic-pain-diagnosis (Tu
+the cause or effect event from its provided context. et al. 2019; Tu, Ma, and Zhang 2023), moral permissibil-
+Datasets along this line of research include MAVEN- ity, human organs senses, simple ethical questions, goal step
+ERE, e-CARE, CausalTimeBank(Gao et al. 2023), wikihow (Zhang, Lyu, and Callison-Burch 2020), (Srivas-
+EventStoryLine (Caselli and Vossen 2017; Gao et al. tava et al. 2022), intuive physics(Zecˇevic´ et al. 2023), ART
+2023), Tuebingen cause-effect pairs dataset (Kıcıman et al. (Liu et al. 2023).
+2023),COPA (Gordon, Kozareva, and Roemmele 2012), The motivation of these tasks is to test if LLMs have ac-
+ChatGPT Causal Reasoning Evaluation, crass ai (Frohberg quired commonsense knowledge from everyday experience
+and Binder 2021), causal judgment (Srivastava et al. and can draw sound, intuitive inferences like a human, and
+2022),Causal Discovery (Causal Parrots), and Knowledge hence ground causal reasoning on commensense knowledge
+Base Facts) (Zecˇevic´ et al. 2023). An example from (Gao (e.g., Figure 2 and 3). Note that in some tasks LLMs are
+et al. 2023) is shown in Figure 1. not even provided with specific in-context data supporting
+We argue here that performing well on such tasks does not the causal reasoning (e.g., in Tu, Ma, and Zhang (2023),
+sufficiently demonstrate the causal reasoning ability of lan- no context is provided to ChatGPT before authors submit
+guage models. One reason is the inherent design of the tasks queries), further indicating that LLMs are only performing
+as multiple-choice. The LLMs are given limited options to knowledge retrieval, not causal reasoning in these tasks. We
+choose from, sometimes only the two options ‘cause’ and believe that this is a necessary component of causal reason-
+‘effect’. This lack of ‘open-endness’ restricts the evaluation ing, and that causal reasoning in humans likely relies on ap-
+ofwhetherLLMscanidentifypossibilitiesinamoreabstract plied domain knowledge and accumulated experience. How-
+sense. In other words, given that many of these datasets are ever, such tasks still do not demonstrate that LLMs have ac-
+directly crafted from basic NLP tasks, by abusing the under- quired the abstraction and imagination skills that constitute
+lying correlation structure of the data, such as calculating thehigherlevelsofourcausalhierarchies(Zhangetal.2023;
+similarities between options and questions in a vector space Pearl and Mackenzie 2018) discussed in the Introduction.
+(e.g., cause-effects pairs in Wang et al. (2022)), LLMs can
+achieve good performance without actually doing any causal Contextual reasoning and graph-based tasks move
+reasoning. If this is the case, the good performance could be towards more complex conceptions of causality
+attributable to spurious language cues in the datasets, since In light of the problems mentioned above, different ap-
+the underlying mechanism of identifying causal relation is proaches have emerged to evaluate LLMs in a way that
+merely from the language used. Examples of simple word incorporates higher levels of causal reasoning. Recall that
+replacements with less precise words in prompts (for exam- the hierarchy from Zhang et al. (2023) described Type 2
+ple ‘pets’ instead of ‘cats’ in questions about food to be fed as “Discovering new knowledge from data” and Type 3
+to the animal) led to a drop in performance (Li, Yu, and Et- as “Quantitatively estimating the consequences of actions”.
+tinger 2022), contributing to this hypothesis. Meanwhile, Pearl and Mackenzie (2018) defined Rung 2
+as “doing”—formalizing the concept of interventions, tra-
+ditionally phrased in terms of do-calculus—and Rung 3 as
+“imagining”—reasoning about alternative or counterfactual
+scenarios, which may contradict what actually happened. In
+this context, we therefore begin to see that a true causal
+reasoning task should formalize the idea of interventional
+and/or counterfactual reasoning, calling for the LLM to ap-
+ply some level of abstraction or even imagination rather than
+simple retrieval of domain knowledge.
+Figure 1: An example of causal relation identification tasks.
+Story-based contextual reasoning. Many tasks in this
+
+creasing the length of the description.
+The FCR task (Yang et al. 2022) presents a scaling of
+complexity on multiple stages, where causal relations are
+categorized as “enable, prevent and cause”. Three tasks are
+embedded within it: 1) a binary classification task to pre-
+dict whether a given text sequence contains a causal re-
+lation; 2) a joint event extraction and fine-grained causal-
+ity task for identifying text chunks describing the cause
+and effect, respectively, and which fine-grained causality
+category it belongs to, and 3) a question-answering task
+with more challenging “why-questions” and “what-if ques-
+tions”. Though some of these questions can likely still be
+answered by knowledge retrieval, 2) and 3) move beyond
+simple causal relation identification, demonstrating the idea
+that a causally-capable LLM should be able to perform at
+multiple levels of the causal hierarchy.
+Simplificationsincausaldiscovery.Anotherapproachto
+eliciting higher-level causal reasoning builds upon the use of
+directed acyclic graph (DAG) models. Some tasks even at-
+tempt to evaluate the ability of LLMs to return entire causal
+graphs, as in Causal Discovery (Causal Parrots)(Zecˇevic´
+etal.2023)andCorr2Cause(Jinetal.2023),theNeuropathic
+pain dataset (Tu, Ma, and Zhang 2023), and the Arctic sea
+ice dataset (Kıcıman et al. 2023).
+Figure 2: Examples from com2sense (taken from Singh et al. The main idea behind Corr2Cause and CLadder is
+(2021) and Srivastava et al. (2022)). causal graph discovery, aiming at inferring the graph struc-
+ture from a series of conditional independence statements.
+Corr2Cause technically meets all three ladders in the “ladder
+ofcausation”,dealingwithinterventionsandcounterfactuals
+as part of the algebraic graph structure. However, its use of
+Figure 3: An example from intuitive physics (Zecˇevic´ et al.
+letters as the basic ‘algebra’ is very different to a reasonable
+2023).
+real-world interpretation: one may argue that humans would
+also fail to find causal relationships based purely on condi-
+tional independence statements between even just a handful
+group of datasets are about story-telling, such as Time- of variables without knowledge about the underlying algo-
+Travel(Liu et al. 2023), FinCausal(Mariko et al. 2020), fan- rithm.
+tasy reasoning(Srivastava et al. 2022), and minute mysteries
+CLadder rectifies these concerns by shuffling through
+qa (Srivastava et al. 2022).
+real-world ‘stories’ and replacing the node letters with rele-
+These tasks provide a more robust challenge for LLMs by vant nouns. To the best of our knowledge, CLadder is per-
+increasing the underlying level of complexity, requiring the haps the most advanced causal benchmark available cur-
+language model to evaluate a sequence of several events or rently, as it holistically tests the LLM’s ability to synthesize
+statements,discardirrelevantormisleadinginformation,and several different components into a complex causal model,
+ultimately synthesize multiple factors to reach a reasonable and then interprets the effects of interventions or changes
+conclusion. An important innovation across several of these within that model. However, it is possible that CLadder’s
+tasks is the use of non-informative or even fictional elements tasks still allow the LLM to use its pre-existing knowledge
+to preclude the application of domain knowledge retrieval. to return a causal direction, potentially with this causal di-
+Tasks such as minute mysteries qa (Srivastava et al. 2022) rection already being included in the training set. While hu-
+tell a long-form story that with high probability does not ex- mans may not perform classical causal discovery algorithms
+ist in the LLM’s pretraining dataset, while fantasy reasoning with numerical data, they may still perform more complex
+(Srivastava et al. 2022) extend this even further by telling a reasoning than merely remembering the direction, e.g. per-
+fantasy story set in a different universe. forming ‘intuitive’ experiments such as assessing the effect
+One concern with these tasks is the entanglement of ‘tem- of increasing the altitude on temperature. In addition, merely
+poral and spatial order” with causality in the sense that the adding “imagine a self-contained hypothetical world” to the
+temporal or spatial order implies the causal relationship. The beginning of the prompt as done in CLadder does not imply
+fact that LLMs are performing well on this task may not be an LLM will actually follow the instructions. Overall, this
+surprising: if event B happens after event A, one may expect suggests that a causal benchmark entirely based on graph
+LLMs to predict ‘A implies B’ option, even if the relation discovery of labelled nodes, while a useful and thoughtful
+is just correlative. This is a common problem across many development,maynot fullyencapsulatethenecessary causal
+of these datasets, but is not necessarily alleviated just by in- reasoning capabilities.
+
+Finally, in the Tuebingen cause-effect pairs dataset of issue with current tasks is that they might include data that
+Kıcıman et al. (2023), or the causal discovery task of is directly in the training set of LLMs. Indeed, experiments
+Zecˇevic´ et al. (2023), edges are evaluated pair by pair in- (Kıcıman et al. 2023) have shown that GPT-3.5 and GPT-4
+dependently. We believe that this might be inappropriate as memorised the Tu¨bingen cause-effect dataset, or a large por-
+: 1) while humans might break down a full graph discovery tion of it (Mooij et al. 2016). Some papers rely on datasets
+problem into problems of smaller graphs, they might still existing sinceseveral yearsago, such asthe neuropathic pain
+be able to work with more than two variables at the same dataset (Tu et al. 2019; Tu, Ma, and Zhang 2023; Kıcıman
+time, evaluating the direct and indirect causal relations ; 2) et al. 2023), where the chance of inclusion in the training
+as further outlined in Kıcıman et al. (2023), if the DAG con- data is more likely.
+tains the edges A → B → C, but not A → C, it is not This further reinforces the idea that in current literature,
+clear whether the LLM should answer the individual ques- we cannot exclude the case that LLMs merely memorise
+tion “Does A cause C?” as “Yes”, as A is indeed a cause of knowledge that can be directly or approximately be re-
+C albeit indirectly, or “No”, as the DAG does not contain turned as answers to prompts on causal relationships, un-
+the direct edge A → C. Asking for edges of A,B,C jointly derlining that the exclusion of (approximately) retrievable
+would mitigate this issue. answers is paramount (Valmeekam et al. 2023). Further, re-
+ports on newer versions of GPT obtained near-perfection
+Many benchmarks suffer from key design issues performance on tasks from an earlier version of a paper (sec-
+tion 4.1 of (Zecˇevic´ et al. 2023)), and one can simply not dis-
+Unsuitable evaluation metrics. Although some tasks avoid
+entangle whether these improvements are due to improve-
+the above issues by prompting the LLM to explain causal
+ments to the model (e.g. more parameters, better training
+relationships (for example, the Causal Explanation Genera-
+procedure etc.) or a memorisation of the relevant tasks. This
+tion(CEG) task (Gao et al. 2023) which ask LLMs to gen-
+suggests that LLMs should not be prompted with any pre-
+erate explanations for causal relations between events (see
+existing datasets except if one can guarantee that they have
+Figure 4), the inappropriate design of an evaluation method
+not been used in an LLM’s pretraining dataset.
+can hurt the justification of causal reasoning capability of
+Poor data quality in the design of datasets. We have
+LLMs. In CEG, standard NLP evaluation metrics like n-
+also observed examples of poor quality in some datasets.
+grams or ROUGE-L (Wang et al. 2022; Gao et al. 2023), de-
+For example, a task built on e-CARE(Gao et al. 2023) re-
+signed for evaluating how similar the generated explanation
+quires a model to choose a correct hypothesis for a given
+is with the ‘ground truth’ explanation provided in the data,
+premise from two candidates, so that the chosen hypothesis
+are used to measure how ‘accurate’ the model-generated ex-
+can form a valid causal conclusion with the premise. How-
+planation is. However, to claim a generated explanation ac-
+ever, as shown in Figure 6, there are examples where making
+curately reveals causality does not necessarily mean that it
+the right decision is even difficult for a human, since the op-
+hastobesyntacticallysimilarwiththelabeledsentence.Two
+tions are not well-crafted.
+differentsentencesusingverydifferentwordsindifferentor-
+der can still convey the same causal concept. Similar tasks
+and datasets include CausalBank(Li et al. 2021), TimeTravel
+(Liu et al. 2023). We also notice that some ‘ground truth’
+explanations in these datasets seem to be incorrect as in e-
+CARE(seeforinstanceFigure5).Howtoappropriatelygen-
+erate accurate causal explanations and evaluate them at large
+Figure 6: Examples from e-CARE of poor data quality.
+scale is an open research question.
+Further, to the best of our understanding, the Forecasting
+Subquestions task of BigBench evaluates the log-probability
+assigned by human-generated questions that can be related
+as ‘causes” or preliminary subquestions to another given
+Figure 4: An example from CEG task. question where higher is better, but does not contain sub-
+questions that are not causes of the question, where lower
+is better. This prevents the assessment whether the subques-
+tion is merely taking place before the question without any
+causal relationship or is causally related to it.
+Datasets and tasks that are not for causality. It is
+also of concern that some datasets are, in our opinion, not
+even related to causal reasoning even though they are la-
+beled so. Some datasets are directly crafted from NLP tasks
+Figure 5: Examples of incorrect ground-truth explanations
+for assessing LLM language understanding. For example,
+in e-CARE.
+the BIGbench entailed polarity (Karttunen 2012; Srivastava
+et al. 2022) task evaluates an LLM’s ability to detect en-
+Inclusion of datasets or tasks in the training set. Sim- tailed polarities from implicative verbs, as shown in Figure
+ilar to the commonsense knowledge retrieval issue, another 7. This is by no means a causal reasoning task. In (Yang
+
+et al. 2022), LogiQA, Dream, RACE are also referred to as Causal reasoning as needed for Type 2 and Type 3 ques-
+causal reasoning datasets, but we believe they are targeted tions in Zhang et al. (2023) requires the ability to handle
+at evaluating language understanding as they seem to assess complex and possibly intersecting factors, but many exist-
+reading comprehension rather than deduction of causal rela- ing benchmarks only ask simple one-step questions (Sri-
+tionships. vastava et al. 2022; Gao et al. 2023). Benchmarks require
+multi-factor scalability. They should be able to introduce
+one, two, or several additional factors and see how perfor-
+mance changes as complications are added, evaluating the
+scaling behavior of LLMs. If a machine truly learns algo-
+rithms to understand causal relations, adding one more vari-
+able should not make any difference, at least within certain
+bounds of model capacity. We note the causal chains and
+natural word chain tasks of Zecˇevic´ et al. (2023) as a posi-
+Figure 7: Examples in Bigbench entailed polarity. tive example to this end.
+Lastly, and perhaps most importantly, a pressing con-
+cern is that tasks rooted in real-world scenarios or contexts
+Some other datasets in BigBench, like the speech detec-
+allow for retrieval rather than reasoning. This applies to
+tion dataset (assessing whether a given figure of speech is
+any dataset for which we cannot exclude that its underly-
+a simile, metaphor, pun, etc.),cause and effect, Indic cause
+ing causal structure has been (approximately) observed in
+and effect (Srivastava et al. 2022) (mainly assessing lan-
+the pretraining dataset of an LLM. Numerous benchmarks
+guage translation), are assessing language understanding
+prompt an LLM with a story and then ask for its logical
+rather than causal reasoning. We believe that these datasets
+consequences (Srivastava et al. 2022; Gao et al. 2023). For
+are inadequate for evaluating causal reasoning and should
+example, “if it’s sunny in the morning and I forget my um-
+hence be excluded for this purpose.
+brella, what will happen if it rains in the afternoon?” (more
+examples can be found in fantasy reasoning(Srivastava et al.
+Conclusion and future work
+2022)). The issue here is that the LLM does not need to ac-
+We believe that building a reliable and robust assessment tually reason at all: it can simply access its training dataset,
+framework for causal reasoning with LLMs is timely and which contains millions of stories about weather and um-
+important. In this work, we collected and reviewed existing brellas, and approximately retrieve a response (Valmeekam
+datasets and tasks, and pointed out issues of certain datasets et al. 2022). Of course, humans also access their memory
+in light of the three types of causal capabilities (Zhang when answering questions like this, but we would be equally
+et al. 2023) and the ladder of causation(Pearl and Macken- capable of answering a similar question with fictional or
+zie 2018). We highlight promising recent trends that present non-informativecontextpurelybyreasoningcausally.Toac-
+a more satisfactory and holistic evaluation of causal rea- curately gauge human-level causal reasoning, a benchmark
+soning. Ultimately, following the model of the widely pop- task must therefore not allow for memory retrieval, out-
+ular General Language Understanding Evaluation (GLUE) ruling the possibility that an answer has been approximately
+framework (Wang et al. 2018) for general NLP evaluation, seen in the pretraining data.
+this work is a step towards the creation of a Causal Language We conclude with the following four criteria. We argue
+Understanding Evalution (CLUE) framework, consisting of that not all of these criteria are ‘necessary’, but they are
+a minimal but exhaustive set of tasks that an LLM should at least desirable to better demonstrate the causal reasoning
+be able to complete in order to be considered successful at capibility of LLMs:
+causal reasoning. 1. Causal rather than correlative: The benchmark should
+Synthesizing across simpler and more complex tasks, we be carefully designed in causal language, to reveal
+note key commonalities that we believe a good benchmark causal, not correlative relations dealing with directional
+or set of benchmarks should possess. First, in the context interventions and/or counterfactuals.
+of the (Zhang et al. 2023) and (Pearl and Mackenzie 2018)
+2. Open-ended: The benchmark should allow LLMs to
+hierarchies, we argue that an effective benchmark must deal
+cover as many causal reasoning possibilities as possible,
+with interventions and/or counterfactuals, being phrased
+rather than providing a fixed set list of options.
+in causal rather than merely correlative language.
+3. Scalable: Rather than simple one-step questions, the
+In addition, good performance of LLMs on existing tasks
+benchmark should introduce multiple factors, allowing
+may be accounted to their remarkable data-processing and
+to gradually increase its complexity while following the
+retrieval capabilities using billions of parameters as opposed
+same causal structure.
+to their causal reasoning capabilities (Kaddour et al. 2023).
+4. Non-retrievable: The benchmark should be phrased
+Some tasks offer multiple-choice answers to the LLM (Gao
+with non-informative or fictional context, such that an-
+et al. 2023; Gordon, Kozareva, and Roemmele 2012; Srivas-
+swers cannot simply be looked up.
+tava et al. 2022), but this can enable the model to simply
+calculate a measure of similarity between the options and We hope that this review can draw the attention of
+the initial premise. A good benchmark should therefore be researchers to the pressing need of constructing suitable
+open-ended rather than multiple choice. datasets for causal reasoning and inference with LLMs.
+
+Acknowledgments Liu, X.; Yin, D.; Zhang, C.; Feng, Y.; and Zhao, D. 2023.
+We thank our anonymous reviewers for useful comments The Magic of IF: Investigating Causal Reasoning Abili-
+which helped us improve the manuscript. L.Y. is supported ties in Large Language Models of Code. arXiv preprint
+by the EPSRC Centre for Doctoral Training in Modern arXiv:2305.19213.
+Statistics and Statistical Machine Learning (EP/S023151/1) Mariko, D.; Akl, H. A.; Labidurie, E.; Durfort, S.;
+and Novartis. V.S. and O.C. are supported by the EPSRC De Mazancourt, H.; and El-Haj, M. 2020. Financial docu-
+Centre for Doctoral Training in Modern Statistics and Statis- ment causality detection shared task (fincausal 2020). arXiv
+tical Machine Learning (EP/S023151/1) and Novo Nordisk. preprint arXiv:2012.02505.
+F. F. acknowledges the receipt of a studentship award from
+Mooij, J. M.; Peters, J.; Janzing, D.; Zscheischler, J.; and
+the Health Data Research UK-The Alan Turing Institute Scho¨lkopf, B. 2016. Distinguishing cause from effect using
+Wellcome PhD Programme (Grant Ref: 218529/Z/19/Z). observational data: methods and benchmarks. The Journal
+of Machine Learning Research, 17(1): 1103–1204.
+References
+Pearl, J.; and Mackenzie, D. 2018. The book of why: the new
+Caselli, T.; and Vossen, P. 2017. The event storyline corpus: science of cause and effect. Basic books.
+A new benchmark for causal and temporal relation extrac-
+Singh, S.; Wen, N.; Hou, Y.; Alipoormolabashi, P.; Wu, T.-
+tion. In Proceedings of the Events and Stories in the News
+L.; Ma, X.; and Peng, N. 2021. COM2SENSE: A common-
+Workshop, 77–86.
+sense reasoning benchmark with complementary sentences.
+Frohberg, J.; and Binder, F. 2021. Crass: A novel data set
+arXiv preprint arXiv:2106.00969.
+and benchmark to test counterfactual reasoning of large lan-
+Srivastava, A.; Rastogi, A.; Rao, A.; Shoeb, A. A. M.; Abid,
+guage models. arXiv preprint arXiv:2112.11941.
+A.;Fisch,A.;Brown,A.R.;Santoro,A.;Gupta,A.;Garriga-
+Gao, J.; Ding, X.; Qin, B.; and Liu, T. 2023. Is Chat-
+Alonso, A.; et al. 2022. Beyond the imitation game: Quanti-
+GPT a Good Causal Reasoner? A Comprehensive Evalua-
+fying and extrapolating the capabilities of language models.
+tion. arXiv preprint arXiv:2305.07375.
+arXiv preprint arXiv:2206.04615.
+Gordon, A.; Kozareva, Z.; and Roemmele, M. 2012.
+Tu, R.; Ma, C.; and Zhang, C. 2023. Causal-discovery per-
+SemEval-2012 task 7: Choice of plausible alternatives: An
+formance of chatgpt in the context of neuropathic pain diag-
+evaluation of commonsense causal reasoning. In * SEM
+nosis. arXiv preprint arXiv:2301.13819.
+2012: The First Joint Conference on Lexical and Computa-
+tional Semantics–Volume 1: Proceedings of the main confer- Tu, R.; Zhang, K.; Bertilson, B.; Kjellstrom, H.; and Zhang,
+ence and the shared task, and Volume 2: Proceedings of the C. 2019. Neuropathic pain diagnosis simulator for causal
+Sixth International Workshop on Semantic Evaluation (Se- discovery algorithm evaluation. Advances in Neural Infor-
+mEval 2012), 394–398. mation Processing Systems, 32.
+Jin, Z.; Liu, J.; Lyu, Z.; Poff, S.; Sachan, M.; Mihalcea, R.; Valmeekam, K.; Marquez, M.; Olmo, A.; Sreedharan, S.;
+Diab, M.; and Scho¨lkopf, B. 2023. Can Large Language and Kambhampati, S. 2023. PlanBench: An Extensible
+Models Infer Causation from Correlation? arXiv preprint Benchmark for Evaluating Large Language Models on Plan-
+arXiv:2306.05836. ning and Reasoning about Change. In Thirty-seventh Con-
+ference on Neural Information Processing Systems Datasets
+Kaddour, J.; Harris, J.; Mozes, M.; Bradley, H.; Raileanu,
+and Benchmarks Track.
+R.; and McHardy, R. 2023. Challenges and applications of
+large language models. arXiv preprint arXiv:2307.10169. Valmeekam, K.; Olmo, A.; Sreedharan, S.; and Kambham-
+pati, S. 2022. Large Language Models Still Can’t Plan
+Karttunen, L. 2012. Simple and phrasal implicatives. In *
+(A Benchmark for LLMs on Planning and Reasoning about
+SEM 2012: The First Joint Conference on Lexical and Com-
+Change). arXiv preprint arXiv:2206.10498.
+putational Semantics–Volume 1: Proceedings of the main
+conference and the shared task, and Volume 2: Proceedings Wang, A.; Singh, A.; Michael, J.; Hill, F.; Levy, O.; and
+of the Sixth International Workshop on Semantic Evaluation Bowman, S. R. 2018. GLUE: A multi-task benchmark and
+(SemEval 2012), 124–131. analysis platform for natural language understanding. arXiv
+Kıcıman, E.; Ness, R.; Sharma, A.; and Tan, C. 2023. Causal preprint arXiv:1804.07461.
+reasoning and large language models: Opening a new fron- Wang, Y.; Mishra, S.; Alipoormolabashi, P.; Kordi, Y.;
+tier for causality. arXiv preprint arXiv:2305.00050. Mirzaei, A.; Arunkumar, A.; Ashok, A.; Dhanasekaran,
+Lal, Y. K.; Chambers, N.; Mooney, R.; and Balasubrama- A. S.; Naik, A.; Stap, D.; et al. 2022. Super-
+nian, N. 2021. Tellmewhy: A dataset for answering why- naturalinstructions: Generalization via declarative instruc-
+questions in narratives. arXiv preprint arXiv:2106.06132. tions on 1600+ nlp tasks. arXiv preprint arXiv:2204.07705.
+Li, J.; Yu, L.; and Ettinger, A. 2022. Counterfactual reason- Yang, L.; Wang, Z.; Wu, Y.; Yang, J.; and Zhang, Y.
+ing: Do Language Models need world knowledge for causal 2022. Towards fine-grained causal reasoning and qa. arXiv
+inference? In NeurIPS 2022 Workshop on Neuro Causal and preprint arXiv:2204.07408.
+Symbolic AI (nCSI). Zecˇevic´, M.; Willig, M.; Dhami, D. S.; and Kerst-
+Li, Z.; Ding, X.; Liu, T.; Hu, J. E.; and Van Durme, B. ing, K. 2023. Causal parrots: Large language models
+2021. Guided generation of cause and effect. arXiv preprint may talk causality but are not causal. arXiv preprint
+arXiv:2107.09846. arXiv:2308.13067.
+
+Zhang, C.; Bauer, S.; Bennett, P.; Gao, J.; Gong, W.;
+Hilmkil, A.; Jennings, J.; Ma, C.; Minka, T.; Pawlowski,
+N.; et al. 2023. Understanding causality with large lan-
+guage models: Feasibility and opportunities. arXiv preprint
+arXiv:2304.05524.
+Zhang, H.; Zhao, X.; and Song, Y. 2020. WinoWhy: A
+deep diagnosis of essential commonsense knowledge for
+answering Winograd schema challenge. arXiv preprint
+arXiv:2005.05763.
+Zhang, L.; Lyu, Q.; and Callison-Burch, C. 2020. Reason-
+ingaboutgoals,steps,andtemporalorderingwithWikiHow.
+arXiv preprint arXiv:2009.07690.

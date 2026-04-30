@@ -1,0 +1,375 @@
+Chain-of-Thought Hub: A Continuous Effort to
+Measure Large Language Models’ Reasoning Performance
+Yao Fu♠ Litu Ou♠ Mingyu Chen♠ Yuhao Wan♦ Hao Peng♣ Tushar Khot♣
+♠University of Edinburgh ♦University of Washington ♣Allen Institute for AI
+{yao.fu, s1970716, s2331360}@ed.ac.uk yuhaowan@cs.washington.edu {haop, tushark}@allenai.org
+https://github.com/FranxYao/chain-of-thought-hub
+Abstract chatbot is relatively easy, as demonstrated by the large va-
+riety of LLaMA-based (Touvron et al., 2023) models like
+As large language models (LLMs) are continu-
+Alpaca (Taori et al., 2023), Vicuna (Chiang et al., 2023),
+ously being developed, their evaluation becomes
+Koala (Geng et al., 2023), Dolly (Databricks, 2023), and so
+increasingly important yet challenging. This work
+on. In a chitchat, all these models may perform superficially proposes Chain-of-Thought Hub, an open-source
+similarly to GPT-3.5-Turbo (Gudibande et al., 2023). At the
+evaluation suite on the multi-step reasoning ca-
+current stage, the community is eager to know what are the
+pabilities of large language models. We are in-
+key factors that clearly differentiate the better-performing
+terested in this setting for two reasons: (1) from
+models from the underperforming ones.
+the behavior of GPT and PaLM model family, we
+observe that complex reasoning is likely to be a In this work, we consider the evaluation of complex reason-
+key differentiator between weaker and stronger ing. As noted by OpenAI (2023b), “In a casual conversation,
+LLMs; (2) we envisage large language models to the distinction between GPT-3.5 and GPT-4 can be subtle.
+become the next-generation computational plat- The difference comes out when the complexity of the task
+form and foster an ecosystem of LLM-based new reaches a sufficient threshold”. A similar observation is
+applications, this naturally requires the founda- made by the Google PaLM model family, as their develop-
+tion models to perform complex tasks that often ers discover that large models’ chain-of-thought reasoning
+involve the composition of linguistic and logical capability is clearly stronger than smaller models (Wei et al.,
+operations. Our approach is to compile a suite 2022b;a). These observations indicate that the ability to
+of challenging reasoning benchmarks to track the perform complex tasks is a key metric.
+progress of LLMs. Our current results show that:
+The capability of performing complex reasoning is crucial
+(1) model scale clearly correlates with reasoning
+for the models to become the next-generation computation
+capabilities; (2) As of May 2023, Claude-v1.3 and
+platform. OneexampleinitiativeisLangChain1 wheredevel-
+PaLM-2 are the only two models that are compara-
+opers build applications powered by backend LLM engines,
+ble with GPT-4, while open-sourced models still
+which generally require the model to perform complex tasks.
+lag behind; (3) LLaMA-65B performs closely to
+Here the vision of pushing LLMs as the foundation of a new
+code-davinci-002, indicating that with successful
+computational ecosystem also serves as a strong motivation
+further development such as reinforcement learn-
+to measure the models’ reasoning performance.
+ing from human feedback (RLHF), it has great
+potential to be close to GPT-3.5-Turbo. Our re- To incentivize the research efforts in improving language
+sults also suggest that for the open-source efforts models’ reasoning performance, we propose the chain-of-
+to catch up, the community may focus more on thought hub (CoT Hub), a continuous open-source effort
+building better base models and exploring RLHF. that tracks LLMs’ reasoning capability using a carefully cu-
+rated evaluation suite. CoT Hub is the first comprehensive
+comparison of very large LMs on reasoning benchmarks
+1. Introduction
+and currently consists of 19 major language models’ (in-
+cluding the GPT, Claude, PaLM and LLaMA) performance
+Recently, the field of AI has been significantly impressed
+on 6 benchmarks and more than 100 subtasks (including
+by the advances in large language models. LLMs exhibit
+multi-dimensional capabilities, and their evaluation is chal- 1https://github.com/hwchase17/langchain
+lenging. Generally, tuning a base language model into a
+1
+3202
+yaM
+62
+]LC.sc[
+1v60371.5032:viXra
+
+Chain-of-Thought Hub
+bi-lingual reasoning capabilities in Chinese), and we are C-Eval A Chinese evaluation suite for foundation models
+continuously adding new models and datasets. consisting of 13k multi-choice questions spanning 52
+diverse disciplines and four difficulty levels (Huang
+Observations made in CoT Hub shed light on many insights
+et al., 2023).
+into LLM development: (1) the reasoning performance of
+LLMs highly correlates with models’ scales; (2) as of May
+2023, PaLM and Claude2 are the only two model fami- We note that most of these datasets are already used in
+lies that are comparable to (yet slightly worse than) the the evaluation of leading large language models, such as
+GPT model family; (2) LLaMA 65B (Touvron et al., 2023) GPT-4 (OpenAI, 2023a) and PaLM-2 (Anil et al., 2023).
+the strongest open LLM to date, performs closely to code-
+Few-Shot Chain-of-thought Prompting We use few-
+davinci-002, the base model of GPT-3.5 family3. This indi-
+shot chain-of-thought prompting to evaluate LLMs. This
+cates that if aligned properly (by doing supervised finetun-
+marks a clear difference between our evaluation and the
+ing (SFT) and reinforcement learning from human feedback
+majority of other concurrent evaluations like HeLM (Liang
+(RLHF) right) LLaMA 65B can potentially improve fur-
+et al., 2022), as most of them use answer-only prompting.
+ther and perform on par with ChatGPT-3.5. We hope
+We also emphasize that we use few-shot, rather than zero-
+our work gives meaningful guidance to the community’s
+shot prompting, because few-shot is a capability that exist
+development of deployable LLMs.
+in both pretrained and instruction-tuned checkpoints, v.s.,
+zero-shot is more suitable for instruction-tuned checkpoints
+2. Method and may under-estimate the pretrained checkpoints.
+In this section we discuss the construction of Chain-of- Comparison to existing and concurrent work There
+Thought Hub. We first discuss our method for test data are many great existing evaluation suites for large language
+collection, then we discuss how we obtain the model per- models, such as HeLM, Chatbot Arena4, and Open LLM
+formance on our test suite. Our main goal is to curate a Leaderboard5. The major difference between this work
+high-quality collection of datasets that (1) is closely related and these works are: (1) HeLM evaluates a significantly
+to the actual usage of LLMs; (2) clearly differentiate the wider spectrum of tasks while we focus on evaluating rea-
+performance of stronger and weaker language models. We soning. Most of the results from this work use chain-of-
+consider the following datasets: thought prompting (hence the name “Chain-of-Thought
+Hub”) whereas HeLM mainly uses answer-only prompting
+(without CoT). (2) Chatbot Arena evaluate the dialog user
+GSM8k A widely used math reasoning datasets consist-
+preference we evaluate reasoning. (3) Open LLM Leader-
+ing of 8k problems that jointly test models’ ability of
+board focus on open-sourced LLMs, we jointly consider
+arithmetic reasoning and composing math steps using
+major LLMs, either open-sourced or not.
+language (Cobbe et al., 2021).
+Using final answer accuracy as a proxy for reasoning
+MATH A suite of challenging datasets consisting of 12k
+capability Most of the datasets we consider share one
+problems within 7 categories testing the models’ ad-
+pattern: to reach the final answer (either a number for math
+vanced math and science reasoning. The problems in
+problems, a choice for multi-choice problems, or a fixed
+thisdatasetareveryhardbecausetheycomefrommath-
+output for coding), the model needs to figure out the inter-
+ematics competitions written in Latex. Even GPT-4
+mediate steps toward that answer. When evaluating, we only
+has only 42.5% performance (Hendrycks et al., 2021).
+use the final answer accuracy but do not consider the correct-
+MMLU An evaluation suite of 15k problems within 57 ness of intermediate steps. This is because empirically, the
+subjects testing model’s high-school and college-level correctness of intermediate steps is strongly correlated with
+knowledge and reasoning (Hendrycks et al., 2020). the final accuracy. If the intermediate steps are very wrong,
+the model is less likely to reach the final answer. If the final
+BigBench Hard A suite of language and symbolic rea-
+answer is correct, the intermediate steps are generally good
+soning tasks consisting 6.5k problems within 23 sub-
+enough (Wei et al., 2022b; Lewkowycz et al., 2022).
+sets that are particularly suitable for testing chain-of-
+thought prompting (Suzgun et al., 2022).
+3. Experiments
+HumanEval A handwritten dataset of 164 Python program-
+ming problems with text comments and docstrings test- First we discuss the model families we consider. We focus
+ing the models’ coding ability (Chen et al., 2021). onthepopularmodels inproduction, includingGPT,Claude,
+PaLM, LLaMA, and T5 model families, specifically:
+2https://www.anthropic.com/index/introducing-claude
+3https://platform.openai.com/docs/model-index-for- 4https://leaderboard.lmsys.org/
+researchers 5https://huggingface.co/spaces/HuggingFaceH4/open llm leaderboard
+2
+
+Chain-of-Thought Hub
+Table 1. Overall model performance on Chain-of-Thought Hub. Numbers with an asterisk* are from our test scripts. For model types,
+base means the model checkpoint after pretraining, SIFT means supervised instruction finetuning. Others are from their corresponding
+papers. We observe: (1) there exist a gap between leading LLMs (GPT, Claude and PaLM) and open-source (LLaMA and FlanT5);
+(2) most leading LLMs are after RLHF, indicating the opportunity of improving open-sourced models using this technique; (3). model
+performance is generally correlated with model scale, indicating further opportunities in scaling, especially for open-source models. We
+further highlight that among open-sourced models, LLaMA 65B performs close to code-davinci-002, the base model of ChatGPT. This
+suggests that if RLHF is done right on LLaMA 65B, it may become close to ChatGPT.
+Model #Params Type GSM8k MATH MMLU BBH HumanEval C-Eval
+GPT-4 ? RLHF 92.0 42.5 86.4 - 67.0 68.7*
+claude-v1.3 ? RLHF 81.8* - 74.8* 67.3* - 54.2*
+PaLM-2 ? Base 80.7 34.3 78.3 78.1 - -
+gpt-3.5-turbo ? RLHF 74.9* - 67.3* 70.1* 48.1 54.4*
+claude-instant-v1.0 ? RLHF 70.8* - - 66.9* - 54.9*
+text-davinci-003 ? RLHF - - 64.6 70.7 - -
+code-davinci-002 ? Base 66.6 19.1 64.5 73.7 47.0 -
+Minerva 540B SIFT 58.8 33.6 - - - -
+Flan-PaLM 540B SIFT - - 70.9 66.3 - -
+Flan-U-PaLM 540B SIFT - - 69.8 64.9 - -
+PaLM 540B Base 56.9 8.8 62.9 62.0 26.2 -
+text-davinci-002 ? SIFT 55.4 - 60.0 67.2 - -
+PaLM 64B Base 52.4 4.4 49.0 42.3 - -
+LLaMA 65B Base 50.9 10.6 63.4 - 23.7 38.8*
+LLaMA 33B Base 35.6 7.1 57.8 - 21.7 -
+LLaMA 13B Base 17.8 3.9 46.9 - 15.8 -
+Flan-T5 11B SIFT 16.1* - 48.6 41.4 - -
+LLaMA 7B Base 11.0 2.9 35.1 - 10.5 -
+Flan-T5 3B SIFT 13.5* - 45.5 35.2 - -
+OpenAI GPT including GPT-4 (currently strongest), GPT- that do not offer public access (such as PaLM), such that
+3.5-Turbo (faster but less capable), text-davinci-003, evaluating them is difficult. For these reasons, we report
+text-davinci-002, and code-davinci-002 (important pre- numbers using the following strategy: if the performance
+vious versions before Turbo). See Fu & Khot (2022) of a model is already reported in a paper, we refer to that
+for a comprehensive discussion. paper; otherwise, we test them by ourselves. Note that this
+strategy is not comprehensive, as we still have a fraction of
+Anthropic Claude including claude-v1.3 (slower but more
+untested non-public models on some datasets. This is partly
+capable) and claude-instant-v1.0 (faster but less capa-
+the reason we view our CoT Hub as a continuous effort.
+ble)6. Strong competitor’s GPT models.
+Table 1 shows the overall results. We rank the models using
+Google PaLM including PaLM, PaLM-2, and their GSM8k performance because it is a classical benchmark
+instruction-tuned versions (FLan-PaLM and Flan-U- testing models’ reasoning capabilities. Numbers marked
+PaLM). Strong base and instruction-tuned models. by an asterisk are tested by ourselves, others are from the
+following sources: GPT-4 and PaLM-2 results are from their
+Meta LLaMA including the 7B, 13B, 33B and 65B vari-
+technical report (OpenAI, 2023a; Anil et al., 2023) respec-
+ants. Important open-sourced base models.
+tively; GPT-3.5-Turbo’s performance on HumanEval is also
+from OpenAI (2023a). Text-davinci-003, code-davinci-002
+Google FlanT5 instruction-tuned T5 models demonstrat-
+and text-davinci-002 performance are from the appendix
+ing strong performance in the smaller model regime.
+in Chung et al. (2022) and from Fu et al. (2022). Minerva’s
+performance is from Lewkowycz et al. (2022). PaLM’s per-
+We report these models’ performance on our CoT Hub suite.
+formance is from Chowdhery et al. (2022). Flan-PaLM and
+We note that due to the wide spectrum of the tasks and
+FlanT5 performance are from Chung et al. (2022). LLaMA’s
+models we consider, the evaluation is nontrivial and even
+performance is from Touvron et al. (2023).
+running inference takes effort. In addition, there are models
+The gap between open-source and leading LLMs In
+6https://console.anthropic.com/docs/api/reference
+3
+
+Chain-of-Thought Hub
+Figure 1. X-axis means the log of the model scale measured in billion parameters. We observe that model performance is generally
+correlated with scale, approximately showing a log-linear trend. Models without disclosing their scale generally perform better than
+models disclosing scale information. Our observations also indicate that the open-source community may still needs to explore/ figure out
+“the moat” about the scaling and RLHF for further improvements.
+general, we observe a performance discrepancy between Anthropic Claude (Askell et al., 2021; Bai et al., 2022a;b).
+open-sourced models (like LLaMA and FlanT5) and close-
+sourced models (GPT, Claude and PaLM). Importantly, the
+4. Conclusion and Future Work
+performance of open-sourced models seems to be upper
+bounded by LLaMA 65B. In this work, we propose Chain-of-Thought Hub, an open-
+source, continuousefforttomeasurethereasoningcapability
+Leading LLMs are after RLHF We observe that ex-
+of very large language models. Our results clearly show the
+cept for PaLM-2, the top 6 models on the leaderboard are
+performance differences between smaller and larger models,
+after reinforcement learning from human feedback. This
+and between close-source and open-source models.
+strongly indicates the effectiveness of RLHF. Given that
+RLHF is still an underexplored area, we strongly encourage After carefully examining the results, we show two impor-
+the community to study more on this topic. tant directions for further improving open-sourced models:
+building better base models and exploring RLHF. We also
+Correlation between model scale and reasoning We
+point out the great potential of LLaMA 65B: if aligned
+further study the relationship between model scale and mod-
+properly by better SFT and RLHF, it could be possible to
+els’ reasoning performance by visualizing model perfor-
+perform on par with ChatGPT-3.5.
+mance against model scale. Results are shown in Fig. 1.
+We see that: (1) generally, model performance is correlated In the future, we plan to further extend CoT Hub by: (1) in-
+with model scale, showing approximately a log-linear trend; cluding more carefully chozen reasoning datasets, especially
+(2) models that do not disclose their scale generally perform datasets measuring commonsense reasoning, math theorem
+better than models that do, indicating that there is still a gap proving, and the ability to call outside APIs; (2) including
+between open-source and close-source. more language models, such as LLaMA-based, instruction-
+finetuned models like Vicuna7 and models through API
+On the potential of LLaMA-65B Finally, we would
+access like Cohere8 and PaLM-2 chat-bison-0019. (3) ex-
+like to highlight the impressive performance of LLaMA
+ploring methods for solving MATH, the probably most chal-
+65B. On MMLU it is close to code-davinci-002, the base
+lenging datasets (recall that it consists of math- ematics com-
+model of GPT-3.5 series. On GSM8k, it is worse (pre-
+petitions written in Latex), by calling APIs that compute
+sumably because it is not trained on code) but close and
+symbolic and numerical calculus (like Wolfram Alpha10).
+much better than other open-sourced models (presumably
+In summary, we believe our work serves as an evaluation
+because it is trained to Chinchilla-optimal Hoffmann et al.,
+platform that guides the development of open-source large
+2022). Combining this observation with the fact that GPT-
+language models.
+3.5-Turbo (ChatGPT) is an RLHF model based on code-
+davinci-002, it may be possible to reproduce ChatGPT 7https://lmsys.org/blog/2023-03-30-vicuna/
+based on LLaMA 65B by applying the RLHF techniques 8https://cohere.com/generate
+discussed in DeepMind Sparrow (Glaese et al., 2022) and 9https://cloud.google.com/vertex-ai
+10https://www.wolframalpha.com/
+4
+
+Chain-of-Thought Hub
+References models to their sources. Yao Fu’s Notion, Dec
+2022. URL https://yaofu.notion.site/
+Anil, R., Dai, A. M., Firat, O., Johnson, M., Lepikhin,
+How-does-GPT-Obtain-its-Ability-Tracing-Emergent-Abilities-of-Language-Models-to-their-Sources-b9a57ac0fcf74f30a1ab9e3e36fa1dc1.
+D., Passos, A., Shakeri, S., Taropa, E., Bailey, P., Chen,
+Z., et al. Palm 2 technical report. arXiv preprint
+Fu, Y., Peng, H., Sabharwal, A., Clark, P., and Khot, T.
+arXiv:2305.10403, 2023.
+Complexity-based prompting for multi-step reasoning.
+arXiv preprint arXiv:2210.00720, 2022.
+Askell, A., Bai, Y., Chen, A., Drain, D., Ganguli, D.,
+Henighan, T., Jones, A., Joseph, N., Mann, B., DasSarma,
+Geng, X., Gudibande, A., Liu, H., Wallace, E., Abbeel,
+N., et al. A general language assistant as a laboratory for
+P., Levine, S., and Song, D. Koala: A dia-
+alignment. arXiv preprint arXiv:2112.00861, 2021.
+logue model for academic research. Blog post,
+Bai, Y., Jones, A., Ndousse, K., Askell, A., Chen, A., Das- April 2023. URL https://bair.berkeley.edu/
+Sarma, N., Drain, D., Fort, S., Ganguli, D., Henighan, T.,
+blog/2023/04/03/koala/.
+et al. Training a helpful and harmless assistant with rein-
+Glaese, A., McAleese, N., Trebacz, M., Aslanides, J., Firoiu,
+forcement learning from human feedback. arXiv preprint
+V., Ewalds, T., Rauh, M., Weidinger, L., Chadwick, M.,
+arXiv:2204.05862, 2022a.
+Thacker, P., et al. Improving alignment of dialogue
+Bai, Y., Kadavath, S., Kundu, S., Askell, A., Kernion, J., agents via targeted human judgements. arXiv preprint
+Jones, A., Chen, A., Goldie, A., Mirhoseini, A., McKin- arXiv:2209.14375, 2022.
+non, C., et al. Constitutional ai: Harmlessness from ai
+feedback. arXiv preprint arXiv:2212.08073, 2022b. Gudibande, A., Wallace, E., Snell, C., Geng, X., Liu,
+H., Abbeel, P., Levine, S., and Song, D. The false
+Chen, M., Tworek, J., Jun, H., Yuan, Q., Pinto, H. P. d. O., promise of imitating proprietary llms. arXiv preprint
+Kaplan, J., Edwards, H., Burda, Y., Joseph, N., Brockman, arXiv:2305.15717, 2023.
+G., et al. Evaluating large language models trained on
+code. arXiv preprint arXiv:2107.03374, 2021. Hendrycks, D., Burns, C., Basart, S., Zou, A., Mazeika,
+M., Song, D., and Steinhardt, J. Measuring mas-
+Chiang, W.-L., Li, Z., Lin, Z., Sheng, Y., Wu, Z., Zhang, sive multitask language understanding. arXiv preprint
+H., Zheng, L., Zhuang, S., Zhuang, Y., Gonzalez, J. E., arXiv:2009.03300, 2020.
+Stoica, I., and Xing, E. P. Vicuna: An open-source
+chatbot impressing gpt-4 with 90%* chatgpt quality, Hendrycks, D., Burns, C., Kadavath, S., Arora, A., Basart,
+March 2023. URL https://lmsys.org/blog/ S., Tang, E., Song, D., and Steinhardt, J. Measuring math-
+2023-03-30-vicuna/. ematical problem solving with the math dataset. NeurIPS,
+2021.
+Chowdhery, A., Narang, S., Devlin, J., Bosma, M., Mishra,
+G., Roberts, A., Barham, P., Chung, H. W., Sutton, C., Hoffmann, J., Borgeaud, S., Mensch, A., Buchatskaya, E.,
+Gehrmann, S., et al. Palm: Scaling language modeling Cai, T., Rutherford, E., Casas, D. d. L., Hendricks, L. A.,
+with pathways. arXiv preprint arXiv:2204.02311, 2022. Welbl, J., Clark, A., et al. Training compute-optimal
+large language models. arXiv preprint arXiv:2203.15556,
+Chung, H. W., Hou, L., Longpre, S., Zoph, B., Tay, Y.,
+2022.
+Fedus, W., Li, E., Wang, X., Dehghani, M., Brahma,
+S., et al. Scaling instruction-finetuned language models.
+Huang, Y., Bai, Y., Zhu, Z., Zhang, J., Zhang, J., Su, T., Liu,
+arXiv preprint arXiv:2210.11416, 2022.
+J., Lv, C., Zhang, Y., Lei, J., et al. C-eval: A multi-level
+multi-discipline chinese evaluation suite for foundation
+Cobbe, K., Kosaraju, V., Bavarian, M., Chen, M., Jun, H.,
+models. arXiv preprint arXiv:2305.08322, 2023.
+Kaiser, L., Plappert, M., Tworek, J., Hilton, J., Nakano,
+R., et al. Training verifiers to solve math word problems.
+Lewkowycz, A., Andreassen, A., Dohan, D., Dyer, E.,
+arXiv preprint arXiv:2110.14168, 2021.
+Michalewski, H., Ramasesh, V., Slone, A., Anil, C.,
+Databricks. Free dolly: Introducing the world’s Schlag, I., Gutman-Solo, T., et al. Solving quantitative
+first truly open instruction-tuned llm. Blog reasoning problems with language models. arXiv preprint
+post, April 2023. URL https://www. arXiv:2206.14858, 2022.
+databricks.com/blog/2023/04/12/
+Liang, P., Bommasani, R., Lee, T., Tsipras, D., Soylu, D.,
+dolly-first-open-commercially-viable-instruction-tuned-llm.
+Yasunaga, M., Zhang, Y., Narayanan, D., Wu, Y., Kumar,
+Fu, Yao; Peng, H. and Khot, T. How does gpt obtain A., et al. Holistic evaluation of language models. arXiv
+its ability? tracing emergent abilities of language preprint arXiv:2211.09110, 2022.
+5
+
+Chain-of-Thought Hub
+OpenAI. Gpt-4 technical report. arXiv preprint
+arXiv:2303.08774, 2023a.
+OpenAI. Gpt-4, 2023b. URL https://openai.com/
+research/gpt-4.
+Suzgun, M., Scales, N., Scha¨rli, N., Gehrmann, S., Tay,
+Y., Chung, H. W., Chowdhery, A., Le, Q. V., Chi,
+E. H., Zhou, D., et al. Challenging big-bench tasks and
+whether chain-of-thought can solve them. arXiv preprint
+arXiv:2210.09261, 2022.
+Taori, R., Gulrajani, I., Zhang, T., Dubois, Y., Li,
+X., Guestrin, C., Liang, P., and Hashimoto, T. B.
+Stanford alpaca: An instruction-following llama
+model. https://github.com/tatsu-lab/
+stanford_alpaca, 2023.
+Touvron, H., Lavril, T., Izacard, G., Martinet, X., Lachaux,
+M.-A., Lacroix, T., Rozie`re, B., Goyal, N., Hambro, E.,
+Azhar, F., et al. Llama: Open and efficient foundation lan-
+guage models. arXiv preprint arXiv:2302.13971, 2023.
+Wei, J., Tay, Y., Bommasani, R., Raffel, C., Zoph, B.,
+Borgeaud, S., Yogatama, D., Bosma, M., Zhou, D., Met-
+zler, D., etal. Emergentabilitiesoflargelanguagemodels.
+arXiv preprint arXiv:2206.07682, 2022a.
+Wei, J., Wang, X., Schuurmans, D., Bosma, M., Chi, E.,
+Le, Q., and Zhou, D. Chain of thought prompting elic-
+its reasoning in large language models. arXiv preprint
+arXiv:2201.11903, 2022b.
+6

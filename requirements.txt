@@ -1,0 +1,11 @@
+# CS5202 Spring 2026 — Academic RAG System
+# Pin all versions for reproducibility (random seed = 42)
+
+arxiv==2.1.3
+pypdf==5.9.0
+pdfplumber==0.11.9
+sentence-transformers==3.4.1
+faiss-cpu==1.10.0
+numpy
+torch==2.2.2
+transformers==4.40.2

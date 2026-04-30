@@ -1,0 +1,46 @@
+
+[build_index] model=all-MiniLM-L6-v2  chunk=2048c  overlap=256c
+[build_index] Loading 10 parsed files
+
+[build_index] model=all-MiniLM-L6-v2  chunk=2048c  overlap=256c
+[build_index] Loading 10 parsed files
+  Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.txt  → 36 chunks
+  ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.txt  → 13 chunks
+  ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.txt  → 76 chunks
+  CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.txt  → 31 chunks
+  Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.txt  → 26 chunks
+  Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.txt  → 29 chunks
+  Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.txt  → 36 chunks
+  Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.txt  → 8 chunks
+  Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.txt  → 14 chunks
+  Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.txt  → 9 chunks
+
+[build_index] Total chunks: 278
+[build_index] Embedding with all-MiniLM-L6-v2 ...
+[build_index] Embedding shape: (278, 384)
+[build_index] FAISS index saved → C:\Users\srika\rag-project\data\index.faiss  (278 vectors)
+[build_index] Chunks saved → C:\Users\srika\rag-project\data\chunks.json
+
+[build_index] Done.
+
+[build_index] model=all-MiniLM-L6-v2  chunk=2048c  overlap=256c
+[build_index] Loading 11 parsed files
+  A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.txt  → 19 chunks
+  Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.txt  → 36 chunks
+  ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.txt  → 13 chunks
+  ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.txt  → 76 chunks
+  CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.txt  → 31 chunks
+  Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.txt  → 26 chunks
+  Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.txt  → 29 chunks
+  Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.txt  → 36 chunks
+  Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.txt  → 8 chunks
+  Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.txt  → 14 chunks
+  Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.txt  → 9 chunks
+
+[build_index] Total chunks: 297
+[build_index] Embedding with all-MiniLM-L6-v2 ...
+[build_index] Embedding shape: (297, 384)
+[build_index] FAISS index saved → C:\Users\srika\rag-project\data\index.faiss  (297 vectors)
+[build_index] Chunks saved → C:\Users\srika\rag-project\data\chunks.json
+
+[build_index] Done.

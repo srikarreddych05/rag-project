@@ -1,0 +1,1054 @@
+CROP: Token-Efficient Reasoning in Large Language Models via
+Regularized Prompt Optimization
+Deep Shah1, Sanket Badhe1, Nehal Kathrotia1, Priyanka Tiwari2
+1Google LLC, 2Purdue University
+Abstract et al., 2026). This paradigm encourages models to
+mimic structured human deliberation (Yao et al.,
+Large Language Models utilizing reasoning
+2023; Besta et al., 2024). Consequently, step-by-
+techniques improve task performance but in-
+step rationale generation has become the standard
+cur significant latency and token costs due to
+verbose generation. Existing automatic prompt operational mode for extracting high-fidelity rea-
+optimization(APO) frameworks target task ac- soning from large-scale foundation models (Light-
+curacy exclusively at the expense of generat- man et al., 2024).
+ing long reasoning traces. We propose Cost- Despite these performance gains, the reliance on
+Regularized Optimization of Prompts (CROP),
+verbose intermediate reasoning introduces a criti-
+an APO method that introduces regularization
+cal deployment hurdle for real-world production
+on response length by generating textual feed-
+environments. The generation of thousands of in-
+back in addition to standard accuracy feed-
+termediate tokens incurs massive inference latency
+back. This forces the optimization process to
+produce prompts that elicit concise responses and exorbitant financial costs (Pope et al., 2022;
+containing only critical information and rea- Aminabadi et al., 2022; Kwon et al., 2023). Recent
+soning. We evaluate our approach on com- empirical analyses reveal that modern reasoning
+plex reasoning datasets, specifically GSM8K, models exhibit substantial verbosity compensation,
+LogiQA and BIG-Bench Hard. We achieved
+often producing excessively lengthy explanations
+an 80.6% reduction in token consumption
+that provide little additional logical value (Patel
+while maintaining competitive accuracy, seeing
+et al., 2024; Xu et al., 2025b). This extensive token
+only a nominal decline in performance. This
+presents a pragmatic solution for deploying consumption thus presents a severe liability that re-
+token-efficient and cost-effective agentic AI stricts the practical viability of deploying complex
+systems in production pipelines. reasoning pipelines (Renze and Guven, 2024; Li
+et al., 2024; Jiang et al., 2023).
+1 Introduction
+To optimize these systems, the field has in-
+Large Language Models (LLMs) have achieved creasingly adopted automated prompt engineer-
+unprecedented state-of-the-art capabilities in com- ing frameworks that leverage LLMs as meta-
+plex reasoning tasks primarily through step-by- optimizers (Zhou et al., 2023; Yang et al., 2024;
+step generation strategies like Chain of Thought Pryzant et al., 2023). Tools such as DSPy remove
+(Wei et al., 2022; Kojima et al., 2022; Wang et al., the need for manual human trial and error by re-
+2023b). By prompting models to decompose intri- fining prompts through systematic search (Khat-
+cate problems into intermediate logical steps prior tab et al., 2024). Recent frameworks extend this
+to outputting a final answer, researchers have sig- paradigm by automating the optimization work-
+nificantly improved performance across mathemat- flow, utilizing meta-learning and combinatorial
+ical, logical, and commonsense reasoning bench- search to systematically refine instructions and
+marks (Nye et al., 2021; Zelikman et al., 2022; prompting strategies without human intervention
+Cobbe et al., 2021). Reasoning capabilities are an (Spiess et al., 2025; Murthy et al., 2025; Xu et al.,
+indispensable requirement for deploying founda- 2025a). However, these existing tools suffer from
+tion models across diverse and critical domains, a critical flaw in that they optimize almost exclu-
+including financial analysis, algorithmic ranking, sively for task accuracy, often at the expense of
+medical diagnosis, and legal reasoning (Wu et al., generating excessively verbose intermediate rea-
+2023; Cui et al., 2023; Badhe et al., 2026; Shah soning traces. By continuously adding edge-case
+1
+6202
+rpA
+8
+]LC.sc[
+1v41241.4062:viXra
+
+instructions and logic corrections to the prompt, the 1.1 Main Contributions
+optimizer inadvertently maximizes the verbosity
+In summary, our primary contributions are as fol-
+tax, producing bloated system prompts that force
+lows:
+the target model to generate even longer and more
+• Cost-Aware Prompt Optimization (CROP):
+exhaustive reasoning traces.
+We propose CROP, a novel token-efficient
+This inherent tendency toward verbosity exposes automatic prompt optimization framework.
+a fundamental missing mathematical constraint By introducing an response adaptive textual
+in the current paradigm of textual optimization. length penalty, CROP successfully decouples
+In standard machine learning optimization, loss reasoning accuracy from generation verbosity
+functions routinely incorporate regularization tech- during the prompt discovery phase.
+niques (such as L1 or L2 penalties) to constrain
+• Massive Inference Efficiency: We empir-
+model weights and prevent overly complex archi-
+ically demonstrate that CROP reduces out-
+tectures from overfitting (Goodfellow et al., 2016;
+put token consumption by up to 80.6% on
+Bishop and Nasrabadi, 2006). Yet, textual prompt
+complex reasoning benchmarks (GSM8K,
+optimization lacks a true analog to a length penalty.
+LogiQA and BIG-Bench Hard) while strictly
+To solve this structural deficiency, we propose preserving the task accuracy of unconstrained
+CROP, an applied methodology that introduces an Chain-of-Thought prompting.
+output-biased textual regularizer directly into the
+• Autonomous Discovery of Symbolic Rea-
+prompt optimization loop. CROP builds upon the
+soning: We show that our regularized tex-
+multi-objective capabilities of textual differentia-
+tual gradients automatically force the target
+tion to treat output token count as a first-class op-
+LLM to adopt highly compressed, symbolic
+timization constraint alongside task accuracy. By
+reasoning structures. This emergent behav-
+computing a continuous length-penalty gradient
+ior conceptually mirrors human-engineered
+that functions independently of the task loss, the
+strategies (e.g., “Chain-of-Draft”) without re-
+regularizer explicitly penalizes the target model
+quiring manual prompt design.
+whenever its output exceeds a minimal thresh-
+old. This feedback is then aggregated with tradi- 2 Related Work
+tional accuracy gradients using textual summation.
+2.1 Automatic Prompt Optimization
+Consequently, CROP forces the meta-optimizer to
+The optimization of natural language prompts has
+rewrite system instructions that explicitly constrain
+evolved from discrete vocabulary search (Shin
+verbosity without sacrificing the underlying logical
+et al., 2020; Deng et al., 2022; Prasad et al., 2023;
+steps necessary for correct inference.
+Guo et al., 2023; Chen et al., 2024; Badhe and
+Through this regularized feedback mechanism, Shah, 2026) to utilizing large language models as
+CROP successfully forces the discovery of con- meta-optimizers (Zhou et al., 2023; Yang et al.,
+cise reasoning paths. Our empirical evaluations 2024; Pryzant et al., 2023; Wang et al., 2023a).
+demonstrate that this approach effectively shrinks Frameworks such as DSPy and TextGrad (Khat-
+the output distribution, minimizing both output tab et al., 2024; Yuksekgonul et al., 2024) have
+length and overall inference latency. We evaluate formalized this into comprehensive computation
+CROP on complex reasoning benchmarks, specifi- graphs, enabling automated textual backpropaga-
+cally GSM8K (Cobbe et al., 2021), LogiQA (Liu tion capable of optimizing user-defined metrics
+et al., 2020), and BIG-Bench Hard (Suzgun et al., and rewards. However, when applied to complex
+2023; Srivastava et al., 2023). The results show reasoning tasks, textual optimization exposes a fun-
+that our cost-aware optimization method yields a damental generative bias: because evaluators di-
+dramatic reduction in output token consumption agnose logic errors via natural language critiques,
+by 80.6% reduction in token consumption while they inherently resolve failures by prescribing ad-
+maintaining competitive accuracy. By establishing ditive logic and expanded instructions. This ac-
+a continuous textual penalty for verbosity, CROP cumulation of instructional leads to unchecked in-
+provides a pragmatic and highly effective solution crease of reasoning leading to verbosity. Recog-
+for deploying token-efficient compound AI sys- nizing this computational bottleneck, recent frame-
+tems in strict production pipelines. works such as Promptomatix and AutoPDL (Pan
+2
+
+et al., 2025; Murthy et al., 2025) have introduced static prompting remains notoriously brittle, while
+cost-aware objectives to balance efficiency with dynamic token-pruning and step-skipping often re-
+performance, alongside discrete evolutionary algo- quire specialized decoding mechanisms or architec-
+rithms like CAPO and ParetoPrompt (Wen, 2025; tural interventions. Unlike approaches that demand
+Authors, 2025; Zehle et al., 2025). Building upon expensive weight updates, custom decoding algo-
+this critical shift, CROP introduces a continuous, rithms, or fragile hardcoded constraints, CROP
+dual-objective textual optimization landscape. By operates entirely in the natural language optimiza-
+applying an unconditional, output-biased regular- tion space. It dynamically modulates verbosity at
+izer alongside task gradients, CROP exerts continu- the prompt level, systematically discovering opti-
+ous downward pressure on token bloat, forcing the mal, token-efficient reasoning pathways through
+meta-optimizer to systematically balance logical regularized textual feedback.
+correctness with generative brevity in a way that
+3 Methodology
+purely additive textual gradients cannot.
+In this section, we formalize CROP, a framework
+2.2 Inference-Time Scaling and
+that extends the automatic prompt optimization
+Self-Correction
+(APO) paradigm to resource-constrained environ-
+Alternative approaches improve reasoning by ments. We first briefly review the preliminary
+scaling compute during inference. Methodolo- formulation of textual differentiation, and subse-
+gies ranging from Self-Consistency (Wang et al., quently detail our novel textual regularization ob-
+2023b) to iterative self-correction frameworks like jective.
+Reflexion and Self-Refine (Shinn et al., 2023;
+3.1 Preliminaries: Textual Differentiation
+Madaan et al., 2023) allow models to critique and
+repeatedly refine their intermediate outputs. While Let V∗ denote the space of all possible natural
+yielding substantial accuracy gains, these pipelines language strings. In a standard LLM-based compu-
+inherently multiply the token consumption and la- tation graph, we define a system prompt p ∈ V∗ as
+tency of the system with every additional trial. In a learnable parameter, an input query x ∈ V∗, and
+contrast to these methods that severely compound a target model M. The forward pass generates an
+inference overhead, CROP shifts the iterative re- output yˆ = M(x;p).
+finement burden entirely to an offline prompt op- Given a ground-truth label y, a textual loss func-
+timization phase, ultimately producing a single, tion L evaluates the prediction. Instead of
+task
+highly efficient system prompt that elicits com- yielding a scalar gradient, textual backpropagation
+pressed reasoning trajectories in a single forward queries a secondary evaluator LLM E, to generate
+pass. a textual gradient g ∈ V∗. This gradient is a
+task
+natural language critique detailing the logical flaws
+2.3 Cost-Aware Systems and Verbosity
+in yˆ and suggesting semantic updates to p:
+Control
+g = E (p,x,yˆ,y) (1)
+To mitigate computational overhead (Pope et al., task task
+2022; Kwon et al., 2023), researchers have devel- An optimizer LLM, O, then acts as the parameter
+oped system-level routing protocols (Chen et al., update function, synthesizing the batch of gradi-
+2023; Ong et al., 2024; Aggarwal et al., 2024; Jian ents to perform a discrete step in the prompt space:
+et al., 2023), and inference-time early exiting or p = O(p ,{g(i) }B ), where B is the batch
+t+1 t task i=1
+truncation strategies (Mao et al., 2025; Jiang et al., size.
+2023; Wu et al., 2025). Furthermore, recent litera-
+3.2 Verbose Reasoning
+ture focuses on explicitly compressing reasoning
+traces via continuous latent projections (Hao et al., While L effectively maximizes reasoning ac-
+task
+2024; Shen et al., 2025; Wei et al., 2025), con- curacy, it is agnostic to computational efficiency.
+ditioned textual pruning (Kang et al., 2024; Xia, Consequently, the meta-optimizer O inherently
+2025; Wang, 2025). However, these approaches gravitates toward system prompts that trigger use-
+introduce severe operational trade-offs. Methods ful but overly verbose Chain-of-Thought (CoT)
+relying on continuous latent projections or explicit bloat in yˆ. In production systems, the length of yˆ
+fine-tuning are computationally prohibitive and directly influences the inference latency and com-
+alter foundation weights. Conversely, structured pute requirements.
+3
+
+ı
+GroundTruth
+Dataset
+(D)
+ƒ Accuracy
+TargetResponse Gradient(gtask)
+p
+.
+ri
+.
+c
+.
+e
+E
+,
+v
+w
+er
+h
+y
+ic
+s
+h
+ec
+is
+on
+0
+d
+.6
+g
+×
+las
+$
+s
+5
+co
+=
+sts
+$3
+6
+.
+0%
+Ky
+o
+la
+f
+r
+th
+w
+e
+ants
+PredictedAnswer Task
+(E
+E
+t
+v
+as
+a
+k
+l
+)
+uator
+(cid:212)
+_ C T h h a o i u n gh o t f j t in o to bu p y ai 1 rs 6 . g T la h s e s r e e s. w W ill e be ca 1 n 6 g / r 2 ou = pt 8 he pa g i l r a s s . ses Meta-Optimizer
+SystemPrompt TargetLLM Eachpairconsistsofoneglassat$5and (O)
+(p) (M) a
+$
+n
+5
+o
++
+the
+$
+r
+3
+a
+=
+t$
+$
+3
+8
+.
+.
+T
+T
+h
+h
+e
+e
+c
+t
+o
+o
+s
+t
+t
+al
+o
+c
+f
+o
+e
+s
+a
+t
+ch
+for
+pa
+8
+ir
+p
+i
+a
+s
+irsis
+œ1.TaskAccuracy
+8×$8=$64. ... if |yˆ|>τ œ2.OutputCompression
+Correct¥ BrevityEvaluator
+(Ereg) G R r e a g d u i l e a n r t iz ( a g t r i e o g n )
+DiscretePromptUpdate(pt+1)
+Figure 1: Overview of CROP optimization pipeline. A meta-optimizer updates the system prompt by aggregating
+textual gradients for both task accuracy (g ) and response brevity (g ), systematically enforcing token-efficient
+task reg
+reasoning.
+3.3 Textual Regularization task gradients and regularization gradients and per-
+forms the update step p = O(p ,g ).
+CROP applies L across the entire batch, assert- t+1 t total
+reg
+Rather than naively returning the prompt from
+ing a constant downward pressure on token con-
+the final iteration, CROP employs a structured se-
+sumption. We define a secondary evaluator prompt,
+lection criterion to identify the optimal prompt
+E , which receives the generated output and com-
+reg
+p∗ discovered during the optimization trajectory.
+putes a textual brevity gradient:
+We define a composite score S for each candidate
+g reg = E reg (p,yˆ) (2) prompt:
+The resulting gradient g explicitly instructs
+reg S(p) = Accuracy(p) − λ · L (p) (4)
+the optimizer to inject brevity constraints into p. norm
+The regularization gradient is computed only when
+where L (p) represents the generated token
+norm
+∥yˆ∥ exceeds a predefined threshold, preventing the
+count normalized by the average COT output token
+penalization of already token-efficient reasoning.
+length, and λ is a tunable regularization coefficient.
+To maintain optimization stability and prevent de-
+The magnitude of λ dictates the explicit trade-off
+structively large steps in the prompt space—which
+between task performance and token consumption.
+frequently induce catastrophic forgetting of the un-
+We selected λ through an empirical grid search on
+derlying logic—E is constrained to enforce only
+reg the validation set over the range of 0.01 to 0.5. We
+a gradual, incremental reduction in output length
+identified λ = 0.2 as the optimal configuration, as
+per iteration. Furthermore, the evaluator is explic-
+it provided the maximum reduction in reasoning
+itly directed to target peripheral narrative elements
+verbosity without inducing a statistically signifi-
+and conversational filler, strictly preserving the to-
+cant degradation in task accuracy.
+kens associated with critical computational steps.
+4 Experiment Setup
+3.4 Gradient Aggregation and
+Multi-Objective Optimize 4.1 Model Setup
+To perform the parameter update, CROP treats We assign specific Large Language Models to the
+prompt optimization as a formal multi-objective distinct roles of evaluation, optimization, and in-
+problem. We leverage the concatenation proper- ference. We utilize Gemini 2.0 Flash as the dual-
+ties of textual autograd engines to compute the evaluator (E and E ) to compute task accuracy
+task reg
+total gradient. For a single instance, the combined critiques and regularized verbosity gradients. For
+textual gradient g is defined via the string con- the parameter update step, we deploy Gemini 3.1
+total
+catenation operator ⊕: Pro (with Thinking enabled) as the meta-optimizer
+(O). A high-capacity model is critical here, as syn-
+g = g ⊕ “\n” ⊕ g (3)
+total task reg
+thesizing multi-objective, conflicting textual gradi-
+During the batched optimization step, the meta- ents requires an extended context window and ad-
+optimizer O receives the aggregated sets of both vanced deductive reasoning (ablated in Section 5).
+4
+
+Algorithm 1 CROP: Cost-Regularized Optimiza- Prohibits intermediate reasoning steps to out-
+tion of Prompts put the final answer directly. This establishes
+Require: Initial system prompt p , Target LLM our empirical lower bound for token consump-
+0
+M, Meta-Optimizer LLM O tion, though typically at the severe expense of
+Require: Task Evaluator E , Brevity Evaluator task accuracy.
+task
+E
+reg
+• Chain-of-Thought (CoT): Appends a stan-
+Require: Dataset D, Batch size B, Max iterations
+dard step-by-step reasoning directive. This
+T
+serves as our upper bound for baseline accu-
+1: p ← p 0 racy, simultaneously representing the widely
+2: for t = 1 to T do
+used but verbosity prompting technique.
+3: Sample batch {(x i ,y i )}B i=1 ∼ D
+4: G batch ← ∅ ▷ Initialize empty batch • Conciseness inducing prompts: We used
+gradient list different prompts which encourages concise
+5: for i = 1 to B do reasoning via prompting (Lee et al., 2025).
+6: yˆ i ← M(x i ;p) ▷ Forward Pass (See prompts in Appendix A.1)
+7: g t ( a i s ) k ← E task (p,x i ,yˆ i ,y i ) ▷ Compute • TextGrad: An automatic prompt optimiza-
+Task Accuracy Gradient
+tion framework that utilizes textual gradients
+8: g r ( e i g ) ← E reg (p,yˆ i ) ▷ Compute Textual to maximize task accuracy without penaliz-
+Regularization Gradient
+ing verbose reasoning during the optimization
+9: g t ( o i t ) al ← g t ( a i s ) k ⊕ “\n” ⊕ g r ( e i g ) ▷ loop.
+Aggregate Gradients via Concatenation
+10: G batch ← G batch ∪ {g t ( o i t ) al } 4.3 Datasets
+11: end for
+To evaluate CROP across diverse cognitive do-
+12: Accuracy t ← C correct /B mains, we selected three challenging reasoning
+13: AvgLength t ← L total /B benchmarks. Because these tasks inherently ne-
+14: S t ← Accuracy t − λ · L norm (t) ▷ cessitate intermediate logic, they intrinsically in-
+Evaluate trade-off score
+centivize unconstrained LLMs to generate highly
+15: if S t > S best then ▷ Update best prompt if verbose Chain-of-Thought (CoT) traces, providing
+score improves
+an optimal testbed for our compression framework.
+16: S best ← S t To prevent data leakage, we utilize the official train,
+17: p∗ ← p
+validation, and test splits provided by the dataset
+18: end if
+authors wherever available. For the BBH Object
+19: p ← O(p,G batch ) ▷ Meta-Optimizer Counting task, which lacks standard splits, we man-
+computes discrete prompt update
+ually partition the data into a 25/25/50 split for
+20: end for
+training, validation, and testing, respectively.
+21: return p∗ ▷ Optimized token-efficient prompt
+• GSM8K (Cobbe et al., 2021): A benchmark
+of linguistically diverse grade-school math
+For forward-pass inference (M), we evaluated word problems. This dataset requires accu-
+two models: Gemini 2.0 Flash and Qwen 2.5 7B. rate multi-step arithmetic reasoning, which
+frequently induces unconstrained LLMs to
+4.2 Baselines
+produce excessively long textual explanations
+We benchmark CROP against zero-shot prompting, for basic algebraic steps.
+chain-of-thoughts, concise induced prompting and
+• Object Counting (BIG-Bench Hard) (Suz-
+automatic prompt optimization method TextGrad.
+gun et al., 2023): An algorithmic reasoning
+We intentionally omit static length-constrained
+task requiring the model to determine the to-
+prompts, which are brittle and degrade reasoning;
+tal count of a specific semantic class from
+furthermore, the model was unable to follow ex-
+a natural-language collection of items. This
+plicit token-limit instructions and frequently ex-
+tests symbolic tracking, where standard CoT
+ceeded the given limits.
+prompts typically trigger exhaustive, token-
+• Standard Zero-Shot (Direct Prompting): heavy item enumeration.
+5
+
+Figure 2: Performance and efficiency comparison across three datasets using the Gemini 2.0 Flash model.
+• LogiQA (Liu et al., 2020): A challeng- Qualitative comparison of generated reasoning traces
+on the GSM8K dataset.
+ing machine reading comprehension dataset
+sourced from expert logical examinations. It Input Query: Kylar went to the store to buy glasses for
+his new apartment. One glass costs $5, but every second
+requires complex deductive inference (e.g.,
+glass costs only 60% of the price. Kylar wants to buy 16
+categorical, conditional, and disjunctive rea- glasses. How much does he need to pay for them?
+soning), assessing CROP’s ability to maintain
+the structural integrity of formal logical argu- 1. Direct Prompting (No Reasoning)
+68
+ments under aggressive token compression.
+✗ Incorrect
+2. Chain-of-Thought (Standard Verbosity)
+Method Core Instruction Let the cost of one glass be $5. Every second glass costs
+60% of the price, which is 0.6 * $5 = $3. Kylar wants
+No Reason- Output ONLY the final answer to buy 16 glasses. We can group the glasses into pairs.
+There will be 16 / 2 = 8 pairs. Each pair consists of one
+ing without reasoning or thinking.
+glass at $5 and another at $3. The cost of each pair is $5
++ $3 = $8. The total cost for 8 pairs is 8 * $8 = $64.
+Chain-of- Think step by step.
+Thought ✓ Correct (128 tokens)
+CROP [...] concisely, showing the 3. CROP (Ours Compressed Reasoning)
+8 * 5 + 8 * (5 * 0.6) = 40 + 8 * 3 = 40 + 24 = 64
+(Ours) combined essential calculations
+leading directly to the final nu- ✓ Correct (44 tokens)
+merical answer. Omit interme-
+diate labels. Focus on chained
+Table 2: Reasoning comparison on the GSM8K dataset.
+calculations.
+Table 1: Comparison of core system instructions across consumption by up to 80.6% without degrading
+prompting baselines for the GSM8K dataset. Standard exact-match accuracy. These results establish that
+prefix formulations and output formatting constraints high-fidelity inference can be sustained at a frac-
+have been omitted to highlight the distinct reasoning
+tion of the standard computational cost.
+directives.
+5.1 Significant Reductions in Token
+Consumption
+5 Results and Analysis
+CROP consistently achieved state-of-the-art token
+We evaluate CROP’s capacity to eliminate the com- efficiency while preserving the logical integrity
+putational redundancy inherent in unconstrained required for complex problem-solving. On math-
+Chain-of-Thought (CoT) reasoning. By integrating ematical arithmetic (GSM8K), algorithmic tasks
+a continuous brevity gradient into the optimization (Object Counting), and LogiQA, the framework re-
+loop, CROP explicitly optimizes for reasoning den- duced output token consumption by 74.8%, 80.6%,
+sity alongside task performance. As detailed in and 66.5% respectively while retaining reasoning
+Table 3, our framework compresses output token leading to comparable accuracy for Gemini 2.0
+6
+
+Table 3: Model Performance Across Prompting Methods. Cells display Accuracy (%) with Average Token Count
+in parentheses.
+Model Dataset CoT w/oReasoning CROP TextGrad BeConcise OnlyNumber UseAbbrev
+GSM8K 95.3(198.4) 51.2(9.2) 93.4(50.0) 95.5(185.5) 96.2(120.8) 91.4(113.0) 95.1(145.7)
+Gemini2Flash CountObject 96.0(101.2) 66.4(9.4) 94.8(19.6) 90.5(24.5) 96.0(59.0) 92.5(55.0) 95.0(92.0)
+LogiQA 65.2(540.5) 60.4(5.1) 64.2(181.0) 66.4(663.0) 65.1(301.0) 61.9(423.0) 65.3(422.0)
+GSM8K 90.2(123.4) 54.9(3.4) 87.8(21.3) 89.8(101.2) 90.4(82.3) 85.1(31.1) 88.2(72.4)
+Qwen2.57B CountObject 92.1(56.3) 67.8(3.8) 90.1(12.1) 88.8(32.7) 92.7(46.6) 81.5(16.2) 90.2(39.7)
+LogiQA 61.2(287.0) 54.0(3.4) 59.3(84.2) 60.1(212.3) 61.1(152.3) 50.8(32.8) 54.7(212.0)
+Flash. Similar token-efficiency was observed for Meta- Discovered System Prompt
+Qwen 2.5 7B as well. This starkly contrasts with Optimizer (Core Instructions)
+the Direct Prompting (Without Reasoning) base- Model
+line, which collapses entirely on these tasks. This
+Gemini 2.0 Solve the problem. Only provide
+divergence confirms that while intermediate com-
+Flash the answer and do not provide
+putation is strictly necessary for accuracy, the nar-
+(Lower Ca- any explanations.
+rative verbosity of that computation is highly com-
+pacity)
+pressible via regularized feedback.
+Gemini 3.1 Solve the problem with extreme
+5.2 Emergent Symbolic Reasoning
+Pro conciseness. Do not use conver-
+A qualitative examination of the optimized prompts (High Ca- sational filler, restate the ques-
+(Table 1) and generated outputs (Table 2) re- pacity) tion, or write full sentences.
+veals that CROP discovered prompts fundamen- Simply provide the final sum.
+tally shifts how the target model structures its
+intermediate logic. Rather than generating con- Table 4: Comparison of optimized system prompts gen-
+erated by different meta-optimizers for the BBH Object
+versational heuristics (e.g., “First, let us observe
+Counting task. While the lower-capacity model (Gem-
+that...”), the regularized prompts elicit a dense,
+ini 2.0 Flash) defaults to a blunt truncation directive,
+symbolic syntax. On GSM8K, the model spon-
+the high-capacity model (Gemini 3.1 Pro) successfully
+taneously adopts a mathematical shorthand anal-
+synthesizes multi-faceted constraints targeting specific
+ogous to the recently proposed “Chain-of-Draft” vectors of verbosity.
+(Xu et al., 2025b) methodology. However, whereas
+prior works rely on manual human engineering to
+complex, multi-objective textual feedback requires
+elicit this behavior, CROP discovers this optimal
+both the extended context window and the ad-
+reasoning syntax entirely autonomously.
+vanced deductive reasoning capabilities inherent to
+5.3 Role of Optimizer Scale in Generalization this larger model.
+The meta-optimizer (O) is responsible for synthe-
+5.4 Gradient Stability and Batch Dynamics
+sizing batched textual accuracy and regularization
+gradients into a coherent, updated system prompt. In standard deep learning, gradient variance is in-
+In early iterations, deploying a lower-capacity versely proportional to batch size. We observe an
+model (Gemini 2.0 Flash) as the meta-optimizer analogous phenomenon in regularized textual dif-
+resulted in a severe degradation of prompt quality. ferentiation. As demonstrated in Table 5, ablation
+The optimizer consistently overfit to idiosyncratic experiments utilizing stochastic updates (batch size
+errors from isolated batch examples rather than de- of 1) yield extreme variance in the textual gradients.
+riving generalizable instructional updates. Exten- When evaluating an isolated example, the meta-
+sive tuning of the meta-optimizer’s system prompt optimizer frequently overfits to the length penalty,
+failed to mitigate this limitation. prioritizing output compression over task accuracy
+Ultimately, scaling the meta-optimizer to a fron- and aggressively stripping away critical cognitive
+tier reasoning model—specifically Gemini 3.1 Pro instructions. This results in prompt collapse: the
+with thinking capabilities enabled—resolved these generation of degenerate directives that entirely
+issues and produced highly robust system prompts eliminate intermediate reasoning capacity. Con-
+(See table 4). We hypothesize that synthesizing versely, scaling to a batch size of 128 stabilizes the
+7
+
+Optimization Discovered System Prompt constrained CoT and automatic prompt optimiza-
+Setting (Core Instructions) tion baselines. Furthermore, our analysis reveals
+that this dual-objective optimization automatically
+Low Capacity Solve the problem. Only pro-
+elicits highly efficient, symbolic reasoning struc-
+Optimizer vide the answer and do not
+tures, conceptually mirroring manual “Chain-of-
+(Gemini provide any explanations.
+Draft” prompting without requiring human inter-
+2.0 Flash,
+vention. Through systematic ablations, we also
+B = 128)
+identified that successful multi-objective textual
+Stochastic Solve the problem concisely. optimization requires frontier-level model capacity
+Optimization Go straight to the answer and large batch sizes to stabilize gradient variance
+(Gemini 3.1 without restating the problem and prevent the collapse of intermediate logic.
+Pro, B = 1) or adding redundant explana- Ultimately, CROP provides a highly practical,
+tory sentences. deployment-ready methodology. By systematically
+excising computational redundancy at the prompt
+Optimal Con- Solve the problem with ex-
+level rather than altering foundational weights, it
+figuration treme conciseness. Do not
+enables the scalable and cost-effective integration
+(Gemini 3.1 use conversational filler, re-
+of high-fidelity reasoning models into strict, real-
+Pro, B = 128) state the question, or write
+world production and agentic environments.
+full sentences. Simply pro-
+vide the final sum.
+Limitations
+Table 5: Qualitative ablation of discovered system
+While CROP significantly reduces inference-time
+prompts under different optimization constraints for
+overhead, we acknowledge two primary limitations
+the BBH dataset. Only the optimal configuration (high
+capacity, large batch) successfully balances extreme regarding its current operational scope.
+conciseness with the preservation of reasoning. One limitation of our current evaluation is that
+we do not explicitly consider input token length or
+cost. In modern production environments, prompt
+multi-objective feedback. By providing the meta-
+caching (or prefix caching) is a default feature that
+optimizer with a statistically representative sample
+automatically stores and reuses the initial segments
+of both reasoning failures and excess verbosity,
+of instructions. Because our framework produces a
+large batches prevent regularization-induced col-
+single, static system prompt that remains identical
+lapse and ensure stable, convergent trajectories dur-
+across all user queries, it perfectly leverages this
+ing prompt optimization.
+caching mechanism. By reusing this prior compu-
+tational work, prefix caching reduces time-to-first-
+6 Conclusion
+token latency by up to 80% and decreases input
+The deployment of Large Language Models in token costs by up to 90% (OpenAI, 2024). Conse-
+complex reasoning pipelines has historically been quently, the financial impact of a slightly longer op-
+bottlenecked by the severe latency and financial timized system prompt is effectively marginalized.
+costs associated with verbose Chain-of-Thought This justifies our exclusive focus on constraining
+generation. In this work, we introduced CROP, the verbosity of the generated output, which re-
+a novel multi-objective automatic prompt opti- mains the primary driver of unmitigated inference
+mization framework. By integrating a continu- costs.
+ous textual regularization penalty directly into the Second, the optimization phase of CROP neces-
+prompt optimization loop, CROP forces the meta- sitates access to high-capacity reasoning models
+optimizer to navigate the Pareto frontier of accu- (e.g., Gemini 3.1 Pro with Thinking). We observe
+racy and token-consumption. that such model is required to effectively synthe-
+Our empirical evaluations demonstrate that inter- size and balance conflicting objectives between
+mediate reasoning is highly compressible. CROP task accuracy and textual regularization. Conse-
+successfully reduces output token consumption by quently, the efficacy of using smaller, mid-tier mod-
+up to 80.6% on rigorous reasoning benchmarks els as meta-optimizers for this dual-objective task
+(GSM8K, BIG-Bench Hard, and LogiQA) while has not yet been established.
+maintaining comparable accuracy compared to un-
+8
+
+References Ian Goodfellow, Yoshua Bengio, and Aaron Courville.
+2016. Deep learning. MIT press.
+Aman Aggarwal and 1 others. 2024. Automix: Auto-
+matically mixing language models. arXiv preprint
+Qingyan Guo, Rui Wang, Junliang Guo, Bei Li, Kaitao
+arXiv:2310.12963.
+Song, Xu Tan, Guihong Liu, Ke Jiang, Jian-Guang
+Reza Yazdani Aminabadi, Samyam Rajbhandari, Am- Yao, Min Zhang, and 1 others. 2023. Connecting
+mar Ahmad Awan, Cheng Li, Du Li, Elton Zheng, large language models with evolutionary algorithms
+Olatunji Ruwase, Shaden Smith, Minjia Zhang, Jeff yields powerful prompt optimizers. arXiv preprint
+Rasley, and 1 others. 2022. Deepspeed-inference:
+arXiv:2309.08532.
+enabling efficient inference of transformer models at
+unprecedented scale. In SC22: International Confer- Shibo Hao and 1 others. 2024. Training large language
+ence for High Performance Computing, Networking, models to reason in a continuous latent space. arXiv
+Storage and Analysis, pages 1–15. IEEE. preprint arXiv:2412.00000.
+MOPO Authors. 2025. Mopo: Multi-objective prompt Yuhang Jian and 1 others. 2023. Ecoassistant: Using
+optimization for affective text generation. In Pro- llm assistant more affordably and accurately. In Ad-
+ceedings of the 31st International Conference on vances in Neural Information Processing Systems.
+Computational Linguistics.
+Huiqiang Jiang, Qianhui Wu, Chin-Yew Lin, Yuqing
+Sanket Badhe and Deep Shah. 2026. Prompt-level
+Yang, and Lili Qiu. 2023. Llmlingua: Compressing
+distillation: A non-parametric alternative to model
+prompts for accelerated inference of large language
+fine-tuning for efficient reasoning. arXiv preprint
+models. In Proceedings of the 2023 Conference on
+arXiv:2602.21103.
+Empirical Methods in Natural Language Processing.
+Sanket Badhe, Deep Shah, and Nehal Kathrotia. 2026.
+Long-tail knowledge in large language models: Tax- Yu Kang, Xianghui Sun, Liangyu Chen, and Wei Zou.
+onomy, mechanisms, interventions and implications. 2024. C3ot: Generating shorter chain-of-thought
+arXiv preprint arXiv:2602.16201. without compromising effectiveness. arXiv preprint
+arXiv:2412.11664.
+Maciej Besta, Nils Blatter, Lucian Dragos, Jing Lin, Ok-
+sana Krause, and 1 others. 2024. Graph of thoughts: Omar Khattab, Arnav Singhvi, Paridhi Maheshwari,
+Solving elaborate problems with large language mod- Zhiyuan Zhang, Keshav Santhanam, Sri Vard-
+els. In International Conference on Learning Repre- hamanan, Saiful Haq, Ashutosh Sharma, Thomas T
+sentations. Joshi, Hanna Moazam, and 1 others. 2024. Dspy:
+Compiling declarative language model calls into
+Christopher M Bishop and Nasser M Nasrabadi. 2006.
+state-of-the-art pipelines. In International Confer-
+Pattern recognition and machine learning. Springer.
+ence on Learning Representations.
+Jialin Chen and 1 others. 2024. Evoprompt: Evolution-
+Takeshi Kojima, Shixiang Shane Gu, Machel Reid, Yu-
+ary prompt optimization for large language models.
+taka Matsuo, and Yusuke Iwasawa. 2022. Large lan-
+In International Conference on Learning Represen-
+guage models are zero-shot reasoners. In Advances
+tations.
+in Neural Information Processing Systems.
+Lingjiao Chen, Matei Zaharia, and James Zou. 2023.
+Frugalgpt: How to use large language models while Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying
+reducing cost and improving performance. In Ad- Sheng, Lianmin Zheng, Cody Hao Yu, Joseph E
+vances in Neural Information Processing Systems. Gonzalez, Hao Zhang, and Jian Jin. 2023. Efficient
+memory management for large language model serv-
+Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, ing with pagedattention. In Proceedings of the 29th
+Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Symposium on Operating Systems Principles.
+Plappert, Jerry Tworek, Jacob Hilton, Reiichiro
+Nakano, and 1 others. 2021. Training verifiers
+Ayeong Lee, Ethan Che, and Tianyi Peng. 2025.
+to solve math word problems. arXiv preprint
+How well do llms compress their own chain-of-
+arXiv:2110.14168.
+thought? a token complexity approach. arXiv
+preprint arXiv:2503.01141.
+Jiaxi Cui, Zongjian Li, Yang Yan, Bohua Chen, and
+Li Yuan. 2023. Chatlaw: Open-source legal large
+Zongqian Li, Yixuan Su, and Nigel Collier. 2024.
+language model with integrated external knowledge
+500xcompressor: Generalized prompt compres-
+bases. arXiv preprint arXiv:2306.16092.
+sion for large language models. arXiv preprint
+Mingkai Deng, Jianyu Wang, Cheng-Ping Hsieh, Yihan arXiv:2408.03094.
+Wang, Han Guo, Tianmin Shu, Meng Song, Eric P
+Xing, and Zhiting Hu. 2022. Rlprompt: Optimizing Hunter Lightman, Vineet Kosaraju, Yura Burda, Harri
+discrete text prompts with reinforcement learning. In Edwards, Bowen Baker, and 1 others. 2024. Let’s
+Proceedings of the 2022 Conference on Empirical verify step by step. In International Conference on
+Methods in Natural Language Processing. Learning Representations.
+9
+
+Jian Liu, Leyang Cui, Hanmeng Liu, Dandan Huang, Matthew Renze and Erhan Guven. 2024. The ben-
+Yile Wang, and Yue Zhang. 2020. Logiqa: A chal- efits of a concise chain of thought on problem-
+lenge dataset for machine reading comprehension solving in large language models. arXiv preprint
+with logical reasoning. In Proceedings of the Twenty- arXiv:2401.05618.
+Ninth International Joint Conference on Artificial
+Intelligence. Deep Shah, Sanket Badhe, and Nehal Kathrotia. 2026.
+Taxonomy of the retrieval system framework: Pitfalls
+Aman Madaan, Niket Tandon, Prakhar Gupta, Skyler and paradigms. arXiv preprint arXiv:2601.20131.
+Hallinan, Luyu Gao, Sarah Wiegreffe, Uri Alon,
+Nouha Dziri, Shrimai Prabhumoye, Yiming Yang, Yikang Shen and 1 others. 2025. Codi: Compress-
+and 1 others. 2023. Self-refine: Iterative refinement ing chain-of-thought into continuous space via self-
+with self-feedback. In Advances in Neural Informa- distillation. In Proceedings of the 2025 Conference
+tion Processing Systems. on Empirical Methods in Natural Language Process-
+ing.
+Minjia Mao, Bowen Yin, Yu Zhu, and Xiao Fang. 2025.
+Early stopping chain-of-thoughts in large language
+Taylor Shin, Yasaman Razeghi, Robert L Logan IV,
+models. arXiv preprint arXiv:2509.14004.
+Eric Wallace, and Sameer Singh. 2020. Autoprompt:
+Eliciting knowledge from language models with au-
+Rithesh Murthy, Ming Zhu, Liangwei Yang, Jielin
+tomatically generated prompts. In Proceedings of the
+Qiu, Juntao Tan, Shelby Heinecke, Silvio Savarese,
+2020 Conference on Empirical Methods in Natural
+Caiming Xiong, and Huan Wang. 2025. Promp-
+Language Processing.
+tomatix: An automatic prompt optimization frame-
+work for large language models. arXiv preprint
+Noah Shinn, Federico Cassano, Ashwin Gopinath,
+arXiv:2507.14241.
+Karthik Narasimhan, and Shunyu Yao. 2023. Re-
+Maxwell Nye, Anders Johan Andreassen, Guy Gur- flexion: Language agents with verbal reinforcement
+Ari, Aitor Lewkowycz Henry, Vikash Mansinghka, learning. In Advances in Neural Information Pro-
+Vedant Mikulik, and Nathanael Schärli. 2021. Show
+cessing Systems.
+your work: Scratchpads for intermediate computa-
+tion with language models. In Advances in Neural Claudio Spiess, Mandana Vaziri, Louis Mandel,
+Information Processing Systems. and Martin Hirzel. 2025. Autopdl: Automatic
+prompt optimization for llm agents. arXiv preprint
+Isaac Ong and 1 others. 2024. Routellm: Learning arXiv:2504.04365.
+to route llms with preference data. In Proceedings
+of the 2024 Conference on Empirical Methods in Aarohi Srivastava, Abhinav Rastogi, Abhishek Rao,
+Natural Language Processing. Abu Awal Md Shoeb, Abubakar Abid, Adam Fisch,
+Adam R Brown, Adam Santoro, Aditya Gupta, Adrià
+OpenAI. 2024. Prompt caching. Accessed: 2026-03- Garriga-Alonso, and 1 others. 2023. Beyond the
+17. imitation game: Quantifying and extrapolating the
+capabilities of language models. Transactions on
+Xiaoying Pan and 1 others. 2025. Autopdl: Automatic Machine Learning Research.
+prompt optimization for llm agents. arXiv preprint
+arXiv:2504.04365.
+Mirac Suzgun, Nathan Scales, Nathanael Schärli, Se-
+bastian Gehrmann, Yi Tay, Hyung Won Chung,
+Rohan Patel, Kshitij Sharma, and Anil Gupta. 2024.
+Aakanksha Chowdhery, Quoc V Le, Ed H Chi,
+Verbosity ̸= veracity: Demystify verbosity compen-
+Denny Zhou, and 1 others. 2023. Challenging big-
+sation behavior of large language models. arXiv
+bench tasks and whether chain-of-thought can solve
+preprint arXiv:2411.07858.
+them. In Findings of the Association for Computa-
+tional Linguistics: ACL 2023.
+Reiner Pope, Sholto Douglas, Aakanksha Chowdhery,
+Jacob Devlin, James Bradbury, and 1 others. 2022.
+Chenglin Wang and 1 others. 2023a. Instructzero: Ef-
+Efficiently scaling transformer inference. arXiv
+ficient instruction optimization for black-box large
+preprint arXiv:2211.05102.
+languagemodels. InAdvancesinNeuralInformation
+Archiki Prasad, Peter Hase, Xiang Zhou, and Mohit Processing Systems.
+Bansal. 2023. Grips: Gradient-free, edit-based in-
+structionsearchforpromptinglargelanguagemodels. et al. Wang. 2025. Compressing chain-of-thought
+In Proceedings of the 17th Conference of the Euro- in llms via step entropy. arXiv preprint
+pean Chapter of the Association for Computational arXiv:2508.03346.
+Linguistics.
+XuezhiWang, JasonWei, DaleSchuurmans, QuocVLe,
+Reid Pryzant, Dan iterative, and 1 others. 2023. Au- Ed H Chi, Sharan Narang, Aakanksha Chowdhery,
+tomatic prompt optimization with gradient descent and Denny Zhou. 2023b. Self-consistency improves
+and beam search. In Proceedings of the 2023 Con- chain of thought reasoning in language models. In
+ference on Empirical Methods in Natural Language International Conference on Learning Representa-
+Processing. tions.
+10
+
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten
+Bosma, Fei Xia, Ed Chi, Quoc V Le, and Denny
+Zhou. 2022. Chain-of-thought prompting elicits rea-
+soning in large language models. In Advances in
+Neural Information Processing Systems.
+Xilin Wei, Xiaoran Liu, Yuhang Zang, Xiaoyi Dong,
+Yuhang Cao, Jiaqi Wang, Xipeng Qiu, and Dahua
+Lin. 2025. Sim-cot: Supervised implicit chain-of-
+thought. arXiv preprint arXiv:2509.20317.
+et al. Wen. 2025. Pareto prompt optimization. In Inter-
+national Conference on Learning Representations.
+Shijie Wu, Ozan Irsoy, Steven Lu, Vadim Dabravol-
+ski, Mark Dredze, Sebastian Gehrmann, Prabhan-
+jan Kambadur, David Rosenberg, and Gideon Mann.
+2023. Bloomberggpt: A large language model for
+finance. arXiv preprint arXiv:2303.17564.
+Zhaofeng Wu and 1 others. 2025. An empirical study
+on prompt compression for large language models.
+arXiv preprint arXiv:2505.00019.
+et al. Xia. 2025. Tokenskip: Controllable chain-of-
+thought compression in llms. In Proceedings of the
+2025 Conference on Empirical Methods in Natural
+Language Processing.
+Guowei Xu, Mert Yuksekgonul, Carlos Guestrin, and
+James Zou. 2025a. metatextgrad: Automatically op-
+timizing language model optimizers. arXiv preprint
+arXiv:2505.18524.
+Silei Xu and 1 others. 2025b. Chain of draft:
+Thinking faster by writing less. arXiv preprint
+arXiv:2502.18600.
+Chengrun Yang, Xuezhi Wang, Yifeng Lu, Hanxiao Liu,
+Quoc V Le, Denny Zhou, and Xinyun Chen. 2024.
+Large language models as optimizers. In Interna-
+tional Conference on Learning Representations.
+Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran,
+Thomas L Griffiths, Yuan Cao, and Karthik
+Narasimhan. 2023. Tree of thoughts: Deliberate
+problem solving with large language models. In
+Advances in Neural Information Processing Systems.
+Mert Yuksekgonul, Federico Bianchi, Daniil Boiko, and
+1 others. 2024. Textgrad: Automatic differentiation
+via text. arXiv preprint arXiv:2406.07496.
+Tom Zehle, Moritz Schlager, Timo Heiß, and Matthias
+Feurer. 2025. Capo: Cost-aware prompt optimiza-
+tion. arXiv preprint arXiv:2504.16005.
+Eric Zelikman, Yuhuai Wu, Jesse Mu, and Noah D
+Goodman. 2022. Star: Bootstrapping reasoning with
+reasoning. In Advances in Neural Information Pro-
+cessing Systems.
+Yongchao Zhou, Andrei Ioan Muresanu, Zihao Zi,
+Keiran Tucker, and 1 others. 2023. Large language
+models are human-level prompt engineers. In Inter-
+national Conference on Learning Representations.
+11
+
+A Example Appendix
+A.1 Baseline prompts
+CoT
+Think Step by Step.
+Be concise
+Think Step by Step. Be Concise.
+Only Num/Eq
+Think Step by Step. Only use numbers or equations.
+AbbrevWords
+Think Step by Step. Abbreviate words as much as possible.
+UseOnlyNTokens
+Think Step by Step. Do not use more than N words.
+A.2 Initial prompts
+GSM8K
+You will answer a mathemetical reasoning question.
+The last line of your response should be of the following format: ’Answer: $VALUE’ where
+VALUE is a numerical value.
+BBH Object counting
+Solve the problem
+The last line of your response should be of the following format: ’Answer: VALUE’ where
+VALUE is a numerical value.
+LogiQA
+You will answer a logical reasoning question.
+The last line of your response should be of the following format: ’Answer: VALUE’ where
+VALUE is the zero-based numerical index of the correct answer.
+A.3 TextGrad Learnt Prompts
+GSM8K
+You will answer a mathematical reasoning question. First, explicitly and concisely state the final
+goal of the question.
+Think step by step and be extremely concise in your reasoning. Avoid conversational filler and
+jump straight into the math.
+Define your variables clearly and explicitly track units during your intermediate calculations to
+prevent conversion errors.
+Carefully consider edge cases, hidden assumptions, overlapping sets, and ensure your final unit
+matches what the question asks for (e.g., dollars vs. cents). Double-check your arithmetic.
+The very last line of your response must be exactly of the following format: ’Answer: VALUE’
+12
+
+where VALUE is a pure integer.
+Leave a blank line before this final line to completely isolate it from the rest of your explanation.
+Ensure there is exactly one space after the colon. Do not include any dollar signs ($), commas,
+units, periods, or any other extraneous characters in VALUE. There should be absolutely no
+additional text, punctuation, or whitespace following the integer.
+BBH Object counting
+Solve the problem.
+To ensure proper parsing, keep your response as concise as possible.
+The very last line of your response must be exactly of the following format: ’Answer: VALUE’
+where VALUE is an integer.
+Do not include any additional text, punctuation, or spaces after the numerical value.
+LogiQA
+You are an expert in logical reasoning. You will answer a logical reasoning question by selecting
+the correct option from the provided list.
+Follow these systematic steps:
+1. **Analyze the Query:** Carefully break down the context and the question. Identify the core
+logical structure, premises, definitions, and specific requirements. Pay special attention to negative
+constraints (e.g., "NOT", "cannot", "least likely") and the modality required (e.g., "must be true",
+"most weakens"). Explicitly state the ultimate goal of the question (e.g., "The goal is to find an
+alternative explanation that directly undermines the causal link").
+2. **Formulate Criteria:** Establish clear, precise, and prioritized criteria that the correct answer
+must satisfy based on your logical analysis. Include negative criteria (what the correct option must
+*not* do) and distinguish between necessary and sufficient conditions.
+3. **Evaluate Options:** Systematically and concisely analyze every option using its zero-based
+index (e.g., Option 0, Option 1, Option 2, Option 3). Use strong, decisive language to explain
+exactly how it meets or fails the formulated criteria.
+- For "weaken/strengthen" questions, prioritize options that directly attack or support the core
+premise or mechanism over those providing indirect, tangential, or correlational impacts.
+- For "must be true/inference" questions, ensure the deduction is a necessary consequence of
+the provided premises. Explicitly reject options that are merely "possible" or require external,
+unwarranted assumptions.
+- Address potential nuances (e.g., correlation vs. causation, ambiguity, shifts in scope), clearly
+explaining why an incorrect option is logically flawed.
+4. **Compare and Conclude:** Conduct a rigorous and direct comparative analysis of the most
+viable options. Be decisive. Explicitly contrast the strengths of the correct option against the
+specific weaknesses of the runners-up to summarize why the selected option is definitively the
+best or only correct choice.
+5. **Final Answer:** Skip any section heading for this step. On the very last line of your response,
+provide the final answer in the exact format:
+Answer: VALUE (where VALUE is the single zero-based integer index of the correct option).
+CRITICAL FORMATTING RULE: The final line MUST be exactly ’Answer: VALUE’ (e.g.,
+’Answer: 2’) with NO additional spaces, NO periods, and NO extra text following the integer. The
+integer must be the absolute final character of your generated response.
+13
+
+A.4 CROP Prompts
+GSM8K
+You will answer a mathematical reasoning question concisely, showing the combined essential
+calculations leading directly to the final numerical answer. Omit intermediate labels. Focus on
+chained calculations. The last line of your response should be of the following format: ’Answer:
+VALUE’ where VALUE is a numerical value.
+BBH Object counting
+You will answer a mathematical reasoning question. Present your reasoning solely through a
+single-line numerical calculation, summing only the pure numerical values identified from the
+question. Do not include item names, descriptions, or separate itemized lists. Do not include
+any introductory or conversational phrases. The last line of your response must be of the exact
+following format: ’Answer: VALUE’ where VALUE is a pure numerical integer (without any
+currency symbols like ’$’ or extra characters).
+LogiQA
+You will answer a logical reasoning question.
+Be concise and direct in your reasoning. Avoid unnecessary introductions, restatements of the
+problem, or verbose explanations. Briefly explain why the correct answer is right and succinctly
+state why the incorrect options are wrong.
+The very last line of your response MUST be exactly of the following format: ’Answer: VALUE’
+where VALUE is the zero-based numerical index of the correct answer. Do not add any extra
+spaces or characters to this final line.
+A.5 Gradient Prompts
+Accuracy Feedback Gradient Prompt
+You are an expert Prompt Engineer.
+You will give feedback to a variable with the following role: <ROLE> response from
+the language model </ROLE>.
+Here is an evaluation of the variable using a string-based function:
+Function purpose: The runtime of string-based function that checks if the prediction is
+correct, where the answer is followed by "Answer :"
+<INPUTS_TO_FUNCTION> {}
+Ground truth answer(role: correct answer for the query): {} </INPUTS_TO_FUNCTION>
+<OUTPUT_OF_FUNCTION> {} </OUTPUT_OF_FUNCTION>
+Objective: Your goal is to give feedback and criticism to the variable given the above
+evaluation output. Our only goal is to improve the above metric, and nothing else.
+</OBJECTIVE_FUNCTION>
+We are interested in giving feedback to the response from the language model for this
+conversation. Specifically, give feedback to the following span of text:
+14
+
+<VARIABLE> {} </VARIABLE>
+Given the above history, describe how the response from the language model could be
+improved to improve the Objective. Be very creative, critical, and intelligent.
+Length Regularization Gradient
+You are an expert Prompt Engineer and Efficiency Strategist.
+You will give feedback to a variable (also known as MODEL_PROMPT) with the fol-
+lowing role: <ROLE> structured system prompt to a somewhat capable language model that
+specifies the behavior </ROLE>.
+<MODEL_PROMPT> {} </MODEL_PROMPT>
+<QUESTION> {} </QUESTION>
+<MODEL_RESPONSE> {} </MODEL_RESPONSE>
+<OBJECTIVE_FUNCTION>Reduce the length of the model response by only few words
+without hurting the quality, and trying to keep as much reasoning and important stuff and focus on
+removing the fluff.</OBJECTIVE_FUNCTION>
+Large language model takes <MODEL_PROMPT> and <QUESTION> as input and
+generates the <MODEL_RESPONSE>.
+Given the above history, describe how the response from the language model could be
+updated to achieve the <OBJECTIVE_FUNCTION> without hurting the quality of the response.
+Be very creative, critical, and intelligent.
+A.6 Optimizer prompt
+System Prompt Update Strategy
+Here is the role of the variable you will improve:
+<ROLE>structured system prompt to a somewhat capable language model that specifies the
+behavior and strategies for the QA task</ROLE>.
+The variable is the text within the following span:
+<VARIABLE> {current_system_prompt} </VARIABLE>
+Here is the context and feedback we got for the variable:
+<CONTEXT>
+(The following block repeats for each conversation in the dataset:)
+Here is a conversation:
+<CONVERSATION>
+<LM_SYSTEM_PROMPT> {current_system_prompt} </LM_SYSTEM_PROMPT>
+<LM_INPUT> {questions[i]} </LM_INPUT>
+<LM_OUTPUT> {forward_response[i]} </LM_OUTPUT>
+15
+
+</CONVERSATION>
+This conversation is potentially part of a larger system. The output is used as response
+from the language model
+Here is the feedback we got for structured system prompt to a somewhat capable lan-
+guage model that specifies the behavior and strategies for the QA task in the conversation:
+<FEEDBACK>
+{feedback_response[i]}
+</FEEDBACK>
+<REGULARIZATION_FEEDBACK>
+{regularization_responses[i]}
+</REGULARIZATION_FEEDBACK>
+</CONTEXT>
+Improve the variable (structured system prompt to a somewhat capable language model
+that specifies the behavior and strategies for the QA task) using the feedback provided in
+<FEEDBACK> and <REGULARIZATION_FEEDBACK> tags.
+Send the improved variable in the following format:
+<IMPROVED_VARIABLE>{the improved variable}</IMPROVED_VARIABLE>
+Send ONLY the improved variable between the <IMPROVED_VARIABLE> tags, and
+nothing else.
+16

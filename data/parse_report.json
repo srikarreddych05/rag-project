@@ -1,0 +1,145 @@
+[
+  {
+    "file": "A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 7,
+    "char_count": 32795,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 15,
+    "char_count": 62921,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 6,
+    "char_count": 23137,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 43,
+    "char_count": 135980,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 16,
+    "char_count": 53991,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf",
+    "status": "error",
+    "extractor": "pdfplumber",
+    "pages": 0,
+    "char_count": 0,
+    "spacing_bug": false,
+    "warnings": [
+      "Unexpected EOF"
+    ]
+  },
+  {
+    "file": "Hierarchical_Multiagent_Large_Language_Model_Reasoning_for_A__2512.13930v1.pdf",
+    "status": "error",
+    "extractor": "pdfplumber",
+    "pages": 0,
+    "char_count": 0,
+    "spacing_bug": false,
+    "warnings": [
+      "Unexpected EOF"
+    ]
+  },
+  {
+    "file": "Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf",
+    "status": "error",
+    "extractor": "pdfplumber",
+    "pages": 0,
+    "char_count": 0,
+    "spacing_bug": false,
+    "warnings": [
+      "Unexpected EOF"
+    ]
+  },
+  {
+    "file": "Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 9,
+    "char_count": 45663,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 13,
+    "char_count": 51601,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 19,
+    "char_count": 63815,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 4,
+    "char_count": 13745,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 14,
+    "char_count": 24860,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 6,
+    "char_count": 15416,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf",
+    "status": "error",
+    "extractor": "pdfplumber",
+    "pages": 0,
+    "char_count": 0,
+    "spacing_bug": false,
+    "warnings": [
+      "Unexpected EOF"
+    ]
+  }
+]

@@ -1,0 +1,260 @@
+[
+  {
+    "filename": "Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf",
+    "title": "Towards Reasoning Era: A Survey of Long Chain-of-Thought for Reasoning Large Language Models",
+    "authors": [
+      "Qiguang Chen",
+      "Libo Qin",
+      "Jinhao Liu",
+      "Dengyun Peng",
+      "Jiannan Guan",
+      "Peng Wang",
+      "Mengkang Hu",
+      "Yuhang Zhou",
+      "Te Gao",
+      "Wanxiang Che"
+    ],
+    "published": "2025-03-12",
+    "arxiv_id": "http://arxiv.org/abs/2503.09567v5",
+    "abstract": "Recent advancements in reasoning with large language models (RLLMs), such as OpenAI-O1 and DeepSeek-R1, have demonstrated their impressive capabilities in complex domains like mathematics and coding. A central factor in their success lies in the application of long chain-of-thought (Long CoT) characteristics, which enhance reasoning abilities and enable the solution of intricate problems. However, despite these developments, a comprehensive survey on Long CoT is still lacking, limiting our understanding of its distinctions from traditional short chain-of-thought (Short CoT) and complicating on",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf",
+    "title": "Making Large Language Models Better Reasoners with Alignment",
+    "authors": [
+      "Peiyi Wang",
+      "Lei Li",
+      "Liang Chen",
+      "Feifan Song",
+      "Binghuai Lin",
+      "Yunbo Cao",
+      "Tianyu Liu",
+      "Zhifang Sui"
+    ],
+    "published": "2023-09-05",
+    "arxiv_id": "http://arxiv.org/abs/2309.02144v1",
+    "abstract": "Reasoning is a cognitive process of using evidence to reach a sound conclusion. The reasoning capability is essential for large language models (LLMs) to serve as the brain of the artificial general intelligence agent. Recent studies reveal that fine-tuning LLMs on data with the chain of thought (COT) reasoning process can significantly enhance their reasoning capabilities. However, we find that the fine-tuned LLMs suffer from an \\textit{Assessment Misalignment} problem, i.e., they frequently assign higher scores to subpar COTs, leading to potential limitations in their reasoning abilities. To",
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf",
+    "title": "DiffCoT: Diffusion-styled Chain-of-Thought Reasoning in LLMs",
+    "authors": [
+      "Shidong Cao",
+      "Hongzhan Lin",
+      "Yuxuan Gu",
+      "Ziyang Luo",
+      "Jing Ma"
+    ],
+    "published": "2026-01-07",
+    "arxiv_id": "http://arxiv.org/abs/2601.03559v2",
+    "abstract": "Chain-of-Thought (CoT) reasoning improves multi-step mathematical problem solving in large language models but remains vulnerable to exposure bias and error accumulation, as early mistakes propagate irreversibly through autoregressive decoding. In this work, we propose DiffCoT, a diffusion-styled CoT framework that reformulates CoT reasoning as an iterative denoising process. DiffCoT integrates diffusion principles at the reasoning-step level via a sliding-window mechanism, enabling unified generation and retrospective correction of intermediate steps while preserving token-level autoregressio",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf",
+    "title": "Large Language Models Reasoning Abilities Under Non-Ideal Conditions After RL-Fine-Tuning",
+    "authors": [
+      "Chang Tian",
+      "Matthew B. Blaschko",
+      "Mingzhe Xing",
+      "Xiuxing Li",
+      "Yinliang Yue",
+      "Marie-Francine Moens"
+    ],
+    "published": "2025-08-06",
+    "arxiv_id": "http://arxiv.org/abs/2508.04848v1",
+    "abstract": "Reinforcement learning (RL) has become a key technique for enhancing the reasoning abilities of large language models (LLMs), with policy-gradient algorithms dominating the post-training stage because of their efficiency and effectiveness. However, most existing benchmarks evaluate large-language-model reasoning under idealized settings, overlooking performance in realistic, non-ideal scenarios. We identify three representative non-ideal scenarios with practical relevance: summary inference, fine-grained noise suppression, and contextual filtering. We introduce a new research direction guided ",
+    "categories": [
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf",
+    "title": "Chain-of-Thought Hub: A Continuous Effort to Measure Large Language Models' Reasoning Performance",
+    "authors": [
+      "Yao Fu",
+      "Litu Ou",
+      "Mingyu Chen",
+      "Yuhao Wan",
+      "Hao Peng",
+      "Tushar Khot"
+    ],
+    "published": "2023-05-26",
+    "arxiv_id": "http://arxiv.org/abs/2305.17306v1",
+    "abstract": "As large language models (LLMs) are continuously being developed, their evaluation becomes increasingly important yet challenging. This work proposes Chain-of-Thought Hub, an open-source evaluation suite on the multi-step reasoning capabilities of large language models. We are interested in this setting for two reasons: (1) from the behavior of GPT and PaLM model family, we observe that complex reasoning is likely to be a key differentiator between weaker and stronger LLMs; (2) we envisage large language models to become the next-generation computational platform and foster an ecosystem of LLM",
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf",
+    "title": "CROP: Token-Efficient Reasoning in Large Language Models via Regularized Prompt Optimization",
+    "authors": [
+      "Deep Shah",
+      "Sanket Badhe",
+      "Nehal Kathrotia",
+      "Priyanka Tiwari"
+    ],
+    "published": "2026-04-08",
+    "arxiv_id": "http://arxiv.org/abs/2604.14214v1",
+    "abstract": "Large Language Models utilizing reasoning techniques improve task performance but incur significant latency and token costs due to verbose generation. Existing automatic prompt optimization(APO) frameworks target task accuracy exclusively at the expense of generating long reasoning traces. We propose Cost-Regularized Optimization of Prompts (CROP), an APO method that introduces regularization on response length by generating textual feedback in addition to standard accuracy feedback. This forces the optimization process to produce prompts that elicit concise responses containing only critical ",
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf",
+    "title": "Response: Emergent analogical reasoning in large language models",
+    "authors": [
+      "Damian Hodel",
+      "Jevin West"
+    ],
+    "published": "2023-08-30",
+    "arxiv_id": "http://arxiv.org/abs/2308.16118v2",
+    "abstract": "In their recent Nature Human Behaviour paper, \"Emergent analogical reasoning in large language models,\" (Webb, Holyoak, and Lu, 2023) the authors argue that \"large language models such as GPT-3 have acquired an emergent ability to find zero-shot solutions to a broad range of analogy problems.\" In this response, we provide counterexamples of the letter string analogies. In our tests, GPT-3 fails to solve simplest variations of the original tasks, whereas human performance remains consistently high across all modified versions. Zero-shot reasoning is an extraordinary claim that requires extraord",
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf",
+    "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+    "authors": [
+      "Jason Wei",
+      "Xuezhi Wang",
+      "Dale Schuurmans",
+      "Maarten Bosma",
+      "Brian Ichter",
+      "Fei Xia",
+      "Ed Chi",
+      "Quoc Le",
+      "Denny Zhou"
+    ],
+    "published": "2022-01-28",
+    "arxiv_id": "http://arxiv.org/abs/2201.11903v6",
+    "abstract": "We explore how generating a chain of thought -- a series of intermediate reasoning steps -- significantly improves the ability of large language models to perform complex reasoning. In particular, we show how such reasoning abilities emerge naturally in sufficiently large language models via a simple method called chain of thought prompting, where a few chain of thought demonstrations are provided as exemplars in prompting. Experiments on three large language models show that chain of thought prompting improves performance on a range of arithmetic, commonsense, and symbolic reasoning tasks. Th",
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf",
+    "title": "Navigating the State of Cognitive Flow: Context-Aware AI Interventions for Effective Reasoning Support",
+    "authors": [
+      "Dinithi Dissanayake",
+      "Suranga Nanayakkara"
+    ],
+    "published": "2025-04-22",
+    "arxiv_id": "http://arxiv.org/abs/2504.16021v1",
+    "abstract": "Flow theory describes an optimal cognitive state where individuals experience deep focus and intrinsic motivation when a task's difficulty aligns with their skill level. In AI-augmented reasoning, interventions that disrupt the state of cognitive flow can hinder rather than enhance decision-making. This paper proposes a context-aware cognitive augmentation framework that adapts interventions based on three key contextual factors: type, timing, and scale. By leveraging multimodal behavioral cues (e.g., gaze behavior, typing hesitation, interaction speed), AI can dynamically adjust cognitive sup",
+    "categories": [
+      "cs.HC",
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf",
+    "title": "Soft Inductive Bias Approach via Explicit Reasoning Perspectives in Inappropriate Utterance Detection Using Large Language Models",
+    "authors": [
+      "Ju-Young Kim",
+      "Ji-Hong Park",
+      "Se-Yeon Lee",
+      "Sujin Park",
+      "Gun-Woo Kim"
+    ],
+    "published": "2025-12-09",
+    "arxiv_id": "http://arxiv.org/abs/2512.08480v1",
+    "abstract": "Recent incidents in certain online games and communities, where anonymity is guaranteed, show that unchecked inappropriate remarks frequently escalate into verbal abuse and even criminal behavior, raising significant social concerns. Consequently, there is a growing need for research on techniques that can detect inappropriate utterances within conversational texts to help build a safer communication environment. Although large-scale language models trained on Korean corpora and chain-of-thought reasoning have recently gained attention, research applying these approaches to inappropriate utter",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf",
+    "title": "Beneath the Surface: Unveiling Harmful Memes with Multimodal Reasoning Distilled from Large Language Models",
+    "authors": [
+      "Hongzhan Lin",
+      "Ziyang Luo",
+      "Jing Ma",
+      "Long Chen"
+    ],
+    "published": "2023-12-09",
+    "arxiv_id": "http://arxiv.org/abs/2312.05434v1",
+    "abstract": "The age of social media is rife with memes. Understanding and detecting harmful memes pose a significant challenge due to their implicit meaning that is not explicitly conveyed through the surface text and image. However, existing harmful meme detection approaches only recognize superficial harm-indicative signals in an end-to-end classification manner but ignore in-depth cognition of the meme text and image. In this paper, we attempt to detect harmful memes based on advanced reasoning over the interplay of multimodal information in memes. Inspired by the success of Large Language Models (LLMs",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf",
+    "title": "Learning From Failure: Integrating Negative Examples when Fine-tuning Large Language Models as Agents",
+    "authors": [
+      "Renxi Wang",
+      "Haonan Li",
+      "Xudong Han",
+      "Yixuan Zhang",
+      "Timothy Baldwin"
+    ],
+    "published": "2024-02-18",
+    "arxiv_id": "http://arxiv.org/abs/2402.11651v2",
+    "abstract": "Large language models (LLMs) have achieved success in acting as agents, which interact with environments through tools such as search engines. However, LLMs are optimized for language generation instead of tool use during training or alignment, limiting their effectiveness as agents. To resolve this problem, previous work has first collected interaction trajectories between LLMs and environments, using only trajectories that successfully finished the task to fine-tune smaller models, making fine-tuning data scarce and acquiring it both difficult and costly. Discarding failed trajectories also ",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf",
+    "title": "Is Chain-of-Thought Reasoning of LLMs a Mirage? A Data Distribution Lens",
+    "authors": [
+      "Chengshuai Zhao",
+      "Zhen Tan",
+      "Pingchuan Ma",
+      "Dawei Li",
+      "Bohan Jiang",
+      "Yancheng Wang",
+      "Yingzhen Yang",
+      "Huan Liu"
+    ],
+    "published": "2025-08-02",
+    "arxiv_id": "http://arxiv.org/abs/2508.01191v5",
+    "abstract": "Chain-of-Thought (CoT) prompting has been shown to be effective in eliciting structured reasoning (i.e., CoT reasoning) from large language models (LLMs). Regardless of its popularity, recent studies expose its failures in some reasoning tasks, raising fundamental questions about the nature of CoT reasoning. In this work, we propose a data distribution lens to understand when and why CoT reasoning succeeds or fails. We hypothesize that CoT reasoning reflects a structured inductive bias learned from in-distribution data, enabling models to conditionally generate reasoning trajectories that appr",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf",
+    "title": "A Critical Review of Causal Reasoning Benchmarks for Large Language Models",
+    "authors": [
+      "Linying Yang",
+      "Vik Shirvaikar",
+      "Oscar Clivio",
+      "Fabian Falck"
+    ],
+    "published": "2024-07-10",
+    "arxiv_id": "http://arxiv.org/abs/2407.08029v1",
+    "abstract": "Numerous benchmarks aim to evaluate the capabilities of Large Language Models (LLMs) for causal inference and reasoning. However, many of them can likely be solved through the retrieval of domain knowledge, questioning whether they achieve their purpose. In this review, we present a comprehensive overview of LLM benchmarks for causality. We highlight how recent benchmarks move towards a more thorough definition of causal reasoning by incorporating interventional or counterfactual reasoning. We derive a set of criteria that a useful benchmark or set of benchmarks should aim to satisfy. We hope ",
+    "categories": [
+      "cs.LG",
+      "cs.CL"
+    ]
+  }
+]

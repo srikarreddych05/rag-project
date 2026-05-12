@@ -1,86 +1,84 @@
 """
-Step 1 — Download LLM Reasoning papers from arXiv.
+Step 1 — Download papers from arXiv across three sub-topics.
 
 Usage:
-    python src/download_papers.py
+    python src/download_papers.py [--topic cot_reasoning|rlhf_alignment|efficient_inference|all]
 
-Output:
-    data/papers/   — downloaded PDFs
-    data/metadata.json — arXiv metadata (title, authors, abstract, etc.)
-    results/download.log
+Downloads up to 250 papers total (100 + 100 + 50) into data/papers/<topic>/.
+Saves unified metadata to data/metadata.json.
+All downloads logged to results/download.log.
 """
 
-import arxiv
+import argparse
 import json
-import time
 import re
+import time
 import random
+import logging
 import numpy as np
 from pathlib import Path
 
-# ── Reproducibility ───────────────────────────────────────────────────────────
-random.seed(42)
-np.random.seed(42)
+import arxiv
 
-# ── Config ────────────────────────────────────────────────────────────────────
-QUERY       = "large language model reasoning chain-of-thought"
-MAX_RESULTS = 18
-SLEEP_SEC   = 2          # polite delay between downloads (arXiv ToS)
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from config import (ARXIV_TOPICS, DOWNLOAD_SLEEP_SEC, PAPERS_DIR,
+                    DATA_DIR, RESULTS_DIR, SEED)
 
-ROOT     = Path(__file__).parent.parent
-OUT_DIR  = ROOT / "data" / "papers"
-META_OUT = ROOT / "data" / "metadata.json"
-LOG_FILE = ROOT / "results" / "download.log"
+random.seed(SEED)
+np.random.seed(SEED)
 
-OUT_DIR.mkdir(parents=True, exist_ok=True)
-LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+LOG_FILE = RESULTS_DIR / "download.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(message)s",
+    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()],
+)
+log = logging.getLogger(__name__)
 
 
 def safe_filename(title: str, arxiv_id: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9 ]", "", title).strip()
-    slug = re.sub(r"\s+", "_", slug)[:60]
+    slug = re.sub(r"\s+", "_", slug)[:55]
     return f"{slug}__{arxiv_id}.pdf"
 
 
-def log(msg: str):
-    print(msg)
-    # Make sure encoding="utf-8" is right here!
-    with open(LOG_FILE, "a", encoding="utf-8") as f: 
-        f.write(msg + "\n")
+def download_topic(topic_name: str, topic_cfg: dict) -> list[dict]:
+    """Download papers for one topic. Returns metadata list."""
+    out_dir = PAPERS_DIR / topic_name
+    out_dir.mkdir(parents=True, exist_ok=True)
 
-
-def main():
-    log(f"[download_papers] query='{QUERY}'  max={MAX_RESULTS}")
+    log.info(f"[{topic_name}] query='{topic_cfg['query']}'  max={topic_cfg['max_results']}")
 
     client = arxiv.Client()
     search = arxiv.Search(
-        query=QUERY,
-        max_results=MAX_RESULTS,
+        query=topic_cfg["query"],
+        max_results=topic_cfg["max_results"],
         sort_by=arxiv.SortCriterion.Relevance,
     )
 
-    metadata = []
-    downloaded = 0
+    metadata, downloaded = [], 0
 
     for result in client.results(search):
         arxiv_id = result.entry_id.split("/")[-1]
         fname    = safe_filename(result.title, arxiv_id)
-        out_path = OUT_DIR / fname
+        out_path = out_dir / fname
 
         if out_path.exists():
-            log(f"  [SKIP] {fname}")
+            log.info(f"  [SKIP] {fname}")
         else:
             try:
-                result.download_pdf(dirpath=str(OUT_DIR), filename=fname)
-                log(f"  [OK]   {fname}")
+                result.download_pdf(dirpath=str(out_dir), filename=fname)
+                log.info(f"  [OK]   {fname}")
                 downloaded += 1
-                time.sleep(SLEEP_SEC)
+                time.sleep(DOWNLOAD_SLEEP_SEC)
             except Exception as e:
-                log(f"  [ERR]  {fname}: {e}")
+                log.warning(f"  [ERR]  {fname}: {e}")
                 continue
 
         metadata.append({
             "filename"  : fname,
+            "topic"     : topic_name,
             "title"     : result.title,
             "authors"   : [a.name for a in result.authors],
             "published" : str(result.published.date()),
@@ -89,11 +87,30 @@ def main():
             "categories": result.categories,
         })
 
-    META_OUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(META_OUT, "w") as f:
-        json.dump(metadata, f, indent=2)
+    log.info(f"[{topic_name}] Done. {downloaded} new downloads.\n")
+    return metadata
 
-    log(f"\n[download_papers] Done. {downloaded} new files. metadata → {META_OUT}")
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--topic", default="all",
+                        choices=list(ARXIV_TOPICS.keys()) + ["all"])
+    args = parser.parse_args()
+
+    topics = ARXIV_TOPICS if args.topic == "all" else {args.topic: ARXIV_TOPICS[args.topic]}
+
+    all_meta = []
+    for name, cfg in topics.items():
+        all_meta.extend(download_topic(name, cfg))
+
+    meta_path = DATA_DIR / "metadata.json"
+    with open(meta_path, "w") as f:
+        json.dump(all_meta, f, indent=2)
+
+    log.info(f"Metadata saved → {meta_path}  ({len(all_meta)} entries)")
+    log.info(f"Topic breakdown: " +
+             ", ".join(f"{k}={sum(1 for m in all_meta if m['topic']==k)}"
+                       for k in topics))
 
 
 if __name__ == "__main__":

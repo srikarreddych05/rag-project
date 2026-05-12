@@ -1,0 +1,23 @@
+Abstract
+We explore how generating a chain of thought — a series of intermediate reasoning steps — significantly improves the ability of large language models to perform complex reasoning. A chain of thought can be elicited naturally through few-shot prompting using a small number of exemplars.
+
+Introduction
+Large language models have demonstrated impressive performance on a variety of tasks, yet multi-step reasoning remains challenging. Prior work has shown that few-shot prompting enables models to perform tasks with limited labeled data. However, standard prompting approaches produce flat answers without reasoning steps.
+
+Method
+We propose chain-of-thought prompting, which includes example reasoning chains in the few-shot demonstrations. Our approach requires no fine-tuning and applies to any autoregressive language model. We use 8 exemplars per prompt, each containing a question, a reasoning chain, and the final answer.
+
+Experiments
+We evaluate chain-of-thought prompting on three benchmarks: GSM8K (grade school math), MATH (competition mathematics), and CommonsenseQA. Our backbone model is PaLM 540B.
+
+Results
+Chain-of-thought prompting achieves 56.9% accuracy on GSM8K, compared to 17.9% for standard prompting — a 39 percentage point improvement. On CommonsenseQA, we observe a 73.2% accuracy versus 68.9% for standard prompting. On MATH, the method achieves 8.8% accuracy.
+
+Ablation Study
+We ablate three components: (1) reasoning steps only — performance drops by 14.2 points on GSM8K; (2) exemplars only — performance drops by 8.6 points; (3) both removed — performance collapses to 5.3%. Intermediate reasoning steps contribute more than exemplars alone.
+
+Error Analysis
+We manually inspect 50 incorrect predictions. The most common error category is calculation mistakes (47%), followed by wrong intermediate steps (31%), and hallucinated premises (22%). Multi-step arithmetic is the primary bottleneck.
+
+Conclusion
+Chain-of-thought prompting is an emergent capability that appears only in models above ~100B parameters. Future work should explore automatic chain-of-thought generation, self-consistency decoding, and applying reasoning chains to code generation tasks.

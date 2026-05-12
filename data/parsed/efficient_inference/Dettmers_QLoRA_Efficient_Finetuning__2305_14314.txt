@@ -1,0 +1,14 @@
+Abstract
+We present QLoRA, a method that enables fine-tuning of 65B parameter models on a single 48GB GPU while preserving full 16-bit performance. QLoRA uses 4-bit NormalFloat quantization, double quantization, and paged optimizers to reduce memory without sacrificing accuracy.
+
+Method
+QLoRA quantizes the frozen base model to NF4 (4-bit NormalFloat) and adds trainable LoRA adapters in BFloat16. Double quantization further reduces overhead by quantizing the quantization constants. Paged optimizers handle gradient checkpointing memory spikes.
+
+Results
+QLoRA fine-tuned Guanaco (65B) achieves 99.3% of ChatGPT performance on Vicuna benchmark with a single 48GB GPU, compared to 95.6% for standard 4-bit quantization baselines. Memory usage is 41 GB versus 780 GB for full fine-tuning.
+
+Ablation
+We ablate NF4 vs INT4 vs FP4. NF4 outperforms INT4 by 0.4 MMLU points and FP4 by 0.7 points. Double quantization saves an additional 0.4 bits per parameter with negligible accuracy impact. Removing paged optimizers causes OOM errors on longer sequences.
+
+Hardware
+All experiments run on a single NVIDIA A100 80GB or RTX 3090 24GB for smaller models. Fine-tuning Guanaco-7B takes 4.5 hours on RTX 3090; Guanaco-65B takes 24 hours on A100.

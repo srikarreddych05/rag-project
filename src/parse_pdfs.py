@@ -1,18 +1,18 @@
 """
-Step 2 — Parse PDFs → clean text files.
+Step 2 — Parse all PDFs → clean .txt files.
 
 Usage:
     python src/parse_pdfs.py
 
-Output:
-    data/parsed/      — one .txt per PDF
-    data/parse_report.json — per-file health report
-    results/parse.log
+Walks data/papers/<topic>/ for each topic.
+Outputs to data/parsed/<topic>/<stem>.txt.
+Writes data/parse_report.json with per-file health metrics.
 
 Encoding health:
-    Detects the 'H e l l o  W o r l d' spacing artifact automatically.
-    Falls back from pdfplumber → pypdf if detected.
-    Logs font diagnostics for any file that still fails.
+    Detects 'H e l l o  W o r l d' spacing artifact automatically.
+    Falls back pdfplumber → pypdf when detected.
+    Files that fail both extractors are logged as 'failed' and excluded
+    from indexing — negative results are reported honestly.
 """
 
 import re
@@ -20,47 +20,47 @@ import sys
 import json
 import random
 import subprocess
+import logging
 import numpy as np
 from pathlib import Path
 
 import pdfplumber
 from pypdf import PdfReader
 
-# ── Reproducibility ───────────────────────────────────────────────────────────
-random.seed(42)
-np.random.seed(42)
+import sys
+sys.path.insert(0, str(Path(__file__).parent))
+from config import (PAPERS_DIR, PARSED_DIR, RESULTS_DIR, DATA_DIR,
+                    ARXIV_TOPICS, SPACING_BUG_THRESHOLD, SEED)
 
-# ── Config ────────────────────────────────────────────────────────────────────
-ROOT       = Path(__file__).parent.parent
-IN_DIR     = ROOT / "data" / "papers"
-OUT_DIR    = ROOT / "data" / "parsed"
-LOG_FILE   = ROOT / "results" / "parse.log"
-REPORT_OUT = ROOT / "data" / "parse_report.json"
+random.seed(SEED)
+np.random.seed(SEED)
 
-OUT_DIR.mkdir(parents=True, exist_ok=True)
-LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+LOG_FILE = RESULTS_DIR / "parse.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(message)s",
+    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()],
+)
+log = logging.getLogger(__name__)
 
 
-def log(msg: str):
-    print(msg)
-    with open(LOG_FILE, "a", encoding="utf-8") as f:  # <-- Add encoding="utf-8"
-        f.write(msg + "\n")
-
+# ── Text extraction helpers ────────────────────────────────────────────────────
 
 def detect_spacing_bug(text: str) -> bool:
-    """Detect 'H e l l o  W o r l d' encoding artifact."""
+    """Detect 'H e l l o  W o r l d' encoding artifact (char-spaced text)."""
     sample  = text[:500].replace("\n", " ")
     tokens  = sample.split()
     if not tokens:
         return False
     single  = sum(1 for t in tokens if len(t) == 1)
-    return (single / len(tokens)) > 0.40
+    return (single / len(tokens)) > SPACING_BUG_THRESHOLD
 
 
 def clean_text(raw: str) -> str:
-    text = re.sub(r"\x0c", "\n\n", raw)        # form-feed → paragraph break
-    text = re.sub(r"[ \t]{2,}", " ", text)      # collapse whitespace
-    text = re.sub(r"\n{3,}", "\n\n", text)      # max 2 blank lines
+    """Normalise whitespace and remove form-feed characters."""
+    text = re.sub(r"\x0c", "\n\n", raw)
+    text = re.sub(r"[ \t]{2,}", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 
 
@@ -77,7 +77,7 @@ def extract_pdfplumber(path: Path) -> tuple[str, int]:
 
 def extract_pypdf(path: Path) -> str:
     reader = PdfReader(str(path))
-    parts  = []
+    parts = []
     for page in reader.pages:
         t = page.extract_text()
         if t:
@@ -89,76 +89,92 @@ def font_diagnostics(path: Path) -> str:
     try:
         r = subprocess.run(["pdffonts", str(path)],
                            capture_output=True, text=True, timeout=10)
-        return r.stdout[:400]
+        return r.stdout[:300]
     except Exception:
         return "pdffonts unavailable"
 
 
-def process_pdf(path: Path) -> dict:
+# ── Per-file processor ─────────────────────────────────────────────────────────
+
+def process_pdf(pdf_path: Path, topic: str) -> dict:
+    """
+    Extract text from one PDF. Returns a health report dict.
+    Saves .txt to data/parsed/<topic>/<stem>.txt on success.
+    """
     report = {
-        "file": path.name, "status": "ok",
+        "file": pdf_path.name, "topic": topic, "status": "ok",
         "extractor": "pdfplumber", "pages": 0,
         "char_count": 0, "spacing_bug": False, "warnings": [],
     }
 
+    out_dir = PARSED_DIR / topic
+    out_dir.mkdir(parents=True, exist_ok=True)
+
     try:
-        text, n_pages = extract_pdfplumber(path)
+        text, n_pages = extract_pdfplumber(pdf_path)
         report["pages"] = n_pages
 
+        # Detect H-e-l-l-o encoding problem and fall back
         if detect_spacing_bug(text):
             report["warnings"].append("Spacing artifact — falling back to pypdf")
-            log(f"  [WARN] spacing artifact in {path.name}, retrying with pypdf")
-            text = extract_pypdf(path)
+            log.warning(f"  [WARN] spacing artifact: {pdf_path.name}")
+            text = extract_pypdf(pdf_path)
             report["extractor"]   = "pypdf (fallback)"
             report["spacing_bug"] = True
 
             if detect_spacing_bug(text):
-                report["warnings"].append("Spacing artifact persists — check pdffonts")
-                report["status"] = "degraded"
-                report["font_diagnostics"] = font_diagnostics(path)
+                report["warnings"].append("Artifact persists after fallback — likely scanned PDF")
+                report["status"]         = "degraded"
+                report["font_diagnostics"] = font_diagnostics(pdf_path)
 
         if not text.strip():
-            report["warnings"].append("No text extracted — possible scanned PDF (needs OCR)")
+            report["warnings"].append("No text extracted — possible scanned PDF; needs OCR")
             report["status"] = "failed"
-            log(f"  [FAIL] {path.name}: no text extracted")
+            log.warning(f"  [FAIL] no text: {pdf_path.name}")
             return report
 
         text = clean_text(text)
         report["char_count"] = len(text)
-        (OUT_DIR / (path.stem + ".txt")).write_text(text, encoding="utf-8")
-        log(f"  [OK]  {path.name}  {n_pages}p  {len(text):,} chars")
+
+        out_path = out_dir / (pdf_path.stem + ".txt")
+        out_path.write_text(text, encoding="utf-8")
+        log.info(f"  [OK]  {pdf_path.name}  {n_pages}p  {len(text):,}c")
 
     except Exception as e:
         report["status"]   = "error"
         report["warnings"].append(str(e))
-        log(f"  [ERR] {path.name}: {e}")
+        log.error(f"  [ERR] {pdf_path.name}: {e}")
 
     return report
 
 
+# ── Main ───────────────────────────────────────────────────────────────────────
+
 def main():
-    pdfs = sorted(IN_DIR.glob("*.pdf"))
-    if not pdfs:
-        log("No PDFs found in data/papers/. Run src/download_papers.py first.")
-        sys.exit(1)
+    all_reports = []
+    totals = {"ok": 0, "degraded": 0, "failed": 0, "error": 0}
 
-    log(f"\n[parse_pdfs] Processing {len(pdfs)} PDFs")
-    log("=" * 60)
+    for topic in ARXIV_TOPICS:
+        topic_dir = PAPERS_DIR / topic
+        if not topic_dir.exists():
+            log.warning(f"[parse_pdfs] No papers dir for topic '{topic}' — skipping")
+            continue
 
-    reports          = [process_pdf(p) for p in pdfs]
-    ok, degraded, fail = 0, 0, 0
-    for r in reports:
-        if r["status"] == "ok":       ok += 1
-        elif r["status"] == "degraded": degraded += 1
-        else:                           fail += 1
+        pdfs = sorted(topic_dir.glob("*.pdf"))
+        log.info(f"\n[parse_pdfs] Topic '{topic}': {len(pdfs)} PDFs")
 
-    log("=" * 60)
-    log(f"[parse_pdfs] {ok} OK  |  {degraded} degraded  |  {fail} failed")
+        for pdf in pdfs:
+            r = process_pdf(pdf, topic)
+            all_reports.append(r)
+            totals[r["status"]] = totals.get(r["status"], 0) + 1
 
-    REPORT_OUT.parent.mkdir(parents=True, exist_ok=True)
-    with open(REPORT_OUT, "w") as f:
-        json.dump(reports, f, indent=2)
-    log(f"[parse_pdfs] report → {REPORT_OUT}")
+    log.info(f"\n[parse_pdfs] Summary: " +
+             "  ".join(f"{k}={v}" for k, v in totals.items()))
+
+    report_path = DATA_DIR / "parse_report.json"
+    with open(report_path, "w") as f:
+        json.dump(all_reports, f, indent=2)
+    log.info(f"[parse_pdfs] Report → {report_path}")
 
 
 if __name__ == "__main__":

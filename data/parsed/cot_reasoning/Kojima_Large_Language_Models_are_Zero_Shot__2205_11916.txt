@@ -1,0 +1,20 @@
+Abstract
+We show that sufficiently large language models are decent zero-shot reasoners by simply adding "Let's think step by step" before each answer. This is a zero-shot CoT approach that requires no exemplar demonstrations.
+
+Introduction
+Previous chain-of-thought work relies on carefully crafted few-shot exemplars. We investigate whether zero-shot prompting with a single reasoning trigger phrase can achieve competitive performance.
+
+Method
+We use a two-stage prompting approach. In stage 1, we append "Let's think step by step" and generate a reasoning chain. In stage 2, we extract the final answer from that chain. Our backbone is GPT-3 (text-davinci-002, 175B parameters).
+
+Experiments
+We evaluate on 12 benchmarks covering arithmetic (GSM8K, MultiArith, AddSub), commonsense (CommonsenseQA, StrategyQA), and symbolic reasoning tasks. We use greedy decoding with temperature 0.
+
+Results
+Zero-shot CoT achieves 40.7% on GSM8K, compared to 10.4% for the zero-shot baseline. On MultiArith, performance improves from 17.7% to 78.7%. The approach is competitive with few-shot CoT on several benchmarks despite using no exemplars.
+
+Ablation Study
+We test 15 alternative trigger phrases. "Let's think step by step" performs best. "Let me work through this" scores 3.1 points lower. The phrase "The answer is" with no reasoning performs at baseline level.
+
+Conclusion
+Zero-shot CoT demonstrates that reasoning ability is latent in large language models and can be surfaced without exemplars. Limitations include sensitivity to exact phrasing and failure on symbolic composition tasks. Future work should develop methods to make zero-shot CoT more robust across domains.

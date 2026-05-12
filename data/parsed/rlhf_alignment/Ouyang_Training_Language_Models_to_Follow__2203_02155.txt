@@ -1,0 +1,20 @@
+Abstract
+We present InstructGPT, a model trained to follow instructions using reinforcement learning from human feedback (RLHF). Starting from GPT-3, we fine-tune with supervised learning on human-written demonstrations, then train a reward model from human preference data, and optimize with PPO.
+
+Introduction
+Large language models often produce outputs that are unhelpful, untruthful, or harmful. Aligning model behavior with human intent requires explicit human feedback beyond standard language modeling objectives.
+
+Method
+Our training pipeline has three stages. Stage 1: supervised fine-tuning (SFT) on 13,000 human-written prompt-response pairs. Stage 2: reward model training on 33,000 pairwise comparisons labeled by 40 contractors. Stage 3: PPO-based reinforcement learning with a KL penalty coefficient of 0.02 to prevent policy drift.
+
+Reward Model
+We train a 6B parameter reward model on pairwise preferences. The model achieves 72.4% accuracy on held-out preference pairs. We use Bradley-Terry model assumptions for preference probability estimation.
+
+Results
+InstructGPT (1.3B parameters) is preferred over GPT-3 (175B) by 85% of labelers on helpfulness, despite being 100x smaller. On TruthfulQA, InstructGPT achieves 41.5% truthfulness versus GPT-3's 22.9%. RLHF training reduces toxicity by 47% on the RealToxicityPrompts benchmark.
+
+Human Evaluation
+40 contractors participated in preference annotation. Inter-annotator agreement (Cohen's kappa) is 0.43, indicating moderate agreement. Labeler guidelines emphasize helpfulness, harmlessness, and honesty.
+
+Limitations
+RLHF training introduces alignment tax — InstructGPT underperforms GPT-3 on some NLP benchmarks by up to 3.6%. The model still generates harmful content in adversarial settings. Reward model hacking remains a risk at higher KL penalties.

@@ -1,0 +1,1193 @@
+{
+  "summary": {
+    "model_key": "mpnet",
+    "chunk_key": "medium",
+    "n_qa": 30,
+    "n_chunks": 9,
+    "MRR": 0.7667,
+    "P@1": 0.6,
+    "R@1": 0.6,
+    "Hit@1": 0.6,
+    "P@3": 0.3556,
+    "R@3": 0.9,
+    "Hit@3": 0.9,
+    "P@5": 0.2267,
+    "R@5": 0.9667,
+    "Hit@5": 0.9667,
+    "P@10": 0.13,
+    "R@10": 1.0,
+    "Hit@10": 1.0
+  },
+  "per_query": [
+    {
+      "question": "What accuracy does chain-of-thought prompting achieve on GSM8K according to Wei et al.?",
+      "gold_source": "Wei_Chain_of_Thought_Prompting__2201_11903",
+      "retrieved_sources": [
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.6667,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.4,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "How many few-shot exemplars are used in the chain-of-thought prompts by Wei et al.?",
+      "gold_source": "Wei_Chain_of_Thought_Prompting__2201_11903",
+      "retrieved_sources": [
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.6667,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.4,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "According to the ablation study in Wei et al., does removing reasoning steps or removing exemplars hurt performance more on GSM8K?",
+      "gold_source": "Wei_Chain_of_Thought_Prompting__2201_11903",
+      "retrieved_sources": [
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 0.25,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "question": "What is the most common error category identified in Wei et al.'s error analysis of chain-of-thought predictions?",
+      "gold_source": "Wei_Chain_of_Thought_Prompting__2201_11903",
+      "retrieved_sources": [
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.6667,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.4,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "question": "What trigger phrase is used in Kojima et al.'s zero-shot CoT method?",
+      "gold_source": "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+      "retrieved_sources": [
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "What accuracy does zero-shot CoT achieve on GSM8K in Kojima et al.?",
+      "gold_source": "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+      "retrieved_sources": [
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "What decoding temperature is used in Kojima et al.'s zero-shot CoT experiments?",
+      "gold_source": "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+      "retrieved_sources": [
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "How many reasoning chains does self-consistency sample per query in Wang et al.?",
+      "gold_source": "Wang_Self_Consistency_Improves_CoT__2203_11171",
+      "retrieved_sources": [
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "What is the accuracy of self-consistency on GSM8K compared to standard chain-of-thought in Wang et al.?",
+      "gold_source": "Wang_Self_Consistency_Improves_CoT__2203_11171",
+      "retrieved_sources": [
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "At what value of k does performance plateau in the self-consistency ablation by Wang et al.?",
+      "gold_source": "Wang_Self_Consistency_Improves_CoT__2203_11171",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 0.3333,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "What KL divergence penalty coefficient is used in InstructGPT's PPO training?",
+      "gold_source": "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.6667,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.4,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "question": "How many pairwise comparisons were collected to train the reward model in InstructGPT?",
+      "gold_source": "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "What percentage of human labelers prefer InstructGPT over GPT-3 on helpfulness?",
+      "gold_source": "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "What is the inter-annotator agreement score (Cohen's kappa) for the InstructGPT human evaluation?",
+      "gold_source": "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "By what percentage does RLHF training reduce toxicity in InstructGPT versus the GPT-3 baseline?",
+      "gold_source": "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.6667,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.4,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "How many human preference comparisons were collected for training the Bai et al. Constitutional AI model?",
+      "gold_source": "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+      "retrieved_sources": [
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "What KL penalty coefficient is used in the Bai et al. RLHF training?",
+      "gold_source": "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903"
+      ],
+      "reciprocal_rank": 0.25,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "question": "What percentage of harmful requests does the HH model in Bai et al. refuse?",
+      "gold_source": "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+      "retrieved_sources": [
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "What is the hardest-to-mitigate safety failure mode identified in Bai et al.?",
+      "gold_source": "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "question": "What is the Elo score improvement of the HH model over the SFT baseline in Bai et al.?",
+      "gold_source": "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903"
+      ],
+      "reciprocal_rank": 0.1667,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "5": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "To how many bits does GPTQ quantize the model weights, and is it training-free?",
+      "gold_source": "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+      "retrieved_sources": [
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "What is the inference speedup achieved by GPTQ INT4 compared to FP16 on the A100 GPU?",
+      "gold_source": "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+      "retrieved_sources": [
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "At what bit-width does GPTQ show the sharpest perplexity degradation cliff?",
+      "gold_source": "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+      "retrieved_sources": [
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "question": "What is the memory reduction percentage achieved by GPTQ on OPT-175B?",
+      "gold_source": "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+      "retrieved_sources": [
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "What is the peak inference throughput of INT4 OPT-175B using GPTQ?",
+      "gold_source": "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+      "retrieved_sources": [
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "What quantization format does QLoRA use for the frozen base model?",
+      "gold_source": "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+      "retrieved_sources": [
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    },
+    {
+      "question": "How does QLoRA's memory usage compare to full fine-tuning for a 65B model?",
+      "gold_source": "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+      "retrieved_sources": [
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "By how many MMLU points does NF4 outperform INT4 in the QLoRA ablation?",
+      "gold_source": "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+      "retrieved_sources": [
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wei_Chain_of_Thought_Prompting__2201_11903"
+      ],
+      "reciprocal_rank": 0.5,
+      "metrics_by_k": {
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "hit": 0
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "hard"
+    },
+    {
+      "question": "What percentage of ChatGPT performance does QLoRA Guanaco-65B achieve on the Vicuna benchmark?",
+      "gold_source": "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+      "retrieved_sources": [
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Wei_Chain_of_Thought_Prompting__2201_11903"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "medium"
+    },
+    {
+      "question": "How long does it take to fine-tune Guanaco-65B using QLoRA on a single A100 GPU?",
+      "gold_source": "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+      "retrieved_sources": [
+        "Dettmers_QLoRA_Efficient_Finetuning__2305_14314",
+        "Frantar_GPTQ_Accurate_Post_Training_Quantization__2210_17323",
+        "Wang_Self_Consistency_Improves_CoT__2203_11171",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Kojima_Large_Language_Models_are_Zero_Shot__2205_11916",
+        "Wei_Chain_of_Thought_Prompting__2201_11903",
+        "Bai_Training_a_Helpful_and_Harmless__2204_05862",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155",
+        "Ouyang_Training_Language_Models_to_Follow__2203_02155"
+      ],
+      "reciprocal_rank": 1.0,
+      "metrics_by_k": {
+        "1": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "3": {
+          "precision": 0.3333,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "5": {
+          "precision": 0.2,
+          "recall": 1.0,
+          "hit": 1
+        },
+        "10": {
+          "precision": 0.1,
+          "recall": 1.0,
+          "hit": 1
+        }
+      },
+      "difficulty": "easy"
+    }
+  ]
+}

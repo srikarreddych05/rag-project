@@ -7,7 +7,7 @@ pdfplumber==0.11.9
 sentence-transformers==3.4.1
 faiss-cpu==1.10.0
 numpy
-torch==2.2.2
+torch==2.6.0
 transformers==4.40.2
 rouge-score==0.1.2
 bert-score==0.3.13
@@ -16,4 +16,4 @@ rank-bm25==0.2.2
 pandas
 matplotlib
 seaborn
-scikit-learn==1.5.0
+

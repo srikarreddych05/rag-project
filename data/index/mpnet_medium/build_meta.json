@@ -1,0 +1,13 @@
+{
+  "run_name": "mpnet_medium",
+  "model_key": "mpnet",
+  "model_name": "all-mpnet-base-v2",
+  "chunk_key": "medium",
+  "chunk_chars": 2048,
+  "overlap_chars": 256,
+  "total_chunks": 9,
+  "embedding_dim": 768,
+  "embed_time_sec": 30.02,
+  "index_type": "IndexFlatIP",
+  "seed": 42
+}

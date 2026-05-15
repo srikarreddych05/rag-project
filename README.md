@@ -180,18 +180,7 @@ python src/query_rag.py --interactive
 
 ---
 
-## Evaluation Results
 
-| Condition   | P@5  | MRR  | ROUGE-L | BERTScore F1 |
-|-------------|------|------|---------|--------------|
-| BM25        | —    | —    | —       | —            |
-| FAISS-256   | —    | —    | —       | —            |
-| FAISS-512   | —    | —    | —       | —            |
-| FAISS-K10   | —    | —    | —       | —            |
-
-*Run `python src/evaluate.py --run_all` to populate this table.*
-
----
 
 ## Known Limitations
 

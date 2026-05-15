@@ -1,39 +1,60 @@
-
-[parse_pdfs] Processing 13 PDFs
-============================================================
-  [OK]  Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf  15p  62,921 chars
-  [OK]  ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf  6p  23,137 chars
-  [OK]  ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf  43p  135,980 chars
-  [OK]  CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf  16p  53,991 chars
-  [ERR] DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf: Unexpected EOF
-  [ERR] Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf: Unexpected EOF
-  [OK]  Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf  9p  45,663 chars
-  [OK]  Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf  13p  51,601 chars
-  [OK]  Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf  19p  63,815 chars
-  [OK]  Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf  4p  13,745 chars
-  [OK]  Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf  14p  24,860 chars
-  [OK]  Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf  6p  15,416 chars
-  [ERR] Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf: Unexpected EOF
-============================================================
-[parse_pdfs] 10 OK  |  0 degraded  |  3 failed
-
-[parse_pdfs] Processing 15 PDFs
-============================================================
-  [OK]  A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf  7p  32,795 chars
-  [OK]  Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf  15p  62,921 chars
-  [OK]  ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf  6p  23,137 chars
-  [OK]  ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf  43p  135,980 chars
-  [OK]  CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf  16p  53,991 chars
-  [ERR] DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf: Unexpected EOF
-  [ERR] Hierarchical_Multiagent_Large_Language_Model_Reasoning_for_A__2512.13930v1.pdf: Unexpected EOF
-  [ERR] Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf: Unexpected EOF
-  [OK]  Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf  9p  45,663 chars
-  [OK]  Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf  13p  51,601 chars
-  [OK]  Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf  19p  63,815 chars
-  [OK]  Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf  4p  13,745 chars
-  [OK]  Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf  14p  24,860 chars
-  [OK]  Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf  6p  15,416 chars
-  [ERR] Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf: Unexpected EOF
-============================================================
-[parse_pdfs] 11 OK  |  0 degraded  |  4 failed
-[parse_pdfs] report → C:\Users\srika\rag-project\data\parse_report.json
+2026-05-15 20:31:54,782  
+[parse_pdfs] Topic 'cot_reasoning': 10 PDFs
+2026-05-15 20:31:54,915    [ERR] ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large___2510.00071v2.pdf: Unexpected EOF
+2026-05-15 20:31:55,685    [OK]  ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large__2305.17306v1.pdf  6p  23577 chars  quality=1.00
+2026-05-15 20:31:57,695    [OK]  CROP_TokenEfficient_Reasoning_in_Large_Language_Models___2604.14214v1.pdf  16p  55329 chars  quality=1.00
+2026-05-15 20:32:00,269    [OK]  DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLM__2601.03559v2.pdf  16p  67217 chars  quality=1.00
+2026-05-15 20:32:02,311    [OK]  Effectiveness_of_ChainofThought_in_Distilling_Reasoning__2511.05184v1.pdf  13p  53701 chars  quality=1.00
+2026-05-15 20:32:04,855    [OK]  Large_Language_Models_Reasoning_Abilities_Under_NonIdea__2508.04848v1.pdf  9p  46008 chars  quality=1.00
+2026-05-15 20:32:07,239    [OK]  Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf  19p  64914 chars  quality=1.00
+2026-05-15 20:32:08,225    [OK]  Response_Emergent_analogical_reasoning_in_large_languag__2308.16118v2.pdf  14p  25703 chars  quality=1.00
+2026-05-15 20:32:09,072    [ERR] Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_f__2503.09567v5.pdf: Unexpected EOF
+2026-05-15 20:32:13,040    [OK]  Understanding_Reasoning_in_ChainofThought_from_the_Hopf__2410.03595v1.pdf  28p  86600 chars  quality=1.00
+2026-05-15 20:32:13,041  
+[parse_pdfs] Topic 'rlhf_alignment': 7 PDFs
+2026-05-15 20:32:14,618    [OK]  Designing_for_HumanAgent_Alignment_Understanding_what_h__2404.04289v1.pdf  6p  38176 chars  quality=1.00
+2026-05-15 20:32:15,403    [OK]  Language_Alignment_via_Nashlearning_and_Adaptive_feedba__2406.15890v1.pdf  7p  20806 chars  quality=1.00
+2026-05-15 20:32:17,773    [OK]  Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf  19p  64914 chars  quality=1.00
+2026-05-15 20:32:21,517    [OK]  Reinforcement_Learning_from_Human_Feedback_Whose_Cultur__2407.17482v2.pdf  28p  80521 chars  quality=1.00
+2026-05-15 20:32:22,741    [ERR] Reinforcement_Learning_Meets_Large_Language_Models_A_Su__2509.16679v1.pdf: Unexpected EOF
+2026-05-15 20:32:28,006    [OK]  RRHF_Rank_Responses_to_Align_Language_Models_with_Human__2304.05302v3.pdf  16p  57352 chars  quality=1.00
+2026-05-15 20:32:29,272    [OK]  Using_Large_Language_Models_to_Provide_Explanatory_Feed__2306.15498v1.pdf  12p  35376 chars  quality=1.00
+2026-05-15 20:32:29,273  
+[parse_pdfs] Topic 'efficient_inference': 1 PDFs
+2026-05-15 20:32:29,884    [OK]  Efficient_LLM_Inference_on_CPUs__2311.00502v2.pdf  6p  18103 chars  quality=1.00
+2026-05-15 20:32:29,885  
+[parse_pdfs] Summary: ok=15  degraded=0  failed=0  error=3
+2026-05-15 20:32:29,886  [parse_pdfs] Report saved to C:\Users\srika\rag-project\data\parse_report.json
+2026-05-15 22:27:34,623  
+[parse_pdfs] Topic 'cot_reasoning': 10 PDFs
+2026-05-15 22:27:34,819    [ERR] ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large___2510.00071v2.pdf: Unexpected EOF
+2026-05-15 22:27:35,940    [OK]  ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large__2305.17306v1.pdf  6p  23577 chars  quality=1.00
+2026-05-15 22:27:39,054    [OK]  CROP_TokenEfficient_Reasoning_in_Large_Language_Models___2604.14214v1.pdf  16p  55329 chars  quality=1.00
+2026-05-15 22:27:42,645    [OK]  DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLM__2601.03559v2.pdf  16p  67217 chars  quality=1.00
+2026-05-15 22:27:45,387    [OK]  Effectiveness_of_ChainofThought_in_Distilling_Reasoning__2511.05184v1.pdf  13p  53701 chars  quality=1.00
+2026-05-15 22:27:49,003    [OK]  Large_Language_Models_Reasoning_Abilities_Under_NonIdea__2508.04848v1.pdf  9p  46008 chars  quality=1.00
+2026-05-15 22:27:52,455    [OK]  Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf  19p  64914 chars  quality=1.00
+2026-05-15 22:27:54,123    [OK]  Response_Emergent_analogical_reasoning_in_large_languag__2308.16118v2.pdf  14p  25703 chars  quality=1.00
+2026-05-15 22:27:55,749    [ERR] Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_f__2503.09567v5.pdf: Unexpected EOF
+2026-05-15 22:28:01,468    [OK]  Understanding_Reasoning_in_ChainofThought_from_the_Hopf__2410.03595v1.pdf  28p  86600 chars  quality=1.00
+2026-05-15 22:28:01,469  
+[parse_pdfs] Topic 'rlhf_alignment': 10 PDFs
+2026-05-15 22:28:07,000    [OK]  Conceptual_BeliefInformed_Reinforcement_Learning__2410.01739v4.pdf  28p  78489 chars  quality=1.00
+2026-05-15 22:28:09,638    [OK]  Designing_for_HumanAgent_Alignment_Understanding_what_h__2404.04289v1.pdf  6p  38176 chars  quality=1.00
+2026-05-15 22:28:11,026    [OK]  Language_Alignment_via_Nashlearning_and_Adaptive_feedba__2406.15890v1.pdf  7p  20806 chars  quality=1.00
+2026-05-15 22:28:15,083    [OK]  Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf  19p  64914 chars  quality=1.00
+2026-05-15 22:28:21,000    [OK]  Reinforcement_Learning_from_Human_Feedback_Whose_Cultur__2407.17482v2.pdf  28p  80521 chars  quality=1.00
+2026-05-15 22:28:21,782    [ERR] Reinforcement_Learning_Meets_Large_Language_Models_A_Su__2509.16679v1.pdf: Unexpected EOF
+2026-05-15 22:28:24,934    [OK]  RLHFBlender_A_Configurable_Interactive_Interface_for_Le__2308.04332v1.pdf  14p  55573 chars  quality=1.00
+2026-05-15 22:28:28,056    [OK]  RRHF_Rank_Responses_to_Align_Language_Models_with_Human__2304.05302v3.pdf  16p  57352 chars  quality=1.00
+2026-05-15 22:28:29,950    [OK]  Using_Large_Language_Models_to_Provide_Explanatory_Feed__2306.15498v1.pdf  12p  35376 chars  quality=1.00
+2026-05-15 22:28:57,699    [OK]  Value_Bonuses_using_Ensemble_Errors_for_Exploration_in___2602.12375v1.pdf  22p  78090 chars  quality=1.00
+2026-05-15 22:28:57,700  
+[parse_pdfs] Topic 'efficient_inference': 4 PDFs
+2026-05-15 22:29:02,631    [OK]  Additive_PowersofTwo_Quantization_An_Efficient_Nonunifo__1909.13144v2.pdf  15p  50062 chars  quality=1.00
+2026-05-15 22:29:22,164    [OK]  DREAM_Efficient_Dataset_Distillation_by_Representative___2302.14416v3.pdf  14p  58121 chars  quality=1.00
+2026-05-15 22:29:23,295    [OK]  Efficient_LLM_Inference_on_CPUs__2311.00502v2.pdf  6p  18103 chars  quality=1.00
+2026-05-15 22:29:28,476    [OK]  Fewer_Weights_More_Problems_A_Practical_Attack_on_LLM_P__2510.07985v3.pdf  25p  89423 chars  quality=1.00
+2026-05-15 22:29:28,477  
+[parse_pdfs] Summary: ok=21  degraded=0  failed=0  error=3
+2026-05-15 22:29:28,481  [parse_pdfs] Report saved to C:\Users\srika\rag-project\data\parse_report.json

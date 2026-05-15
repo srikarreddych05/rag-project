@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Scholar Stream — Academic RAG{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-title">Ask Anything About LLM Research</h1>
+    <p class="hero-sub">
+      Retrieval-Augmented Generation over 250 arXiv papers spanning
+      Chain-of-Thought Reasoning, RLHF &amp; Alignment, and Efficient Inference.
+    </p>
+
+    <!-- Search form -->
+    <form class="search-form" action="/search" method="post" id="searchForm">
+      <div class="search-row">
+        <input
+          type="text"
+          name="query"
+          class="search-input"
+          placeholder="What accuracy does chain-of-thought prompting achieve on GSM8K?"
+          required
+          autocomplete="off"
+          id="queryInput"
+        />
+        <button type="submit" class="search-btn" id="searchBtn">
+          <span id="btnText">Search</span>
+          <span id="btnSpinner" class="spinner hidden"></span>
+        </button>
+      </div>
+
+      <!-- Advanced options -->
+      <div class="adv-row">
+        <label class="adv-label">
+          Top-K
+          <input type="range" name="top_k" min="1" max="10" value="5" id="topk"
+                 oninput="document.getElementById('topkVal').textContent=this.value">
+          <span id="topkVal">5</span>
+        </label>
+
+        <label class="adv-label">
+          Hybrid Weight&nbsp;
+          <span class="hint">(0=BM25 &nbsp; 1=FAISS)</span>
+          <input type="range" name="alpha" min="0" max="1" step="0.05" value="0.5"
+                 id="alpha" oninput="document.getElementById('alphaVal').textContent=this.value">
+          <span id="alphaVal">0.5</span>
+        </label>
+
+        <label class="adv-label toggle-label">
+          <input type="checkbox" name="gen_on" value="true" checked id="genToggle">
+          Generate Answer (LLM)
+        </label>
+      </div>
+    </form>
+
+    <!-- Example queries -->
+    <div class="examples">
+      <span class="examples-label">Try:</span>
+      <button class="ex-btn" onclick="fillQuery('What accuracy does chain-of-thought prompting achieve on GSM8K?')">CoT on GSM8K</button>
+      <button class="ex-btn" onclick="fillQuery('How many pairwise comparisons were used to train InstructGPT?')">InstructGPT data</button>
+      <button class="ex-btn" onclick="fillQuery('What is the inference speedup of GPTQ INT4 over FP16?')">GPTQ speedup</button>
+      <button class="ex-btn" onclick="fillQuery('How does QLoRA reduce memory compared to full fine-tuning?')">QLoRA memory</button>
+    </div>
+  </div>
+</section>
+
+<!-- Live stats -->
+<section class="stats-section">
+  <div class="stats-inner">
+    <div class="stat-card">
+      <div class="stat-num">{{ stats.total_papers }}</div>
+      <div class="stat-label">Papers Indexed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ stats.total_chunks }}</div>
+      <div class="stat-label">Text Chunks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ stats.model_name.split('/')[-1] }}</div>
+      <div class="stat-label">Embedding Model</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">{{ stats.index_type.split('(')[0] }}</div>
+      <div class="stat-label">Index Type</div>
+    </div>
+  </div>
+</section>
+
+<script>
+function fillQuery(q) {
+  document.getElementById('queryInput').value = q;
+  document.getElementById('queryInput').focus();
+}
+document.getElementById('searchForm').addEventListener('submit', function() {
+  document.getElementById('btnText').classList.add('hidden');
+  document.getElementById('btnSpinner').classList.remove('hidden');
+  document.getElementById('searchBtn').disabled = true;
+});
+</script>
+{% endblock %}

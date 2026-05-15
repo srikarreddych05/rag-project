@@ -1,0 +1,871 @@
+Effectiveness of Chain-of-Thought in Distilling Reasoning Capability from
+ Large Language Models 
+
+ 
+ Cong-Thanh Do1,*, Rama Doddipatla1, and Kate Knill2 
+ 1Cambridge Research Laboratory, Toshiba Europe Ltd., Cambridge, UK
+ 2Department of Engineering, University of Cambridge, Cambridge, UK
+
+ 
+
+ 
+ Abstract livering faster processing than larger models an
+ essential factor for interactive applications utilis-
+ Chain-of-Thought (CoT) prompting is a widely 
+ ing natural language. These more efficient LLMs
+ used method to improve the reasoning capabilfacilitate edge deployment on devices with limited
+ ity of Large Language Models (LLMs). More 
+ recently, CoT has been leveraged in Knowl- resources, addressing the computational demands
+ edge Distillation (KD) to transfer reasoning of larger models. Furthermore, better reasoning
+ capability from a larger LLM to a smaller helps smaller models understand nuanced language
+ one. This paper examines the role of CoT in and maintain context throughout extended natural
+ distilling the reasoning capability from larger 
+ language interactions, even in the presence of lin-
+ LLMs to smaller LLMs using white-box KD, 
+ guistic imperfections (Beygi et al., 2022; Dongre
+ analysing its effectiveness in improving the 
+ et al., 2025). Finally, they offer reduced operational
+ performance of the distilled models for various natural language reasoning and understand- cost for inference, making them more accessible,
+ ing tasks. We conduct white-box KD experi- and empower natural language processing systems
+ ments using LLMs from the Qwen and Llama2 to be more proactive in problem-solving and task
+ families, employing CoT data from the CoT- completion. 
+ Collection dataset. The distilled models are 
+ Several approaches have been developed to imthen evaluated on natural language reasoning 
+ prove the reasoning capabilities of LLMs. For exand understanding tasks from the BIG-Benchample, techniques like few-shot prompting (Kojima
+ Hard (BBH) benchmark, which presents comet al., 2022) and Supervised Fine-Tuning (SFT)
+ plex challenges for smaller LLMs. Experimental results demonstrate the role of CoT in im- (Devlin et al., 2019) can improve the capabilities
+ proving white-box KD effectiveness, enabling of LLMs, including reasoning, in specific domains
+ the distilled models to achieve better average when training data are available. Chain-of-Thought
+ performance in natural language reasoning and (CoT) prompting is a popular method used to elicit
+ understanding tasks from BBH. 
+ the reasoning capabilities of LLMs (Wei et al.,
+ 1 Introduction 2022b). CoT, which involves a series of intermediate reasoning steps, significantly improves the
+ Reasoning is the process of using logic, evidence, 
+ capability of LLMs to perform complex reasoning
+ and knowledge to make sense of information, draw 
+ tasks (Huang and Chang, 2023; Ling et al., 2023).
+ conclusions, solve problems, and make decisions. 
+ Knowledge Distillation (KD) (Hinton et al.,
+ While reasoning is considered as one of the essen- 
+ 2014) is a promising technique to transfer knowltial capabilities, it tends to emerge only in Large 
+ edge, including reasoning capability, from larger
+ Language Models (LLMs) at a certain scale (Wei 
+ LLMs to smaller LLMs. This technique is freet al., 2022a). Smaller LLMs, typically with fewer 
+ quently employed to condense the knowledge
+ than tens of billions of parameters, have limited 
+ stored in larger neural networks into smaller counreasoning capability (Fu et al., 2023). Improving 
+ terparts, thereby reducing computational resource
+ the reasoning capability of LLMs, especially of 
+ requirements and improving inference speed withsmaller ones, is an important research topic with 
+ out substantial performance sacrifices. More revarious practical applications (Lu et al., 2024). 
+ cently, CoT has been leveraged in KD to transfer
+ Indeed, improving the reasoning capability for 
+ multi-step reasoning capability from a larger LLM
+ smaller LLMs enables real-time responsiveness, deto a smaller one (Wang et al., 2023; Lee et al.,
+ *Correspondence: cong-thanh.do@toshiba.eu 2024). In (Lee et al., 2024), a mentor model, which
+ 5202 
+ voN 
+ 7 
+ ]LC.sc[ 
+ 1v48150.1152:viXra 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ Figure 1: KD+CoT approach for distilling reasoning capability from a teacher LLM to a student LLM using
+ white-box KD and CoT. Rationales intermediate reasoning steps in CoT are incorporated in the training data of
+ KD+CoT. These rationales are not incorporated in the vanilla white-box KD s training data.
+
+ is an intermediate-sized, task-specific fine-tuned put probabilities or intermediate hidden states durmodel, was used to augment additional CoT an- ing distillation. This approach enables the student
+ notations and provide soft labels for the student LLM to learn not just the final outputs but the unmodel during reasoning distillation. derlying reasoning process leading to improved
+ While CoT enhances complex reasoning in performance on complex language understanding
+ LLMs, integrating it with white-box KD where and reasoning tasks (Zhang et al., 2024b). With
+ the teacher model s internal workings are fully the availability of more open-source LLMs, whitevisible during distillation presents opportunities box KD is becoming increasingly valuable for both
+ and challenges that require deeper investigation. academia and industry, as it provides good potential
+ In this paper, we examine the role of CoT in to improve performance. However, most studies
+ the distillation of reasoning capability from larger on white-box KD have focused on traditional small
+ LLMs to smaller LLMs using white-box KD. We language models (Gu et al., 2024), and the applicademonstrate the effectiveness of CoT in improv- tion of CoT in white-box KD has yet to be widely
+ ing KD performance, enabling the distilled mod- explored. 
+ els to achieve better average performance in vari- 
+ 3 KD+CoT: White-box Knowledge 
+ ous natural language reasoning and understanding 
+ Distillation with Chain-of-Thought 
+ tasks from the BIG-Bench-Hard benchmark (Suzgun et al., 2023). 
+ In this paper, we examine the role of CoT in the dis-
+ 2 Related work tillation of reasoning capability from larger LLMs
+ to smaller LLMs using white-box KD, where the
+ CoT distillation is a popular approach which is used output probabilities of the teacher LLM can be acto distill reasoning capability from larger LLMs to cessed during the distillation process (Hinton et al.,
+ smaller LLMs (Magister et al., 2023; Shridhar et al., 2014). We assume that the teacher and student
+ 2023; Ho et al., 2023; Wang et al., 2023; Chen et al., LLMs have tokenizers of the same size N and the
+ 2023; Li et al., 2024; Feng et al., 2024). The main same vocabulary, to simplify the computation of
+ idea in these works is to prompt a very large teacher the distillation loss between probability distribu-
+ LLM, such as GPT-4 (OpenAI, 2024), to solve com- tions. We use Kullback-Leibler (KL) divergence as
+ plex questions via zero-shot CoT prompting (Wei the only loss in the distillation loss to keep the KD
+ et al., 2022b), and then use the reasoning samples step pure with only information flowing from the
+ to fine-tune a smaller student LLM. This approach teacher model (Sreenivas et al., 2024).
+ is applied with black-box KD (Chen et al., 2024), The KD+CoT approach for distilling reasoning
+ where only the texts generated by the teacher LLMs capability from the teacher LLM to the student
+ are accessible. LLM is illustrated in Fig. 1. During the KD+CoT
+ White-box KD approach (Hinton et al., 2014) process, training instances with rationales are forleverages full access to the teacher LLM s out- warded through both the teacher and student LLMs.
+
+ 
+
+ 
+
+ 
+
+ 
+ The output probabilities produced at the output 
+ layers of these models are used to compute the distillation loss. The error derivative of the distillation 
+ loss is then back-propagated through the student 
+ LLM to update its weights and minimise the distillation loss. The key difference between KD+CoT 
+ and vanilla white-box KD is that the former incorporates rationales in the training data, while the 
+ latter does not. 
+ Figure 2 illustrates examples of training instances from the CoT-Collection dataset (Kim et al., 
+ 2023), showcasing integrated step-by-step reasoning rationales. Incorporating these rationales into 
+ the training data for KD is expected to elicit the 
+ teacher LLM s reasoning capability during training, 
+ effectively distilling it to the student LLM by minimising the distillation loss between the models 
+ output probabilities. 
+
+ 4 Experiments 
+ 4.1 Models, data, and training 
+ 4.1.1 Models 
+
+ We use two families of LLMs for the experiments, 
+ Qwen (Bai et al., 2023) and Llama2 (Touvron et al., 
+ 2023). These models are chosen for their proficiency in few-shot learning and their unique vocabulary coverage. The Qwen-1.8B and Qwen-7B 
+ models which have 1.8 and 7 billion parameters, respectively, were proposed by Alibaba Cloud. These 
+ models are used as the student and teacher LLMs, 
+ respectively, in the Qwen-based KD experiments. 
+ Qwen-1.8B and Qwen-7B are Transformer-based 
+ Figure 2: Examples of training data instances with in-
+ LLMs, which were pre-trained on a large volume 
+ tegrated rationales that lead to the answers. These data
+ of data, including web texts, books, codes, etc. The are from the CoT-Collection dataset (Kim et al., 2023).
+ Qwen tokenizer consists of N = 151,936 tokens. 
+ 4.1.2 Data 
+ In Llama2-based KD experiments, the Llama2- 
+ 13B-Chat is used as the teacher model, and the A CoT is a series of intermediate natural language
+ Llama2-7B and TinyLlama are used as the student reasoning steps that lead to the final output. These
+ models. Llama2 is an auto-regressive language intermediate steps, also known as rationales, are
+ model that employs an optimised Transformer ar- crucial for understanding the reasoning process.
+ chitecture and was trained on 2 trillions tokens of We use the CoT-Collection dataset (Kim et al.,
+ data. The Llama2-13B-Chat model, which consists 2023), an instruction tuning dataset that includes
+ of 13 billion parameters, is a fine-tuned version of 1.84 million rationales from the FLAN collection
+ the Llama2-13B model. It utilises SFT and rein- (Longpre et al., 2023) across 1,060 tasks, such as
+ forcement learning with human feedback (RLHF) multiple choices QA, extractive QA, closed-book
+ to align with human preferences for helpfulness QA, formal logic, natural language inference, and
+ and safety. The Llama2-7B model has 7 billion arithmetic. These rationales were augmented usparameters, while the TinyLlama model (Zhang ing OpenAI Codex (OpenAI, 2025). We separate
+ et al., 2024a) has 1.1 billion parameters and was 1.84 million instances of the CoT-Collection into
+ pre-trained on 1 trillion tokens of data. TinyLlama training and validation sets, with the training set
+ is built on the architecture and tokenizer of Llama2 consisting of 1.44 million instances and the develwhich consists of N = 32,000 tokens. opment set consisting of 0.4 million instances.
+
+ 
+
+ 
+
+ 
+
+ 
+ 4.1.3 Training BBH, few-shot prompting with CoT (Wei et al.,
+ 2022b) is utilised during inference and is indepen-
+ We implement our training recipes based on the 
+ dent with training. This involves providing the
+ MiniLLM framework (Gu et al., 2024). The KD is 
+ models with a few demonstrations of the task at
+ trained over 20,000 training steps during 10 epochs, 
+ inference time as conditioning (Brown et al., 2020).
+ saving intermediate models every 1,000 steps. All 
+ Specifically, we use the same few-shot prompting
+ intermediate models resulting from a KD training 
+ with CoT as in (Suzgun et al., 2023), which inare evaluated during inference, and the best score is 
+ cludes three demonstrations. During inference, the
+ selected and reported in section 4.2.1. In our traintemperature parameter is set to 0.2 and the batch
+ ing, 20,000 iterations are sufficient to ensure the 
+ size is set to 16. 
+ KD is sufficiently trained, given the training and 
+ validation data from the CoT-Collection dataset. 4.2.1 Results 
+ We integrate the Low-Rank Adaptation (LoRA) al- 
+ Results of the Qwen-based KD experiments are
+ gorithm (Hu et al., 2022) into the KD process to 
+ shown in Table 1 while those of the Llama2reduce computational requirements when Llama2based KD experiments are shown in Tables 2 and
+ 7B is used as student model. LoRA freezes the pre- 
+ 3. In the Qwen-based experiments, both the distrained model weights and injects trainable rank detilled models created with the vanilla white-box
+ composition matrices into each layer of the Trans- 
+ KD (Qwen-1.8B+KD) and the KD+CoT methods
+ former architecture, significantly reducing the num- 
+ (Qwen-1.8B+KD+CoT) yield improved average
+ ber of trainable parameters and, consequently, the 
+ exact-match scores compared to the student model
+ computational demands during KD. In our LoRA 
+ (Qwen-1.8B). While the vanilla white-box KD imsetting, we set the rank r = 32, alpha = 32, and 
+ proves the average performance across 27 tasks by
+ the drop-out rate is set to 0.1. A KD training com- 
+ 30% relative, the KD+CoT further improves the
+ pletes in about 30 hours using an NVIDIA A100 
+ result, with 7.54% relative boost. 
+ 80GB GPU card. A learning rate of 5e-6 and a 
+ In the Llama2-based experiments (see Tables 2
+ batch size of 16 are used. The temperature parameand 3), the vanilla white-box KD yields improved
+ ter is set to 1 and the max prompt length of the 
+ performance for some tasks but not on average
+ model is set to 512. 
+ across all the tasks. In contrast, the KD+CoT
+ method improves average performance by 5.22%
+ 4.2 Evaluation 
+ relative with Llama2-7B and 4.54% relative with
+ The BBH benchmark (Suzgun et al., 2023) is used TinyLlama as student models, respectively.
+ in this study. BBH is a benchmark comprising While improvements are not universal, the
+ 23 challenging natural language reasoning and KD+CoT approach is observed to enhance perforunderstanding tasks from BIG-Bench (Srivastava mance across several natural language reasoning
+ et al., 2023), specifically those where prior lan- and understanding tasks. This highlights the role
+ guage model evaluations did not surpass human of CoT in white-box KD, and we will analyse these
+ performance. In total, BBH includes 27 tasks, as tasks in detail in the following sections.
+ some tasks have sub-tasks. The 27 tasks in BBH 
+ 4.2.2 Analysis 
+ can be regrouped into four categories as follows: 
+ We analyse the performance of the models on the
+ algorithmic and multi-step arithmetic reasoning 
+ individual tasks of BBH across its four categories:
+ (e.g. multistep arithmetic two, boolean expressions, 
+ logical deduction (three objects, five objects, and Algorithmic and multi-step arithmetic reasonseven objects), geometric shapes, dyck languages, ing Many of the tasks in BBH require varying
+ navigate, and temporal sequences), natural lan- levels of arithmetic (e.g., multistep arithmetic two),
+ guage understanding (e.g., disambiguation QA, logical (e.g., boolean expression and logical deduchyperbaton (adjective ordering), and snarks (sar- tion), geometric (e.g., geometric shapes), hierarchicasm detection)), use of world knowledge (e.g., cal (e.g., dyck language), spatial (e.g., navigate),
+ sport understanding, movie recommendation, date and temporal (e.g., temporal sequences) reasonunderstanding, causal judgement, and ruin names), ing capabilities (Suzgun et al., 2023). The general
+ and multilingual knowledge and reasoning (e.g., observation suggests that KD with CoT improves
+ salient translation error detection). performance in some tasks within this category, but
+ To enhance the performance of all models on not all. When the vanilla white-box KD already
+
+ 
+
+ 
+
+ 
+ Task #Questions Qwen-1.8B Qwen-1.8B+KD Qwen-1.8B+KD+CoT Teacher
+ Boolean expressions 3013 43.20 42.40 (-1.85%) 34.80 (-19.44%) 76.40 
+ Dyck languages 10729 0.00 0.00 (0.00%) 0.00 (0.00%) 17.20 
+ Formal fallacies 23062 11.60 29.60 (+155.17%) 36.40 (+213.79%) 49.60
+ Geometric shapes 8416 1.20 0.80 (-33.33%) 0.00 (-100.00%) 18.40 
+ Logical deduction (3 objects) 17561 25.60 30.00 (+17.19%) 32.80 (+28.13%) 54.00
+ Logical deduction (5 objects) 24932 11.60 16.40 (+41.38%) 18.00 (+55.17%) 36.80
+ Logical deduction (7 objects) 32094 4.40 11.60 (+163.64%) 8.80 (+100.00%) 32.40
+ Multistep arithmetic two 4763 8.40 0.00 (-100.00%) 2.00 (-76.19%) 26.40
+ Navigate 8759 52.00 40.00 (-23.08%) 40.80 (-21.54%) 58.80 
+ Temporal sequences 23912 14.80 18.00 (+21.62%) 28.40 (+91.89%) 38.80 
+ Tracking shuffled objects (3 objects) 20824 10.80 32.80 (+203.70%) 32.00 (+196.30%) 33.20
+ Tracking shuffled objects (5 objects) 27607 2.80 13.60 (+385.71%) 15.20 (+442.86%) 21.60
+ Tracking shuffled objects (7 objects) 34328 0.00 6.00 (+6.00%, abs.) 11.60 (11.60%, abs.) 13.60
+ Word sorting 7775 1.60 1.20 (-25.00%) 1.60 (0.00%) 17.20 
+ Disambiguation QA 12049 39.20 33.60 (-14.29%) 30.00 (-23.47%) 43.20 
+ Hyperbaton 5135 9.20 48.40 (+426.08%) 51.20 (+456.52%) 78.40
+ Snarks 6206 38.20 43.26 (+13.25%) 43.26 (+13.25%) 59.55 
+
+ Causal judgement 35034 2.14 3.20 (+49.53%) 9.10 (+325.23%) 59.36 
+ Date understanding 7530 26.40 31.60 (+19.70%) 37.60 (+42.42%) 61.20 
+ Movie recommendation 7881 34.40 24.80 (-27.91%) 27.60 (-19.77%) 71.20 
+ Object counting 6425 26.40 22.80 (-13.64%) 28.40 (+7.58%) 68.00 
+ Penguins in a table 13396 7.53 17.12 (+127.36%) 21.92 (+191.10%) 52.74
+ Reasoning about colored objects 13554 2.40 16.40 (+583.33%) 14.40 (+500.00%) 62.00
+ Ruin names 7617 16.80 20.00 (+19.05%) 22.40 (+33.33%) 42.40 
+ Sport understanding 3780 32.40 60.80 (+87.65%) 56.40 (+74.07%) 75.20 
+ Web of lies 8035 47.60 49.60 (+4.20%) 48.80 (+2.52%) 68.80 
+ Salient translation error detection 38692 9.20 9.60 (+4.35%) 6.40 (-30.43%) 42.80
+ Average 15300 17.77% 23.10% (+30.00%) 24.44% (+37.54%) 47.38%
+
+ Table 1: Exact-match scores (in %) of the student (baseline), distilled (KD), and teacher models on the 27 tasks of
+ the BBH benchmark, with Qwen-1.8B as the student model and Qwen-7B as the teacher model. The numbers in
+ parentheses represent relative gains, except where absolute gains (abs.) are specified. The number (#) of questions
+ for each task is also displayed. The tasks are grouped into four categories in accordance with the order presented in
+ section 4.2.2. 
+ improves upon the baseline, CoT further ampli- there are tasks in this category where the vanilla
+ fies its effectiveness. Conversely, when the vanilla KD and KD+CoT do not improve over the student
+ white-box KD does not outperform the baseline, model, for example for Boolean expressions task
+ CoT helps elevate its performance, making the dis- when the student model is Qwen-1.8B.
+ tillation process more effective. This observation 
+ Example (i) (Temporal sequences task) 
+ is noticeable but not universally applicable to both Question: Today, Sarah went to the clothing
+ Qwen-based and Llama2-based KD experiments. store. Between what times could they have
+ gone? We know that : Sarah woke up at 
+ 5am. Ashley saw Sarah taking photos near
+ An example of the Temporal sequences task 
+ the Eiffel Tower from 5am to 11am. Michael
+ which requires LLM s temporal reasoning capasaw Sarah walking in the garden from 11am to
+ bility is shown in Example (i). In this example, 12pm. Emily saw Sarah buying cookies at a
+ we can see that the Qwen-1.8B+KD+CoT model s bakery from 12pm to 2pm. Richard saw Sarah
+ buying a phone at the electronics store from
+ answer has deeper level of reasoning compared 
+ 2pm to 3pm. The clothing store was closed
+ to those of the Qwen-1.8B and Qwen-1.8B+KD 
+ after 7pm. Between what time could Sarah
+ models. Thanks to this improved reasoning capa- have gone to the clothing store? Options:
+ bility, the Qwen-1.8B+KD+CoT model answers (A) 3pm to 7pm, (B) 2pm to 3pm, (C) 12pm to
+ correctly to the question. It should be noted that 2pm, (D) 11am to 12pm.
+
+ 
+
+ 
+
+ 
+ Task #Questions Llama2-7B Llama2-7B+KD Llama2-7B+KD+CoT Teacher
+ Boolean expressions 3013 68.00 70.40 (+3.52%) 72.00 (+5.88%) 72.40 
+ Dyck languages 10729 8.40 8.00 (-4.76%) 12.00 (+42.85%) 32.40 
+ Formal fallacies 23062 49.60 50.40 (+1.61%) 51.20 (+3.22%) 49.60 
+ Geometric shapes 8416 30.00 32.00 (+6.66%) 32.00 (+6.66%) 37.20 
+ Logical deduction (3 objects) 17561 56.40 53.60 (-4.96%) 56.80 (+0.70%) 73.60
+ Logical deduction (5 objects) 24932 33.60 31.60 (-5.95%) 33.60 (0%) 50.40
+ Logical deduction (7 objects) 32094 22.00 26.80 (+21.81%) 30.40 (+38.18%) 40.80
+ Multistep arithmetic two 4763 0.00 0.40 (+0.40%, abs.) 2.00 (+2.00%, abs.) 4.40
+ Navigate 8759 54.40 58.40 (+7.35%) 59.60 (+9.55%) 64.00 
+ Temporal sequences 23912 12.00 14.80 (+23.33%) 12.80 (+6.66%) 20.80 
+ Tracking shuffled objects (3 objects) 20824 33.60 33.60 (0%) 32.00 (-4.76%) 34.40
+ Tracking shuffled objects (5 objects) 27607 15.60 18.00 (+15.38%) 16.00 (+2.56%) 21.20
+ Tracking shuffled objects (7 objects) 34328 11.20 17.20 (+53.57%) 14.40 (+28.57%) 18.40
+ Word sorting 7775 10.40 5.60 (-46.15%) 4.80 (-53.84%) 24.40 
+ Disambiguation QA 12049 46.80 50.80 (+8.54%) 50.40 (+7.69%) 47.20 
+ Hyperbaton 5135 52.40 54.00 (+3.05%) 60.80 (+16.03%) 57.60 
+ Snarks 6206 47.75 51.12 (+7.05%) 57.30 (+20.00%) 70.78 
+
+ Causal judgement 35034 52.40 50.26 (-4.08%) 49.19 (-6.12%) 59.89 
+ Date understanding 7530 60.80 63.60 (+4.60%) 62.40 (+2.63%) 68.00 
+ Movie recommendation 7881 68.00 53.60 (-21.17%) 67.20 (-1.17%) 64.80 
+ Object counting 6425 50.00 49.60 (-0.8%) 49.20 (-1.60%) 55.60 
+ Penguins in a table 13396 32.87 33.56 (+2.09%) 35.61 (+8.33%) 51.36 
+ Reasoning about colored objects 13554 48.00 45.60 (-5.00%) 49.60 (+3.33%) 62.40
+ Ruin names 7617 33.20 28.80 (-13.25%) 29.60 (-10.84%) 41.20 
+ Sport understanding 3780 88.00 84.80 (-3.63%) 88.40 (+0.45%) 92.00 
+ Web of lies 8035 54.40 49.60 (-8.82%) 61.20 (+12.5%) 94.40 
+ Salient translation error detection 38692 25.20 22.80 (-9.52%) 30.00 (+19.04%) 39.60
+ Average 15300 39.44% 39.22% (-0.56%) 41.50% (+5.22%) 49.95%
+
+ Table 2: Exact-match scores (in %) of the models on 27 tasks of BBH, with Llama2-7B as the student model and
+ Llama2-13B-Chat as the teacher model. The numbers in parentheses represent relative gains, except where absolute
+ gains (abs.) are specified. The Llama2-7B s performance here is comparable to that reported in (Wan et al., 2024).
+
+ Example (i) (Temporal sequences task) Example (i) (Temporal sequences task)
+ Answer (Qwen-1.8B): Let s think step by step. Answer (Qwen-1.8B+KD+CoT): Let s think step
+ Wake-up time: 5am. 5am-11am: taking photos by step. Wake-up time: 5am. 5am-11am:
+ near the Eiffel Tower. 11am-12pm: walking taking photos near the Eiffel Tower.
+ in the garden. 12pm-2pm: buying cookies at 11am-12pm: walking in the garden. 12pm-2pm:
+ the bakery. 2pm-3pm: buying a phone at the buying cookies at the bakery. 2pm-3pm:
+ electronics store. 3pm-7pm: the clothing buying a phone at the electronics store.
+ store is closed. The clothing store closure The clothing store closure time: 7pm. The
+ time: 7pm. The only time when Sarah could only time when Sarah could have gone to the
+ have gone to the clothing store was 2pm to clothing store was 3pm to 7pm. So the answer
+ 3pm. So the answer is (C) 12pm to 2pm. is (A). 
+ Natural language understanding BBH encom-
+ Example (i) (Temporal sequences task) 
+ passes several tasks that emphasise semantic under-
+ Answer (Qwen-1.8B+KD): Let s think step by 
+ step. Wake-up time: 5am. 5am-11am: taking standing, name disambiguation, entity resolution,
+ photos near the Eiffel Tower. 11am-12pm: grammar rules, and sarcasm detection. Examples
+ walking in the garden. 12pm-2pm: buying of these tasks include disambiguation QA, hypercookies at the bakery. 2pm-3pm: buying a 
+ baton (adjective ordering), salient translation erphone at the electronics store. The clothing 
+ ror detection, and snarks (sarcasm detection). In
+ store closure time: 7pm. The only time when 
+ Sarah could have gone to the clothing store tasks such as Disambiguation QA, stronger reawas 11am to 12pm. So the answer is (C). soning capability enables LLMs to interpret nu-
+
+ 
+
+ 
+
+ 
+ Task #Questions TinyLlama TinyLlama+KD TinyLlama+KD+CoT Teacher
+ Boolean expressions 3013 60.80 56.80 (-6.57%) 44.80 (-26.31%) 72.40 
+ Dyck languages 10729 12.80 32.80 (+156.25%) 27.60 (+115.62%) 32.40
+ Formal fallacies 23062 47.60 36.00 (-24.36%) 49.20 (+3.36%) 49.60 
+ Geometric shapes 8416 0.00 0.00 (0%) 0.00 (0%) 37.20 
+ Logical deduction (3 objects) 17561 29.20 31.60 (-26.02%) 33.60 (+15.06%) 73.60
+ Logical deduction (5 objects) 24932 18.80 17.20 (-8.51%) 19.60 (+4.25%) 50.40
+ Logical deduction (7 objects) 32094 12.40 10.00 (-19.35%) 14.80 (+19.35%) 40.80
+ Multistep arithmetic two 4763 0.00 0.40 (+0.40%, abs.) 0.80 (+0.80%, abs.) 4.40
+ Navigate 8759 47.20 44.40 (-5.93%) 52.40 (+11.01%) 64.00 
+ Temporal sequences 23912 27.60 29.20 (+5.79%) 25.60 (-7.24%) 20.80 
+ Tracking shuffled objects (3 objects) 20824 30.00 34.00 (+13.33%) 30.80 (+2.66%) 34.40
+ Tracking shuffled objects (5 objects) 27607 17.60 19.20 (+9.09%) 18.00 (+2.27%) 21.20
+ Tracking shuffled objects (7 objects) 34328 10.80 12.00 (+11.11%) 8.80 (-18.51%) 18.40
+ Word sorting 7775 3.20 1.60 (-50.00%) 5.20 (+62.50%) 24.40 
+ Disambiguation QA 12049 30.8 38.80 (+25.97%) 42.00 (+36.36%) 47.20 
+ Hyperbaton 5135 50.00 49.60 (-0.80%) 54.80 (+9.60%) 57.60 
+ Snarks 6206 52.24 43.25 (-17.20%) 53.93 (+3.23%) 70.78 
+
+ Causal judgement 35034 54.01 31.55 (-41.58%) 47.59 (-11.88%) 59.89 
+ Date understanding 7530 16.00 20.80 (+30.00%) 22.40 (+40.00%) 68.00 
+ Movie recommendation 7881 28.80 14.40 (-50.00%) 29.20 (+1.38%) 64.80 
+ Object counting 6425 22.40 24.80 (+10.71%) 25.60 (+14.28%) 55.60 
+ Penguins in a table 13396 21.23 17.80 (-16.15%) 27.39 (+29.01%) 51.36 
+ Reasoning about colored objects 13554 15.60 16.80 (+7.69%) 15.60 (0%) 62.40
+ Ruin names 7617 21.20 22.00 (+3.77%) 20.80 (-1.88%) 41.20 
+ Sport understanding 3780 60.40 54.00 (-10.59%) 55.20 (-8.60%) 92.00 
+ Web of lies 8035 51.60 51.60 (0%) 51.60 (0%) 94.40 
+ Salient translation error detection 38692 12.80 4.40 (-65.62%) 12.00 (-6.25%) 39.60
+ Average 15300 27.96% 26.48% (-5.29%) 29.23% (+4.54%) 49.95%
+
+ Table 3: Exact-match scores (in %) of the student (baseline), distilled (KD), and teacher models on the 27 tasks
+ of the BBH benchmark, with TinyLlama as the student model and Llama2-13B-Chat as the teacher model. The
+ numbers in parentheses represent relative gains, except where absolute gains (abs.) are specified.
+ anced spoken language questions and identify am- Example (ii) (Disambiguation QA task)
+ biguity. Example (ii) illustrates a Disambigua- Question: In the following sentences,
+ explain the antecedent of the pronoun (which
+ tion QA task instance, where the model must dething the pronoun refers to), or state that
+ termine whether a pronoun s antecedent is ambigu- it is ambiguous. Sentence: The guard called
+ ous in a specific context. In this example, the the cleaner and asked them to open the door.
+ Llama2-7B+KD model does not improve upon the Options: (A) Asked the guard (B) Asked the
+ cleaner (C) Ambiguous. 
+ Llama2-7B model s answer, whereas the Llama2- 
+ 7B+KD+CoT effectively analyses the question s 
+ Use of world knowledge Certain BBH tasks
+ nuances and provides the correct answer. This 
+ necessitate both factual and general knowledge
+ demonstrates the improved reasoning capability 
+ about the world, along with an understanding of
+ in the model created with KD+CoT approach. 
+ common practices and assumptions in Western
+ While performance gains are typically observed society. For instance, factual knowledge tasks
+ across this task group when using Llama2-7B include sport understanding, movie recommenand TinyLlama-1.1B as student models, such dation, and date understanding. On the other
+ improvements are notably absent with Qwen-1.8B hand, tasks that demand general knowledge
+ on the Disambiguation QA task. This highlights include causal judgement, which relies on an
+ the variability in effectiveness of CoT in white-box understanding of causal reasoning, and ruin
+ KD across different model architectures. names, which requires understanding human
+
+ 
+
+ 
+
+ 
+ Example (ii) (Disambiguation QA task) Example (iii) (Sport understanding task)
+ Answer (Llama2-7B and Llama2-7B+KD): Let s Question: Is the following sentence
+ think step by step. Here we need to determine plausible? Marcell Ozuna scored a
+ who the pronoun them might be referring to. touchdown Options: (A) Yes (B) No.
+ There are two possible referents for them , 
+ namely the guard and the cleaner. The verb Example (iii) (Sport understanding task)
+ asked might be able to help us determine Answer (TinyLlama: Let s think step by
+ which one is more likely (if either). Let step. Marcell Ozuna is a baseball player.
+ X be the guard and Y the cleaner. The Touchdown is part of American football. So
+ sentence is then of the form X asked Y the answer is (B) No. 
+ to do something . Let s consider Y first: 
+ X asked Y to do something . This case makes 
+ Example (iii) (Sport understanding task)
+ sense, because X is the one who asked Y to 
+ Answer (TinyLlama+KD: Let s think step by
+ do something. Now, consider X: X asked 
+ step. Marcell Ozuna is a baseball player.
+ Y to do something . This case also makes 
+ Touchdown is part of American football and
+ sense, because X is the one who asked Y 
+ rugby. So the answer is (B) No. 
+ to do something. Because both X and Y are 
+ possible at the same time, we conclude that 
+ the antecedent of the pronoun is ambiguous. Example (iii) (Sport understanding task)
+ So the answer is (C). Answer (TinyLlama+KD+CoT): Let s think step
+ by step. Marcell Ozuna is a baseball player.
+ Touchdown is part of American football and
+ Example (ii) (Disambiguation QA task) 
+ baseball. So the answer is (A) Yes. 
+ Answer (Llama2-7B+KD+CoT): Let s think step 
+ by step. Here we need to determine who 
+ ground their response in relevant sports knowledge.
+ the pronoun them might be referring to. 
+ There are two possible referents for them , The error made by TinyLlama+KD+CoT appears
+ namely the guard and the cleaner. The verb to stem from retrieving knowledge that aligns with
+ asked might be able to help us determine the player s discipline but ultimately misguides the
+ which one is more likely (if either). Let 
+ model toward an incorrect conclusion. 
+ X be the guard and Y the cleaner. The 
+ sentence is then of the form X asked Y 
+ Multilingual knowledge and reasoning 
+ to do something . Let s consider Y first: 
+ X asked Y to do something . This case makes General-purpose language models possess the
+ sense, because X is the one who asked Y to do capability to perform translation and engage
+ something. Now, consider X: X asked them 
+ in multistep reasoning within multilingual conto do something . This case doesn t make 
+ texts (Winata et al., 2021; Shi et al., 2023). In
+ sense, because X is the one who asked Y to 
+ do something, so X cannot be the one who BBH, there is one multilingual task, salient
+ is being asked to do something. Because in translation error detection, which is based on
+ this context, X is the guard and Y is the 
+ translation quality estimation and cross-lingual
+ cleaner, the answer should be the cleaner. 
+ natural-language inference. In this task, improved
+ So the answer is (B). 
+ reasoning capability could enhance the ability to
+ perception, humor in the English language, and navigate multiple languages and generate accurate
+ familiarity with Western artists, bands, and movies. translations. An example on this task where the
+ For these tasks, a stronger grounding in rich Llama2-7B+KD+CoT model successfully procommon knowledge enables LLMs to better duces the correct answer, whereas the Llama2-7B
+ meet requirements. The KD+CoT approach and Llama2-7B+KD models do not, is presented
+ yields improvements for a number of tasks in in Example (iv). In this example, the LLMs are
+ this group, for examples Date understanding or tasked with identifying an error in a German-to-
+ Penguins in a table. However, the approach is English translation. The Llama2-7B+KD+CoT
+ not effective in some tasks, for examples Causal model produces a correct answer with improved
+ Judgement when the student model is Llama2-7B reasoning, while the Llama2-7B+KD is unable to
+ or Sport understanding when the student model is improve upon the Llama2-7B s response.
+ TinyLlama-1.1B. More specifically, the Llama2-7B+KD+CoT
+ In Example (iii) from the Sport Understanding model successfully retrieves the correct German
+ task, both TinyLlama and TinyLlama+KD produce translation of the input sentence via Google Transthe correct answer, whereas TinyLlama+KD+CoT late. It is then able to distinguish between the corfails to do so. In this case, all models are required rect and incorrect translations, and accurately idento identify the name of a baseball player and then tify the error as related to named entities. Indeed,
+
+ 
+
+ 
+
+ 
+ Example (iv) (Salient translation error Example (iv) (Salient translation error
+ detection task) detection task) 
+ Question: The following translations from Answer (Llama2-7B+KD+CoT): Let s think step
+ German to English contain a particular by step. We solve this question by first
+ error. That error will be one of the translating the source sentence to English
+ following types: Named Entities: An entity and then by comparing our translation with
+ (names, places, locations, etc.) is the provided translation. According to
+ changed to a different entity. Numerical Google Translate, the correct translation of
+ Values: Numerical values (ordinals or the source sentence from German to English
+ cardinals), dates, and/or units are changed. is Elbenberg is a district of Naumburg in
+ Modifiers or Adjectives: The modifiers and the district of Kassel in northern Hesse,
+ adjectives pertaining to a noun are changed. Germany. On the other hand, the provided
+ Negation or Antonyms: Introduce or remove translation is Elbenberg is a district
+ a negation or change comparatives to their of Naumburg in the district of Tossel in
+ antonyms. Facts: Trivial factual errors northern Hesse, Germany. Note that the
+ not pertaining to the above classes are provided sentence says Elbenberg is a
+ introduced in the translations. Dropped district of Naumburg in the district of
+ Content: A significant clause in the Tossel in northern Hesse, Germany. However,
+ translation is removed. Please identify that the translation should have been Elbenberg
+ error. Source: Elbenberg ist ein Stadtteil is a district of Naumburg in the district of
+ der nordhessischen Kleinstadt Naumburg im Kassel in northern Hesse, Germany. Because
+ Landkreis Kassel. Translation: Elbenberg a district in the original source is changed
+ is a district of Naumburg in the district to a different district in the translation,
+ of Tossel in northern Hesse, Germany. The the translation contains an error pertaining
+ translation contains an error pertaining to to Named Entities. So the answer is (D).
+ Options: (A) Modifiers or Adjectives (B) 
+ Numerical Values (C) Negation or Antonyms ber of parameters. However, they exhibit sig-
+ (D) Named Entities (E) Dropped Content (F) nificantly lower inference time compared to
+ Facts. the teacher models. More specifically, the
+ TinyLlama model requires only 20% while the
+ Example (iv) (Salient translation error 
+ Llama2-7B requires approximately 53% of the
+ detection task) 
+ Answer (Llama2-7B and Llama2-7B+KD): Let s Llama2-13B-Chat s inference time, measured
+ think step by step. We solve this question on an NVIDIA A100 80GB GPU. Similarly, the
+ by first translating the source sentence 
+ Qwen-1.8B model operates at approximately
+ to English and then by comparing our 
+ 28% of the inference time of Qwen-7B, with the
+ translation with the provided translation. 
+ According to Google Translate, the correct same inference settings. The improved inference
+ translation of the source sentence from speed makes the distilled models more suitable for
+ German to English is Elbenberg is a district deployment in resource-constrained environments
+ of Naumburg in the district of Tossel in 
+ compared to the larger teacher models. 
+ northern Hesse, Germany. On the other hand, 
+ the provided translation is Elbenberg is 5 Conclusion 
+ a district of Naumburg in the district of This paper examined the effectiveness of CoT in
+ Tossel in northern Hesse, Germany. Note 
+ distilling reasoning capability from a teacher LLM
+ that the provided sentence says Elbenberg 
+ to a student LLM using white-box KD, where the
+ is a district of Naumburg in the district of 
+ Tossel in northern Hesse, Germany. However, distillation loss between their output probabilities
+ the translation should have been Elbenberg is minimised. Experimental results demonstrated
+ is a district of Naumburg in the district of 
+ that CoT improves the effectiveness of white-box
+ Tossel in northern Hesse, Germany. Because 
+ KD, even when the vanilla white-box KD does not
+ a negation is introduced at the beginning of 
+ the sentence and has fundamentally changed outperform the baseline. The results also suggest
+ the meaning of the original source, the that CoT elicits the teacher LLM s reasoning capatranslation contains an error pertaining to 
+ bility, which are then effectively distilled into the
+ Negation or Antonyms. So the answer is (C). 
+ student model during the distillation process. In
+ this capability to recognise the correct translation summary, the KD+CoT approach enhances the disis supported by its enhanced reasoning capabilities. tilled models, improving their overall performance
+ in BBH natural language reasoning and understand-
+ 4.2.3 Inference time 
+ ing tasks over the student models while maintaining
+ The distilled models have similar inference time as their efficiency advantage over the teacher models
+ the student models since they share the same num- in terms of inference speed.
+
+ 
+
+ 
+
+ 
+ 6 Data availability statement Hongzhan Chen, Siyue Wu, Xiaojun Quan, Rui Wang,
+ Ming Yan, and Ji Zhang. 2023. MCC-KD: multi-CoT
+ In this paper, we have used the CoT-Collection consistent knowledge distillation. In Findings of the
+ Association for Computational Linguistics : EMNLP
+ dataset (Kim et al., 2023) for training and the data 
+ 2023, pages 6805 6820. 
+ from various natural language reasoning and understanding tasks in the BBH benchmark (Suz- Jacob Devlin, Ming-Wei Chang, Kenton Lee, and
+ Kristina Toutanova. 2019. BERT: Pre-training of
+ gun et al., 2023) for evaluation. From the CoTdeep bidirectional transformers for language under-
+ Collection data, we have created new training data 
+ standing. In Proc. of the 17th Conference of the
+ to train the vanilla white-box KD by filtering out North American Chapter of the Association for Comthe rationales. In terms of codes, we have devel- putational Linguistics (NAACL)), pages 4171 4186.
+ oped our white-box KD training scripts based on 
+ Vardhan Dongre, Xiaocheng Yang, Emre Can Acikgoz,
+ the MiniLLM framework (Gu et al., 2024) and our Suvodip Dey, Gokhan Tur, and Dilek Hakkani-Tur.
+ evaluation scripts based on (Suzgun et al., 2023). 2025. ReSpAct: Harmonizing reasoning, speaking,
+ All datasets and code are included in the supple- and acting towards building large language modelbased conversational AI agents. In Proceedings of
+ mentary materials accompanying this paper and are 
+ the 15th International Workshop on Spoken Dialogue
+ publicly accessible. Systems Technology, pages 72 102, Bilbao, Spain.
+ Association for Computational Linguistics.
+ Kaituo Feng, Changsheng Li, Xiaolu Zhang, Jun Zhou,
+ References 
+ Ye Yuan, and Guoren Wang. 2024. Keypoint-based
+ progressive chain-of-thought distillation for LLMs.
+ Jinze Bai, Shuai Bai, Yunfei Chu, Zeyu Cui, Kai Dang, 
+ In Proceedings of the 41st International Conference
+ Xiaodong Deng, Yang Fan, Wenbin Ge, Yu Han, Fei 
+ on Machine Learning (ICML). 
+ Huang, Binyuan Hui, Luo Ji, Mei Li, Junyang Lin, 
+ Runji Lin, Dayiheng Liu, Gao Liu, Chengqiang Lu, Yao Fu, Hao Peng, Litu Ou, Ashish Sabharwal, and
+ Keming Lu, Jianxin Ma, Rui Men, Xingzhang Ren, Tushar Khot. 2023. Specializing smaller language
+ Xuancheng Ren, Chuanqi Tan, Sinan Tan, Jianhong models towards multi-step reasoning. In Proceedings
+ Tu, PengWang, ShijieWang, WeiWang, Shengguang of the 40th International Conference on Machine
+ Wu, Benfeng Xu, Jin Xu, An Yang, Hao Yang, Jian Learning (ICML). 
+ Yang, Shusheng Yang, Yang Yao, Bowen Yu, Hongyi 
+ Yuan, Zheng Yuan, Jianwei Zhang, Xingxuan Zhang, YuxianGu, LiDong, FuruWei, and Minlie Huang.2024.
+ Yichang Zhang, Zhenru Zhang, Chang Zhou, Jin- MiniLLM: knowledge distillation of large language
+ gren Zhou, Xiaohuan Zhou, and Tianhang Zhu. 2023. models. In International Conference on Learning
+ Qwen technical report. Preprint, arXiv:2309.16609. Representations (ICLR).
+ Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. 2014.
+ Sajjad Beygi, Maryam Fazel-Zarandi, Alessandra Cer- 
+ Distilling knowledge in a neural network. In NIPS
+ vone, Prakash Krishnan, and Siddhartha Jonnala- 
+ 2014 Deep Learning Workshop. 
+ gadda. 2022. Logical reasoning for task oriented 
+ dialogue systems. In Proceedings of the Fifth Work- Namgyu Ho, Laura Schmid, and Se-Young Yun. 2023.
+ shop on e-Commerce and NLP (ECNLP 5), pages Large language models are reasoning teachers. In
+ 68 79, Dublin, Ireland. Association for Computa- Proceedings of the 61st Annual Meeting of the Assotional Linguistics. ciation for Computational Linguistics, pages 14852 
+ 14882. 
+ Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie 
+ Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Edward J. Hu, Yelong Shen, Phillip Wallis, Zeyuan
+ Neelakantan, Pranav Shyam, Girish Sastry, Amanda Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and
+ Askell, Sandhini Agarwal, Ariel Herbert-Voss, Weizhu Chen. 2022. LoRA: low-rank adaptation of
+ Gretchen Krueger, Tom Henighan, Rewon Child, large language models. In International Conference
+ Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, 
+ on Learning Representations (ICLR). 
+ ClemensWinter, ChristopherHesse, MarkChen, Eric 
+ Jie Huang and Kevin Chen-Chuan Chang. 2023. To-
+ Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, 
+ wards reasoning in large language models: a survey.
+ Jack Clark, Christopher Berner, Sam McCandlish, 
+ In Findings of the Association for Computational
+ Alec Radford, Ilya Sutskever, and Dario Amodei. 
+ Linguistics : ACL 2023, pages 1049 1065.
+ 2020. Language models are few-shot learners. In 
+ 34th Conference on Neural Information Processing Seungone Kim, Se June Joo, Doyoung Kim, Joel
+ Systems (NeurIPS 2020). Jang, Seonghyeon Ye, Jamin Shin, and Minjoon Seo.
+ 2023. The CoT Collection: improving zero-shot and
+ Hongzhan Chen, Ruijun Chen, Yuqi Yi, Xiaojun Quan, few-shot learning of language models via chain-of-
+ Chenliang Li, Ming Yan, and Ji Zhang. 2024. Knowl- thought fine-tuning. In Proceedings of the 2023 Conedge distillation of black-box large language models. ference on Empirical Methods in Natural Language
+ Preprint, arXiv:2401.07013. Processing (EMNLP), pages 12685 12708.
+
+ 
+
+ 
+
+ 
+ Takeshi Kojima, Shixiang Shane Gu, Machel Reid, Yu- Sharath Turuvekere Sreenivas, Saurav Muralidharan,
+ taka Matsuo, and Yusuke Iwasawa. 2022. Large lan- Raviraj Joshi, Marcin Chochowski, Ameya Sunil Maguage models are zero-shot reasoners. In 36th Con- habaleshwarkar, Gerald Shen, Jiaqi Zeng, Zijia Chen,
+ ference on Neural Information Processing Systems Yoshi Suhara, Shizhe Diao, Chenhan Yu, Wei-Chun
+ (NeurIPS 2022). Chen, Hayley Ross, Oluwatobi Olabiyi, Ashwath
+ Aithal, Oleksii Kuchaiev, Daniel Korzekwa, Pavlo
+ Hojae Lee, Junho Kim, and SangKeun Lee. 2024. Molchanov, Mostofa Patwary, Mohammad Shoeybi,
+ Mentor-KD: Making small language models better Jan Kautz, and Bryan Catanzaro. 2024. Llm pruning
+ multi-step reasoners. In Proceedings of the 2024 and distillation in practice: The minitron approach.
+ Conference on Empirical Methods in Natural Lan- Preprint, arXiv:2408.11796.
+ guage Processing (EMNLP), pages 17643 17658. 
+ Aarohi Srivastava, Abhinav Rastogi, Abhishek Rao,
+ Abu Awal Md Shoeb, Abubakar Abid, Adam Fisch,
+ Xiang Li, Shizhu He, Jiayu Wu, Zhao Yang, Yao Xu, 
+ Adam R. Brown, Adam Santoro, Aditya Gupta,
+ Yang jun Jun, Haifeng Liu, Kang Liu, and Jun Zhao. 
+ Adri Garriga-Alonso, Agnieszka Kluska, Aitor
+ 2024. MoDE-CoTD: chain-of-thought distillation 
+ Lewkowycz, Akshat Agarwal, Alethea Power, et al.
+ for complex reasoning tasks with mixture of decou- 
+ 2023. Beyond the imitation game: quantifying and
+ pled LoRA-experts. In LREC-COLING 2024, pages 
+ extrapolating the capabilities of language models.
+ 11475 11485. 
+ Transactions on Machine Learning Research.
+ Zhan Ling, Yunhao Fang, Xuanlin Li, Zhiao Huang, Mirac Suzgun, Nathan Scales, Nathanael Sch rli, Se-
+ Mingu Lee, Roland Memisevic, and Hao Su. 2023. bastian Gehrmann, Yi Tay, Hyung Won Chung,
+ Deductive verification of chain-of-thought reasoning. Aakanksha Chowdhery, Quoc V. Le, Ed H. Chi,
+ In 37th Conference on Neural Information Process- Denny Zhou, and Jason Wei. 2023. Challenging BIGing Systems (NeurIPS). Bench tasks and whether chain-of-thought can solve
+ them. In Findings of the Association for Computa-
+ Shayne Longpre, Le Hou, Tu Vu, Albert Webson, tional Linguistics : ACL 2023, pages 13003 13051.
+ Hyung Won Chung, Yi Tay, Denny Zhou, Quoc V. Le, 
+ Hugo Touvron, Louis Martin, Kevin Stone, Peter Al-
+ Barret Zoph, Jason Wei, and Adam Roberts. 2023. 
+ bert, Amjad Almahairi, Yasmine Babaei, Nikolay
+ The Flan collection: designing data and methods for 
+ Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti
+ effective instruction tuning. In Proceedings of the 
+ Bhosale, Dan Bikel, Lukas Blecher, Cristian Canton
+ 40th International Conference on Machine Learning 
+ Ferrer, Moya Chen, Guillem Cucurull, David Esiobu,
+ (ICML). 
+ Jude Fernandes, Jeremy Fu, Wenyin Fu, Brian Fuller,
+ Cynthia Gao, Vedanuj Goswami, Naman Goyal, An-
+ Zhenyan Lu, Xiang Li, Dongqi Cai, Rongjie Yi, 
+ thony Hartshorn, Saghar Hosseini, Rui Hou, Hakan
+ Fangming Liu, Xiwen Zhang, Nicholas D. Lane, 
+ Inan, Marcin Kardas, Viktor Kerkez, Madian Khabsa,
+ and Mengwei Xu. 2024. Small language mod- 
+ IsabelKloumann, ArtemKorenev, PunitSinghKoura,
+ els: Survey, measurements, and insights. Preprint, 
+ Marie-Anne Lachaux, Thibaut Lavril, Jenya Lee, DiarXiv:2409.15790. 
+ ana Liskovich, Yinghai Lu, Yuning Mao, Xavier Martinet, Todor Mihaylov, Pushkar Mishra, Igor Moly-
+ Lucie Charlotte Magister, Jonathan Mallinson, Jakub 
+ bog, Yixin Nie, Andrew Poulton, Jeremy Reizen-
+ Adamek, Eric Malmi, and Aliaksei Severyn. 2023. 
+ stein, Rashi Rungta, Kalyan Saladi, Alan Schelten,
+ Teaching small language models to reason. In Pro- 
+ Ruan Silva, Eric Michael Smith, Ranjan Subramaceedings of the 61st Annual Meeting of the Assonian, Xiaoqing Ellen Tan, Binh Tang, Ross Tayciation for Computational Linguistics, pages 1773 
+ lor, Adina Williams, Jian Xiang Kuan, Puxin Xu,
+ 1781. 
+ Zheng Yan, Iliyan Zarov, Yuchen Zhang, Angela Fan,
+ Melanie Kambadur, Sharan Narang, Aurelien Ro-
+ OpenAI. 2024. Gpt-4 technical report. Preprint, 
+ driguez, Robert Stojnic, Sergey Edunov, and Thomas
+ arXiv:2303.08774. 
+ Scialom. 2023. Llama 2: Open foundation and finetuned chat models. Preprint, arXiv:2307.09288.
+ OpenAI. 2025. Openai codex. 
+ Fanqi Wan, Xinting Huang, Deng Cai, Xiaojun Quan,
+ FredaShi, MiracSuzgun, MarkusFreitag, XuezhiWang, Wei Bi, and Shuming Shi. 2024. Knowledge fusion
+ Suraj Srivats, Soroush Vosoughi, Hyung Won Chung, of large language models. In International Confer-
+ Yi Tay, Sebastian Ruder, Denny Zhou, Dipanjan Das, ence on Learning Representations (ICLR).
+ and Jason Wei. 2023. Language models are multi- 
+ Peifeng Wang, Zhengyang Wang, Zheng Li, Yifan Gao,
+ lingual chain-of-thought reasoners. In International 
+ Bing Yin, and Xiang Ren. 2023. SCOTT: Self-
+ Conference on Learning Representations (ICLR). 
+ consistent chain-of-thought distillation. In Proceedings of the 61st Annual Meeting of the Association for
+ Kumar Shridhar, Alessandro Stolfo, and Mrinmaya 
+ Computational Linguistics (Volume 1: Long Papers),
+ Sachan. 2023. Distilling reasoning capabilities into 
+ pages 5546 5558, Toronto, Canada. 
+ smaller language models. In Findings of the Association for Computational Linguistics : ACL 2023, Jason Wei, Yi Tay, Rishi Bommasani, Colin Raffel,
+ pages 7059 7073. Barret Zoph, Sebastian Borgeaud, Dani Yogatama,
+
+ 
+
+ 
+
+ 
+ Maarten Bosma, Denny Zhou, Donald Metzler, Ed H. Dyck Languages: Predict the sequence of the
+ Chi, Tatsunori Hashimoto, Oriol Vinyals, Percy closing parentheses of a Dyck-4 word without
+ Liang, Jeff Dean, and William Fedus. 2022a. Emerits last few closing parentheses. 
+ gent abilities of large language models. Transactions 
+ on Machine Learning Research. 
+ Formal Fallacies Syllogisms Negation:
+ Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Given a context involving a set of statements
+ Bosma, Brian Ichter, Fei Xia, Ed Chi, Quoc Le, and (generated by one of the argument schemes),
+ Denny Zhou. 2022b. Chain-of-thought prompting 
+ determine whether an argument presented
+ elicits reasoning in large language models. In 36th 
+ informally can be logically deduced from
+ Conference on Neural Information Processing Systems (NeurIPS). the provided context.1 
+ Genta Indra Winata, Andrea Madotto, Zhaojiang Lin, Geometric Shapes: Given a full SVG path
+ RosanneLiu, JasonYosinski, andPascaleFung.2021. 
+ element containing multiple commands, de-
+ Language models are few-shot multilingual learners. 
+ In Proceedings of the 1st Workshop on Multilingual termine the geometric shape that would be
+ Representation Learning. generated if one were to execute the full path
+ element. 
+ Peiyuan Zhang, Guangtao Zeng, Tianduo Wang, and 
+ Wei Lu. 2024a. Tinyllama: An open-source small 
+ Hyperbaton (Adjective Ordering): Given
+ language model. Preprint, arXiv:2401.02385. 
+ two English-language sentences, determine
+ Songming Zhang, Xue Zhang, Zengkui Sun, Yufeng the one with the correct adjective order.
+ Chen, and Jinan Xu. 2024b. Dual-space knowledge 
+ distillation for large language models. In Proceed- 
+ Logical Deduction: Deduce the order of a
+ ings of the 2024 Conference on Empirical Methods 
+ sequence of objects based on the clues and
+ in Natural Language Processing (EMNLP), pages 
+ 18164 18181. information about their spacial relationships
+ and placements. 
+ Movie Recommendation: Given a list of
+ A BIG-Bench Hard task descriptions 
+ movies a user might have watched and liked,
+ recommend a new, relevant movie to the user
+ Brief descriptions of the tasks in the BIG-Benchout of the four potential choices user might
+ Hard (BBH) benchmark, as presented in (Suzgun 
+ have. 
+ et al., 2023): 
+ Boolean Expressions: Evaluate the truth Multi-Step Arithmetic: Solve multi-step
+ value of a random Boolean expression consist- equations involving basic arithmetic operaing of Boolean constants ( True , False ) and tions (addition, subtraction, multiplication,
+ basic Boolean operators ( and , or , not ). and division). 
+ Causal Judgment: Given a short story (in- Navigate: Given a series of navigation steps
+ volving moral, intentional, or counterfactual to an agent, determine whether the agent
+ analysis), determine how a typical person would end up back at its initial starting point.
+ would answer a causal question about the 
+ Object Counting: Given a collection of posstory. 
+ sessions that a person has along with their
+ Date Understanding: Given a small set of quantities (e.g., three pianos, two strawberries,
+ sentences about a particular date, answer the one table, and two watermelons), determine
+ provided question. the number of a certain object/item class (e.g.,
+ fruits). 
+ Disambiguation QA: Given a sentence with 
+ an ambigious pronoun, either determine Penguins in a Table: Given a unique table of
+ whether the sentence is inherently ambigu- penguins (and sometimes some new informaous (i.e., the thing that the pronoun refers to tion), answer a question about the attributes
+ cannot be inferred by given information) or, if of the penguins. 
+ the pronoun can be implicitly deduced, state 
+ 1This task has a particular focus on negations and was
+ the antecedent of the pronoun (i.e., the noun 
+ designed to understand whether LLMs can distinguish deducto which the pronoun refers). tively valid arguments from formal fallacies.
+
+ 
+
+ 
+
+ 
+ Reasoning about Colored Objects: Given a 
+ context, answer a simple question about the 
+ color of an object on a surface. 
+ Ruin Names: Given an artist, band, or movie 
+ name, identify a one-character edit to the 
+
+ name that changes the meaning of the input 
+ and makes it humorous. 
+ Salient Translation Error Detection: Given 
+ a source sentence written in German and its 
+ translation in English, determine the type of 
+ translation error that the translated sentence 
+ contains. 
+
+ Snarks: Given two nearly-identical sentences, 
+ determine which one is sarcastic. 
+
+ Sports Understanding: Determine whether 
+ a factitious sentence related to sports is plausible. 
+
+ Temporal Sequences: Given a series of 
+ events and activities a person has completed 
+ in the course of a day, determine what time, 
+ during the day, they might have been free to 
+ perform another activity. 
+
+ Tracking Shuffled Objects: Given the initial positions of a set of objects and a series 
+ of transformations (namely, pairwise swaps) 
+ applied to them, determine the final positions 
+ of the objects. 
+
+ Web of Lies: Evaluate the truth value of a random Boolean function expressed as a naturallanguage word problem. 
+ Word Sorting: Given a list of words, sort 
+ them lexicographically.

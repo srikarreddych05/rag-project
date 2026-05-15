@@ -5,9 +5,9 @@
   "chunk_key": "medium",
   "chunk_chars": 2048,
   "overlap_chars": 256,
-  "total_chunks": 9,
+  "total_chunks": 651,
   "embedding_dim": 768,
-  "embed_time_sec": 30.02,
+  "embed_time_sec": 730.05,
   "index_type": "IndexFlatIP",
   "seed": 42
 }

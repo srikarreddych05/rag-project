@@ -1,0 +1,823 @@
+RLHF-Blender: A Configurable Interactive Interface 
+ for Learning from Diverse Human Feedback 
+
+ 
+
+ Yannick Metz1 David Lindner2 Raphae l Baur2 Daniel Keim1 Mennatallah El-Assady2
+
+ 
+ Abstract tial biases in the data; (2) the feedback type can be adapted
+ to a particular task or user based on preferences, knowledge
+ To use reinforcement learning from human feedstate, or available input modalities; (3) agents can actively
+ back (RLHF) in practical applications, it is cruselect an appropriate type of feedback during training to
+ cial to learn reward models from diverse sources 
+ optimize learning. However, implementing such systems
+ of human feedback and to consider human factors 
+ is challenging because it requires an interplay of different
+ involved in providing feedback of different types. 
+ disciplines, such as machine learning, user interface design,
+ However, the systematic study of learning from 
+ and even psychology. A particular limitation is that there
+ diverse types of feedback is held back by limited 
+ are no readily available tools to collect and learn from distandardized tooling available to researchers. To 
+ verse types of human feedback. Consequently, there has
+ bridge this gap, we propose RLHF-Blender, a conbeen little systematic investigation of learning from a larger
+ figurable, interactive interface for learning from 
+ set of feedback types. 
+ human feedback. RLHF-Blender provides a modular experimentation framework and implemen- Moreover, existing estimates of human feedback quality
+ tation that enables researchers to systematically used in reward modeling are often based on simplified asinvestigate the properties and qualities of human sumptions (Ghosal et al., 2023). Grounding assumptions on
+ feedback for reward learning. The system facil- the quality of human feedback in data from human subject
+ itates the exploration of various feedback types, studies can improve the learning of human-aligned reward
+ including demonstrations, rankings, comparisons, models. 
+ and natural language instructions, as well as stud- 
+ To enable such studies, we propose RLHF-Blender, which
+ ies considering the impact of human factors on 
+ provides a standardized and modular setup that enables systheir effectiveness. We discuss a set of concrete 
+ tematic empirical studieswith human subjects to study learnresearch opportunities enabled by RLHF-Blender. 
+ ing from different feedback types (Figure 1). RLHF-Blender
+ More information is available at our website. 
+ generalizes across various possible environments and users
+ and enables a detailed analysis of various dependencies to
+ improve estimates of human feedback characteristics like ir-
+ 1 Introduction 
+ rationalityorbias. Ourprototypeimplementationshowcases
+ a series of user interactions for different types of human
+ Reinforcement learning from human feedback (RLHF) is 
+ feedback and how they can be processed as input for reward
+ a powerful tool to train agents when it is difficult to specify 
+ models. We aim to align the efforts of machine learning and
+ a reward function or when human knowledge can improve 
+ human-computer interaction towards a goal of expressive
+ training efficiency. Recently, using multiple forms of huand versatile human feedback for human-AI interaction.
+ man feedback for reward modeling has come into focus 
+ (Jeon et al., 2020; Ghosal et al., 2023; Ibarz et al., 2018; Contributions In this paper, we (1) Highlight challenges
+ B y k et al., 2022a; Mehta & Losey, 2022). Using diverse and possible solutions for learning from diverse human
+ sources of information opens up several possibilities: (1) feedback. We discuss how considering different dependenfeedback from different sources allows for correcting poten- cies can improve the estimation of human feedback quality.
+ When then present a standard encoding scheme for human
+ 1Department of Computer and Information Science, University of Konstanz, Germany 2Department of Computer Science, feedback ; (2) Introduce RLHF-Blender as the implementa-
+ ETH Zurich, Switzerland. Correspondence to: Yannick Metz tion of an interactive application for the investigation of hu-
+ <yannick.metz@uni-konstanz.de>. man feedback in reinforcement learning; (3) Discuss potential future research opportunities to learn from diverse hu-
+ Interactive Learning with Implicit Human Feedback Workshop at 
+ man feedback enabled by our system. RLHF-Blender will
+ ICML 2023, Honolulu, Hawaii, USA, 2023. Copyright 2023 by 
+ be made available for research as open-source software.
+ the author(s). 
+ 3202 
+ guA 
+ 8 
+ ]GL.sc[ 
+ 1v23340.8032:viXra 
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+
+ 
+
+ 
+
+ 
+
+ Figure 1. An overview of RLHF-Blender: The user interface serves samples of agent behavior to the user. These samples are drawn from
+ an episode buffer with steps from an online RL agent or offline data sources. Via the user interface, users can provide different types of
+ feedback. RLHF-Blender translates these different types of feedback into a standard encoding, which is then passed to a reward model.
+ All user interactions and feedback can be logged and stored for post-hoc data analysis and reward model training.
+
+ 2 Related Work uncovered a positive effect on agent performance and challenges like the intuitiveness of different feedback types or
+ In this section, we provide a brief overview of work on 
+ frustration if the robot ignores human feedback. In a differreinforcement learning from human feedback. 
+ ent study (B y k et al., 2020) with 27 total participants, the
+ Reinforcement Learning from Human Feedback Us- correct formulation of queries was investigated. This study
+ ing human feedback as the sole or an additional source of re- showed that an information-gain objective decreasing uncerward information has gained traction in research (Ng et al., tainty was well suited to propose effective questions. There
+ 2000; Knox & Stone, 2009; Griffith et al., 2013; Chris- has been a recent effort to provide testing environments for
+ tiano et al., 2017), especially for the alignment of large lan- human-subject experimentation in reinforcement learning
+ guage models (Ouyang et al., 2022). This paper focuses (Taylor et al., 2021) or active querying (B y k et al., 2022b).
+ on learning rewards solely from human feedback, exclud- However, existing work has focused on simple feedback
+ ing approaches like interactive reward shaping (Knox & types and user interfaces, and more extensive human studies
+ Stone, 2009; Warnell et al., 2017). Different types of feed- as possible future research directions have been highlighted.
+ back, ranging from ratings, demonstrations (Ng et al., 2000; 
+ Abbeel & Ng, 2004), comparisons (Wirth et al., 2017) to in- 3 Learning from Human Feedback
+ terruptions (Hadfield-Menell et al., 2017) or even language 
+ and narrations (Fish et al., 2018; Sumers et al., 2022b) has Preliminaries In this work, we are interested in analyzbeen proposed. A wide range of different types of feed- ing human feedback used for reward learning for training
+ back can be interpreted via a common framework of reward- machine learning agents. Our discussion is not restricted to
+ rational choice (Jeon et al., 2020). a specific implementation of reinforcement learning from
+ human feedback (Christiano et al., 2017; Wirth et al., 2017).
+ Modeling Irrationality and Bias Initial research in 
+ We assume that an agent can learn from a set of observations
+ learning from human feedback worked with the assumpgenerated in an online learning process from the agent acttion of optimal human feedback (Ng et al., 2000; Abbeel 
+ ing in an environment or based on offline data from recorded
+ & Ng, 2004), but it has been established that human feedbehavior of, e.g., humans or a trained ML model. In general,
+ back is generally sub-optimal and noisy (Ramachandran & 
+ the reward function for a task is fully specified by human an-
+ Amir, 2007; Ghosal et al., 2023). Models like a Boltzmann 
+ notators. In certain conditions, a ground-truth reward funcdistribution capture human irrationality in decision-making 
+ tion can be available for the complete or part of the obser-
+ (Luce, 2012) and feedback (Ziebart et al., 2010; Jeon et al., 
+ vation space. This allows us to compare human feedback
+ 2020). However, such models are often based on simplified 
+ with such ground-truth rewards. Additionally, we will disassumptions. Studying the characteristics of feedback in hucuss the possibility of calibrating estimates of human feedman studies can improve the estimation of irrationality and 
+ back quality based on a ground-truth reward function.
+ bias and, in turn, learning based on these reward models. 
+ Human-Centered Studies Despite calls to ground mod- 3.1 Dependencies Influencing Feedback Quality
+ els of human feedback in human-subject studies instead of 
+ Previous work has pointed at differences in human irrasimplified heuristics (Ghosal et al., 2023; Shah et al., 2019), 
+ tionality for different types of feedback (Ghosal et al., 2023).
+ so far, the investigation of human factors in learning from 
+ There are a series of various factors and dependencies that
+ feedback, in particular from different types, has been limcan influence the quality of human feedback.
+ ited. One existing study explored the interaction of 20 participants with a robot via different input channels (Koert We start with dependencies that can be directly disentanet al., 2020) in a simulated kitchen and a sorting task. They gled and analyzed via human subject studies:
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ Type-Dependency As has been noted before, qual- targets a single observation/generation or contains a relative
+ ity might differ between types of feedback, e.g., compar- statement; (4)ifitisgivenforinstances, i.e., particularstates
+ isons might have a higher quality compared to ratings, etc. and actions, or general features; (5) what actual feedback
+ (Ghosal et al., 2023). information is available based on the human intent; and, (6)
+ Task-Dependency We can generally assume that the how the feedback was expressed. In the following, we defeedback quality is dependent on the task, e.g., a tasks obser- scribe the attributes required in common feedback encoding.
+ vation space-dimensionality, complexity, diversity of possi- 
+ Observations can be provided from different sources, such
+ ble (close-to)-optimal policies, among other characteristics. 
+ as recorded state-actions sequences from online agents act-
+ Progress-Dependency Feedback can differ in quality 
+ ing in the environment, offline data, demonstrations generat different training phases, e.g., at the beginning or with 
+ ated by a human expert on the fly, etc. We can give feeda converged model policy (Arzate Cruz & Igarashi, 2020; 
+ back at different levels of granularity, e.g., for the entire
+ Knox et al., 2012). 
+ episode level or a single state, etc. Each encoding instance
+ of feedback thus contains a reference to a single or a set of
+ Additionally, there are additional dependencies that may in- episodes/states/segments, which we call the targets T of a
+ fluence feedback but are only partially measurable because feedback instance. The target reference allows us to assign
+ they cannot be fully disentangled from other dependencies: feedback to available state-action pairs. In one special case,
+ Personality-Dependency Feedback can depend on a feedback might not be targeted at any particular set of statehuman s personality or background, which might influ- action pairs, which might be indicated by a unique value
+ ence the quality under different criteria. This might en- and can be handled by a downstream reward model.
+ compass things such as directness or frustration tolerance 
+ Many types of human feedback can be assigned to targets
+ (ArzateCruz&Igarashi,2020;Lindner&El-Assady,2022). 
+ observed by the human, i.e., a rating or preference compar-
+ Knowledge-Dependency A human s ability to give highison of samples shown to the human. However, feedback
+ quality feedback can depend on their knowledge, i.e., if the 
+ can also be generative, i.e., containing new behavior gentask is of high complexity or requires domain expertise. 
+ erated by humans as demonstrations or desired goal states.
+ Demand-Dependency Cognitive demand and effort can 
+ From a modeling perspective, we can encode generated obplay a significant role in the quality of feedback, particuservations equivalently to existing ones by integrating them
+ larly if we might expect feedback to be incomplete or inacas target references. However, as generated behavior is not
+ curate due to high effort (Knox et al., 2012). 
+ sampled from the same underlying policy as observed behavior, it should be treated accordingly. 
+ These, and potentially additional dependencies, can be the 
+ Thirdly, feedback might be defined for a single, absolute
+ target of experimental evaluation, and understanding them 
+ target, for example, a rating or desired goal state or a relabetter can improve reward modeling in the future. Theretive statement, e.g., a ranking or comparison. Such a relafore, we present a dynamic and flexible experimentation 
+ tive statement is expressed via a partial ordering T T 
+ environment that allows us to cover a large space of tasks, 1 2 
+ T ,..., encoded via a list of targets and respective ranking
+ types of feedback, and users. 3 
+ indices, e.g., 1 and 2, in a pairwise comparison. If no partial ordering is defined, e.g., for a batch of demonstrations,
+ 4 Human Feedback Types we assume each target to be absolute and split batches of
+ feedback into absolute elements. 
+ We strive to enable learning from diverse human feedback. 
+ To enable this, we first outline a structuring scheme that Feedback might be given for instances, i.e., entire obsercaptures a wide range of possible human feedback. This vations, or on a feature-level, i.e., for abstract features.
+ structuring leads to a standard encoding format for arbitrary Feature-level feedback might highlight important or desired
+ feedback. We then discuss how five commonly used types of features via techniques like gaze tracking or asking humans
+ human feedback can be modeled can be interpreted via the for desired goal states. When constraining feature-level
+ encoding. In the following chapter, we present interaction feedback to a subset of the observation space, we can save
+ mechanics for these feedback types and describe how our this feedback in the same format. However, we add a flag to
+ software framework interprets them. indicate feature-level instead of instance-level feedback.
+ After establishing the feedback target, we now need to clas-
+ 4.1 Structuring Human Feedback 
+ sify the information humans give based on their intent. We
+ We structure incoming human feedback according to six use the categories of evaluative, instructive, descriptive, and
+ core dimensions: (1) the granularity of feedback; (2) if it non-intentional feedback. For evaluative feedback, we astargets observed behavior or includes generated ; (3) if it sume a score is available according to the target granular-
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ pendence). It may be given at different levels of granularity;
+ ity, e.g., a rating for an episode or a comparative ranking becommon are evaluative feedback for an entire episode or
+ tween features. Instructive feedback, like demonstrations 
+ for single steps (Knox & Stone, 2009; Griffith et al., 2013).
+ or corrections, contains a reference to a target, potentially a 
+ As users, we must be able to select a clearly defined target
+ confidence/optimality score, and often either a full action 
+ and rate it via some numerical or ordinal input. This type of
+ distribution or single action assigned to a state, assumed 
+ feedback is comparatively easy to utilize for reward models
+ to represent the human-optimal policy. Lastly, descriptive 
+ because it can be used as a prediction target.
+ feedback contains feature-level information or annotations 
+ targeted at the entire tasks and environment. F2: Comparative Feedback Here, a user makes
+ a relative judgment, i.e., a pairwise comparison be-
+ Finally, feedback might either be expressed explicitly, i.e., 
+ tween two targets or a ranking of multiple targets.
+ via conscious direct human input, or implicitly, i.e., indirect, 
+ This type of preference-based feedback is widely used bepotentially subconscious expressions like gazes or mimics. 
+ cause it is often easier for humans to give comparative judg-
+ While it is not feasible to implement a universal encoding 
+ ment compared to absolute scores (Wirth et al., 2017). Comthat directly fits raw inputs from each available implicit feedparative feedback is a set of targets with an associated orderback type, our encoding supports the passing of extracted 
+ ing relation (e.g., rank values). A common granularity is segscores, features, or instances alongside a potential quality/ments of states-action sequences (Wirth et al., 2017; Chrisconfidence score that encodes the estimated extraction qualtiano et al., 2017). For comparative feedback, users must
+ ity from an extraction model. However, additional features 
+ be able to select a set of targets and express order or prefand meta-data might be passed alongside each feedback as 
+ erence via their input. Rankings of targets need to be transinput for custom downstream reward models. 
+ lated into scores as prediction targets for reward models.
+ A Standard Encoding for Human Feedback We uti- 
+ F3: Corrective Feedback Here, the user has a
+ lize these dimensions to classify feedback into standard entrajectory showcasing imperfect behavior as a refercoding. We combine each feedback instance with additional 
+ ence and needs to instruct via an improved strategy.
+ metadata like timestamps, verbal meta-level comments, un- 
+ This can be done either implicitly, e.g., by pushing a robot
+ certainty, etc., enabling detailed downstream analysis. We 
+ into a correct position (Mehta & Losey, 2022), or explicitly
+ summarize the standard encoding as an abstract grammar: 
+ via specifying a better action. Implicit corrections require
+ an additional step translating the corrected trajectory into a
+ FB < T|{T ,T ,...},CL,Info,Meta-Data > 
+ 1 2 
+ sequence of agent actions. Common granularities are cor-
+ T Episode|State|Segment|All 
+ rections for single states or short segments. Corrections are
+ Info Evaluate|Instruct|Describe|None given as either a preferable policy distribution or optimal ac-
+ Evaluate score tion for each target. User interactions implicit interactions
+ enable correct behavior, e.g., by dragging or allowing the
+ Instruct Policy|Action 
+ user to specify a correct action in a state. Corrective feed-
+ Describe Mask|State,Annotation 
+ back can be used to directly optimize the behavioral pol-
+ None ... icy of an RL agent or translated into comparative feedback,
+ CL Instance|Feature with the corrective trajectory as the preferred trajectory.
+ Meta-Data Timestamp,User-ID,.. F4: Demonstrative Feedback Here, the human
+ is asked to provide a reference of optimal behavior that the agent should imitate (Ng et al., 2000).
+ 4.2 Feedback Types 
+ Like corrective feedback, it is instructive, providing actions
+ To outline the utility of our proposed system and framework, for a sequence of generated states. This type of feedback
+ we choose five exemplary types of feedback and outline user generally requires an environment-specific user interface to
+ interactions, how these types of feedback can be encoded, generate demonstrations. In some cases, e.g., in continuous
+ and finally, comment on how a reward model might interpret control environments, it may not be feasible for humans to
+ them. In subsection 5.2, we discuss an implementation for a generate demonstrations. Similar to explicit corrective feeduser interface enabling these types of feedback. back, wecanusedemonstrationsdirectlytooptimizethepolicy via supervised learning or assign demonstrated behavior
+ F1: Evaluative Feedback We define this type 
+ the highest possible reward to optimize the reward model.
+ of feedback for cases in which a human gives a numerical or otherwise quantifiable judgment of a tar- F5: Descriptive feedback While there are difget, e.g., binary feedback or a numeric score (Arzate Cruz ferent ways of defining descriptive feedback, we
+ & Igarashi, 2020). It is generally defined for a single target chose a formulation in which descriptive feedback
+ (simultaneous feedback for a group of targets can be split is a qualitative judgment about features (Sumers et al.,
+ into single-target feedback by assuming conditional inde- 2022a). For example, certain feature values might be desir-
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ able to achieve a certain (sub-)goal. Therefore, specifying a 
+ in Figure 2. The interface enables five separate interactions
+ (partial) goal state could be treated as descriptive feedback. 
+ which can be dynamically enabled or disabled: Ratings, so
+ Toenablethistypeoffeedback, asystemmustprovideaway 
+ evaluative feedback targeted at observed episodes, can be
+ for users to annotate or generate inputs in the feature space, 
+ given via a slider, which can be adjusted to allow for dife.g., by highlighting important features or generating deferent granulates, i.e., only binary or more fine-grained ratsired goal states). Descriptive feedback could be treated as a 
+ ings on a scale. Comparisons or rankings are implemented
+ constraint during reward model optimization (e.g., the presvia a drag & drop interaction that allows users to put a set
+ ence of features should lead to a higher predicted reward). 
+ of episodes in a desired order. Again, the number of possible elements can be dynamically adjusted, e.g., only to enable pairwise comparisons. Furthermore, for vision-based
+ 5 An Implementation for Reinforcement 
+ applications, shown in Figure 2 is the BabyAI (Chevalier-
+ Learning from Different Feedback Types Boisvertetal.,2019)RLenvironment, brushingallowsusers
+ to specify feature importance. By brushing a region in the
+ This section describes our system implementation, starting 
+ image, important or unimportant regions can be highlighted,
+ with an overview and then discussing sub-components. 
+ which can be passed onto an agent as additional information
+ (Guan et al., 2021). Finally, it allows the integration of ad-
+ 5.1 System Overview 
+ ditional modules to generate demonstrations and action ad-
+ RLHF-Blender (see Figure 1) consists of three major compo- vice. Humans can select a section or single state of episodes
+ nents: (1) An interactive user interface that enables brows- to give corrective feedback, e.g., by inputting a better action
+ ing episodes or segments from a set of available state-action compared to the one taken by the agent. For demonstrations
+ sequences and implements multiple feedback interactions or corrections, the interface allows to integrate environmentwhich can be enabled or disabled dynamically, (2) a feed- specific interfaces.
+ back processor consisting of a sampling and a translator 
+ This primary interface can be enriched with additional inunit, to serve appropriate episodes/segments to the user, and 
+ teraction mechanics and visualizations, e.g., to investigate
+ to translate human feedback to a standardized format, (3) 
+ possible explainability methods. Our system allows the user
+ a consistent software interface to train reward models with 
+ to scroll through the entire dataset of existing episodes, e.g.,
+ the episode data and human feedback. All three components 
+ all the historically generated trajectories by current and past
+ are highly modular to enable different combinations of modagents. Figure 2 shows a scroll bar on the left side that enules for versatile human-subject studies. 
+ ables episode selection, as well as highlighting of already
+ The system enables different training configurations: It can labeled episodes or potentially high-impact episodes (indibe used with online data, i.e., an RL agent is trained syn- cated via color, in this case, purple).
+ chronously with a reward model. During an experiment ses- 
+ The bottom-right corner of Figure 2 showcases the possision, a reward model and agent can be trained on the human 
+ bility of integrating views for additional information. In
+ feedback reward model, which in turn allows the sampling 
+ this case, it presents a user with an estimate of their feedof new trajectories by rolling out the online policy. Howback s quality or success, e.g., by comparing a ground-truth
+ ever, such a setup might require careful synchronization or 
+ model without human reward with the performance of a
+ tuning. Therefore, the preferred configuration is an offline 
+ user-trained reward model. We plan for the system to have
+ mode, which uses pre-collected episode data to train reward 
+ the ability to integrate views that can showcase various types
+ models. A suitable dataset, e.g., contains trajectories generof information, or even explainability tools, that can support
+ ated by agents of different skill levels. One can dynamically 
+ the human and tackle issues such as lack of feedback and
+ serve episodes of different skill levels during an experiment 
+ resulting frustration. 
+ session. Alternatively, episodes labeled with a ground-truth 
+ reward function allow the sampling of increasingly higher- 
+ 5.3 Feedback Processor 
+ skill behavior, potentially adapted to human feedback performance. A second important component is the feedback processor,
+ which handles both the processing of incoming human feed-
+ 5.2 User Interface back of different types and the selection of episodes served
+ to the human, similar to querying the human for feedback
+ Our application provides a comprehensive user interface, 
+ at a particular point in training. 
+ which provides a series of visual interfaces and interactions 
+ for different feedback types. The interface can be dynam- 
+ 5.3.1 TRANSLATOR 
+ ically configured in the experiment design stage, e.g., enabling or disabling different types of feedback and UI ele- A translator component receives potentially heterogements. The interface with the feedback interactions is shown neously structured feedback from the user interface. The
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ Figure 2. A possible realization of the interface enabling all described feedback types. Users can rate individual episodes using the
+ interactive Likert scale. Users provide comparative feedback by dragging and dropping episodes into different categories. For a
+ selected episode, the interactive control element allows users to correct actions in previously sampled episodes. Here, the agent makes an
+ unnecessary turn, and the user corrects it by selecting the corresponding point in the trajectory and suggesting another action. Throughout
+ the interface, visual hints encourage the user to correct specific actions. The same control element is used to generate demonstrations
+ from scratch, e.g., how to reach the next crucial item in this environment. The brush tool allows users to highlight crucial parts of the
+ agent observation to provide descriptive feedback. 
+ translator depends on the standard feedback encoding pre- to select the most appropriate samples and perform
+ sented in subsection 4.1 as the data storage format for trans- targeted queries. For example, one can select samples
+ lated feedback. This standardized feedback can be used to with a high reward model loss if a reward model is
+ train single- or multi-type reward models. The translator trained with feedback in the background.
+ component combines and matches feedback sent from the State-Machine: We can switch sampling strategy
+ user interface with the respective segments, meta-data, etc. throughout the process, e.g., starting with random
+ sampling, then going over to query-based sampling,
+ or changing data sources throughout the experiment.
+ 5.3.2 SAMPLING/QUERYING COMPONENT State-machinebehaviorcanbecombinedwiththeother
+ modes based on set criteria. 
+ A sampling component determines which samples to show 
+ in the user interface, i.e., for which samples we query the The sampling component is designed modularly to integrate
+ user for information. Depending on the desired setup, we potential advanced query mechanisms and sampling stratemight use different sampling modes, ranging from passive gies for experimentation. This allows us to analyze the efto active. We can configure the user interface to enable man- fect of different strategies on human behavior, reward model
+ ual episode selection by the human, i.e., by providing an training, or online training of RL agents.
+ overview of the data buffer with the option to analyze samples in detail. This does not involve programmatic sampling. 
+ 5.4 Reward Model 
+ Alternatively, we provide three sampling modes: 
+ Based on the trajectory data and collected human feedback,
+ Random: Randomly sample episodes from the replay we train reward models. Our system is directly integrated
+ buffer without regard for the quality or diversity of with the library of reward networks of the imitation package
+ shown samples. This might serve as a valuable baseline (Gleave et al., 2022), which simplifies compatibility with
+ to compare against more advanced sampling strategies. different algorithms and avoids code duplication.
+ Progressive: If an ordering of the data buffer is avail- 
+ We need to specify input data and a loss function for reward
+ able, e.g., by a ground-truth reward function or order 
+ model training. Input data is available in the standard feedof generation by an online RL agent, we can choose to 
+ back encoding presented above, which states/actions etc.,
+ progressively sample increasingly high-quality or new 
+ served from the buffer as model input. A developer can
+ samples to simulate training progress. 
+ choose a loss function dynamically based on the available
+ Query-Based: We may define more advanced metrics 
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ feedback data. For example, suppose numeric evaluative we can select additional instructions or info displayed to the
+ feedback is available. Then, we can train a reward model participant when starting the experiment.
+ with a simple regression loss like mean squared error to es- 
+ RL from human preferences is often implemented asyntimate a human-optimal reward function for state and potenchronously, i.e., with a (pre-trained) RL agent being optitial actions. If both a ground-truth reward function and feedmized based on an existing version of the reward model.
+ back with a single state granularity are available, we might 
+ Trajectories generated in this process are then saved in the
+ also choose a shaping reward model to predict a policydata buffer. Then human preferences are collected based
+ shaping term (Knox & Stone, 2009; Warnell et al., 2017). 
+ on the collected data. Here, we might choose either a ran-
+ For different types of feedback, particularly instructive or 
+ dom or progressive sampling of the buffer elements. A recomparativefeedback, wemightchooseadifferentlossfuncward model is then optimized via supervised learning on the
+ tion to optimize the reward model (Christiano et al., 2017). 
+ dataset of rated comparisons. Here, we may choose a sim-
+ Again, the library is designed modularly, allowing the inte- ple neural network-based reward model which receives singration of different reward models or loss functions. Fur- gle states as an input and outputs a single scalar reward estithermore, suppose multiple feedback types are used simulta- mate. We then choose a loss function that optimizes a score
+ neously. In that case, one may either apply different losses function from pairwise preferences (Christiano et al., 2017).
+ to the same underlying reward model or aggregate the prediction from multiple reward models, e.g., via weighting or 6.2 Investigating Effectiveness of Multi-type Feedback
+ voting. Furthermore, additional data passed via the standard 
+ To investigate the effectiveness of simultaneous multi-type
+ encoding, like confidence scores or meta-data, are available 
+ feedback, we enable multiple feedback types simultaneat training time and might be used as additional inputs, conously, for example, ratings, ranking, and correction/action
+ straints, or ways to adapt the loss calculation. 
+ advice. For each episode, the participant can then choose
+ which feedback type to use, which could enable the analysis
+ 5.5 Post-hoc Analysis 
+ of preferential types of feedback for different users. Alter-
+ Finally, a key objective is facilitating post-hoc analysis, i.e., natively, one can instruct the user to utilize multiple types
+ analyzing the quality and dependencies of human feedback of feedback for the same samples, which allows for experin reinforcement learning scenarios. Therefore, our system imenting with inter-modal validation or calibration of reputs emphasis on detailed logging and persistent storage ward estimation methods. Combining numerical ratings and
+ of results. The standardized format allows the sharing and rankings of episodes could increase the expressiveness of
+ reusability of analysis scripts and tools. reward models compared to pure pairwise comparisons.
+ Experiments are logged into separate files or tables, which The system automatically handles the translations of difenables the analysis of individual, anonymous users. Along- ferent feedback into the standard encoding and subsequent
+ side the logged metadata and quantitative evaluation based logging. However, in the case of multi-type feedback, the
+ on reward model training or downstream training of RL choice of the reward modeling approach is more complex.
+ agents based on the learned reward model, we can investi- We might train a separate reward model with an individgate factors outlined in section subsection 3.1. ual loss function for each feedback type and then treat the
+ trainedmodelsasatypeofensemblethatmightbecombined
+ via custom voting or weighted averaging. Alternatively, we
+ 6 Research Opportunities for Diverse 
+ might optimize a single model via a multi-objective loss that
+ Human Feedback 
+ incorporates the different types of feedback. Finally, we can
+ We want to outline four possible study designs that can be utilize frameworks like reward-rational choice (Jeon et al.,
+ realized with our system. 2020) as a common loss function. Comparing these different approaches, therefore, is a main research opportunity.
+ 6.1 Reinforcement Learning from Human Preferences 
+ 6.3 More Accurate Estimations of Human Irrationality
+ Our system suits itself to replicate the well-known setup 
+ of reinforcement learning from human preferences (Chris- Humans might not be able to fully express their internal
+ tiano et al., 2017). During setup, we can configure a mini- (user-optimal) reward function via feedback, i.e., the feedmal user interface, potentially just with a progress bar and back is subject to noise or uncertainty stemming from an unthe ranking interface (see Figure 2D). Other types of feed- derlying human irrationality (Ghosal et al., 2023). In models
+ back are, therefore, disabled. We restrict the number of dis- such as the reward-rational choice framework (Jeon et al.,
+ played episodes to two for strict pairwise comparison. Fur- 2020), we interpret instances of human feedback as imperthermore, during the setup of the interactive user interface, fect expressions of an underlying reward function. Given a
+ choice from a set of possible choices c C and a ground-
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ ing function : C f with f being the set of distribu- 3.1, many possible influence factors exist. Therefore, we
+
+ tions over all possible trajectories of an agent, we define a could extend these calibration experiments via multiple dis-
+ Boltzmann-rational policy as (Jeon et al., 2020): tinct calibration phases or a continuous calibration where
+ we purposefully sample examples with a ground-truth reexp( E [r ( )]) 
+ P(c |r ,C) = (c ) U ward function or query the human for repeated feedback on
+ U (cid:80) c C exp( E (c) [r U ( )]) the same samples to investigate properties like consistency.
+ Here, the coefficient indicates the rationality, i.e., the cer- To enable this experimentation, the main necessary design
+ tainty or estimated quality of a choice, and in extension, choice here is an appropriate sampling component. For
+ the human feedback. As pointed out by Ghosal et al., most example, to enable multiple calibration phases, we might
+ work chooses a value for this coefficient based on assump- choose a state-machine sampling, which switches modes
+ tions, especially for simulated human feedback, which uses based on pre-defined time intervals, which changes the unthis formulation. The authors, therefore, propose to fit this derlying buffer from unlabeled online data to an offline
+ -coefficient to data for different types of feedback, like buffer with a ground-truth reward available. An expericomparisons, demonstrations, and interruptions. They use menter canalso implementa customsampling modulebased
+ an initial calibration phase with a known calibration reward on the given system and data types, which intermixes samfunction, similar to the previously described ground-truth ples of different data sources dynamically.
+ reward function, to estimate the coefficient s value for different types of feedback. However, the authors point to pos- 6.5 Investigating the Effect of Explainability
+ sible limitations of such a calibration approach. 
+ Finally, an interesting research question arises regarding the
+ RLHF-Blender can serve to investigate characteristics of potential role of explainability methods and additional vidifferent human feedback types across various user groups, sual information for human feedback. Such additional intasks, and training phases. Empirical results could serve as formation could improve the quality of human feedback or
+ guidelines or priors for future estimations of human reward help the user to identify episodes that can profit from feedusing the reward-rational choice or similar frameworks. Re- back in reward learning or reward shaping. Therefore, our
+ ferring to our motivating example of the -parameter in the system is designed to include additional visualizations or
+ Boltzmann distribution, we may assume that this is influ- values as widgets in the user interface. This enables comparenced by a range of different dependencies at a particular ative studies to study the effect of explainability techniques
+ task, feedback type, point during training, and user (see sub- on feedback quality, human confidence, and satisfaction.
+ section3.1). Forsimplicity, weproposetointerpretthevalue 
+ as a linear combination of these different dependencies: 
+ 7 Conclusion 
+ (cid:88) 
+ = + + +... 
+ type type task task progress progress As our system is still under development, we have not yet
+ fully evaluated and deployed our system in a realistic enviwith as potential weighting factors, and being estimated 
+ ronment, e.g., a large-scale user study. This also includes
+ for a specific setup. As a simplified assumption, we can, for 
+ other researchers applications of the system for custom exexample, assume a uniform weighting, i.e., = 1/K, with 
+ periments. While the system is designed to be highly modk being the number of considered factors. An estimate of 
+ ular, we might find that the current system design still redifferent dependencies would allow us to dynamically adapt 
+ quires substantial modifications and custom components or
+ the irrationality estimate during training, fitted to the sperestricts the system s applicability. Therefore, validating the
+ cific task, type of feedback, current progress in the trainsystem design in contact with potential users is an imporing, and additional factors. We can then calculate the value 
+ tant next step. We plan to make our system widely available
+ of the different dependencies by setting a particular option 
+ to the research community as an open-source project.
+ fixed, e.g., the feedback type, and then marginalizing over 
+ all other dependencies. However, this is generally infeasi- In this paper, we have presented a framework and implemenble, particularly when adding more and more dependencies. tation for a configurable interface enabling learning from di-
+ Therefore, we advocate for dynamic and flexible experimen- verse human feedback. We have presented possible depentation environments that cover a large space of tasks, types dencies that influence human feedback and should be empirof feedback, users, etc. ically investigated. We have then introduced RLHF-Blender
+ as a modular system that enables experimenting with differ-
+ 6.4 Training with Continuous Calibration ent configurations for user interfaces, feedback processing,
+ and reward modeling, thus enabling highly flexible setups.
+ Using just a single calibration at the beginning of the train- RLHF-Blender is available at https://rlhfblender.
+ ing, as we have just described (Ghosal et al., 2023), might info. 
+ be insufficient for a full calibration. As outlined in section 
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ References adaki, K. Reward Learning from Narrated Demonstrations. 2018. arXiv: 1804.10692v1. 
+ Abbeel, P. and Ng, A. Y. Apprenticeship learning via 
+ inverse reinforcement learning. In Proceedings of the Ghosal, G. R., Zurek, M., Brown, D. S., and Dragan, A. D.
+ Twenty-First International Conference on Machine Learn- The Effect of Modeling Human Rationality Level on
+ ing, ICML 04, pp. 1, New York, NY, USA, 2004. As- Learning Rewards from Multiple Feedback Types, Ausociation for Computing Machinery. ISBN 1581138385. gust 2023. URL http://arxiv.org/abs/2208.
+ doi: 10.1145/1015330.1015430. URL https://doi. 10687. arXiv:2208.10687 [cs].
+ org/10.1145/1015330.1015430. 
+ Gleave, A., Taufeeque, M., Rocamonde, J., Jenner, E.,
+ Arzate Cruz, C. and Igarashi, T. A survey on inter- Wang, S. H., Toyer, S., Ernestus, M., Belrose, N., Emactive reinforcement learning: Design principles and mons, S., and Russell, S. imitation: Clean imitation learnopen challenges. DIS 2020 - Proceedings of the ing implementations. arXiv:2211.11972v1 [cs.LG], 2022.
+ 2020 ACM Designing Interactive Systems Conference, URL https://arxiv.org/abs/2211.11972.
+ pp. 1195 1209, July 2020. doi: 10.1145/3357236. 
+ Griffith, S., Subramanian, K., Scholz, J., Isbell, C. L., and
+ 3395525. URL https://arxiv.org/abs/2105. 
+ Thomaz, A. Policy Shaping: Integrating Human Feed-
+ 12949v1. arXiv: 2105.12949 Publisher: Association 
+ back with Reinforcement Learning. Advances in Neural
+ for Computing Machinery, Inc ISBN: 9781450369749. 
+ Information Processing Systems, 2013. 
+ B y k, E., Palan, M., Landolfi, N. C., Losey, D. P., 
+ Guan, L., Verma, M., Guo, S. S., Zhang, R., and Kambhamand Sadigh, D. Asking easy questions: A userpati, S. Widening the pipeline in human-guided reinforcefriendly approach to active reward learning. In Kaelment learning with explanation and context-aware data
+ bling, L. P., Kragic, D., and Sugiura, K. (eds.), Proaugmentation. Advances in Neural Information Processceedings of the Conference on Robot Learning, voling Systems, 34:21885 21897, 2021. 
+ ume 100 of Proceedings of Machine Learning Research, pp. 1177 1190. PMLR, 30 Oct 01 Nov Hadfield-Menell, D., Dragan, A., Abbeel, P., and Rus-
+ 2020. URLhttps://proceedings.mlr.press/ sell, S. The off-switch game. In Proceedings of the
+ v100/b-iy-ik20a.html. 26th International Joint Conference on Artificial Intelligence, IJCAI 17, pp. 220 227. AAAI Press, 2017. ISBN
+ B y k, E., Losey, D. P., Palan, M., Landolfi, N. C., 
+ 9780999241103. 
+ Shevchuk, G., and Sadigh, D. Learning reward functions from diverse sources of human feedback: Op- Ibarz, B., Leike, J., Pohlen, T., Irving, G., Legg, S., and
+ timally integrating demonstrations and preferences. Amodei, D. Rewardlearningfromhumanpreferencesand
+ The International Journal of Robotics Research, 41 demonstrations in atari. Advances in neural information
+ (1):45 67, January 2022a. ISSN 0278-3649, 1741- processing systems, 31, 2018.
+ 3176. doi: 10.1177/02783649211041652. URL http: 
+ Jeon, H.J., Milli, S., andDragan, A.D. Reward-rational(im-
+ //journals.sagepub.com/doi/10.1177/ 
+ plicit) choice: A unifying formalism for reward learning,
+ 02783649211041652. 
+ December 2020. URL http://arxiv.org/abs/
+ B y k, E., Talati, A., and Sadigh, D. Aprel: A library for ac- 2002.04833. arXiv:2002.04833 [cs].
+ tive preference-based reward learning algorithms, 2022b. 
+ Knox, W. B. and Stone, P. Interactively shaping agents
+ Chevalier-Boisvert, M., Bahdanau, D., Lahlou, S., Willems, via human reinforcement: The tamer framework. In The
+ L., Saharia, C., Nguyen, T. H., and Bengio, Y. BabyAI: Fifth International Conference on Knowledge Capture,
+ First steps towards grounded language learning with a hu- September 2009. URL http://www.cs.utexas.
+ man in the loop. In International Conference on Learning edu/users/ai-lab?KCAP09-knox.
+ Representations, 2019. URL https://openreview. 
+ Knox, W. B., Glass, B. D., Love, B. C., Maddox, W. T., and
+ net/forum?id=rJeXCo0cYX. 
+ Stone, P. How humans teach agents: A new experimental
+ Christiano, P. F., Leike, J., Brown, T., Martic, M., Legg, S., perspective. International Journal of Social Robotics, 4:
+ and Amodei, D. Deep reinforcement learning from hu- 409 421, 2012. 
+ man preferences. Advances in neural information pro- 
+ Koert, D., Kircher, M., Salikutluk, V., D Eramo, C., and
+ cessing systems, 30, 2017. 
+ Peters, J. Multi-Channel Interactive Reinforcement
+ Facebook. React, 2023. URL https://react.dev. Learning for Sequential Tasks. Frontiers in Robotics
+ and AI, 7:97, September 2020. ISSN 2296-9144. doi:
+ Fish, H.-Y., Adam, T., Harley, W., Huang, L.-K., and Fragki- 10.3389/frobt.2020.00097. URL https://www.
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ frontiersin.org/article/10.3389/frobt. T. L., and Hadfield-Menell, D. Linguistic communi-
+ 2020.00097/full. cation as (inverse) reward design. April 2022b. doi:
+ 10.48550/arxiv.2204.05091. URL https://arxiv.
+ Lindner, D. and El-Assady, M. Humans are not Boltz- org/abs/2204.05091v1. arXiv: 2204.05091 ISBN:
+ mann Distributions: Challenges and Opportunities for 2204.05091v1. 
+ Modelling Human Feedback and Interaction in Reinforcement Learning. June 2022. doi: 10.48550/arxiv.2206. Taylor, M. E., Nissen, N., Wang, Y., and Navidi, N. Im-
+ 13316. URL https://arxiv.org/abs/2206. proving Reinforcement Learning with Human Assistance:
+ 13316v1. arXiv: 2206.13316. An Argument for Human Subject Studies with HIPPO
+ Gym, February 2021. URL http://arxiv.org/
+ Luce, R. D. Individual choice behavior: A theoretical abs/2102.02639. arXiv:2102.02639 [cs].
+ analysis. Courier Corporation, 2012. 
+ Tiangolo. Fastapi. https://fastapi.tiangolo.
+ Mehta, S. A. and Losey, D. P. Unified Learn- com//, 2023. Accessed: Wednesday 31st May, 2023.
+ ing from Demonstrations, Corrections, and Prefer- 
+ Warnell, G., Waytowich, N., Lawhern, V., and Stone,
+ ences during Physical Human-Robot Interaction, July 
+ P. Deep TAMER: Interactive Agent Shaping in
+ 2022. URL http://arxiv.org/abs/2207. 
+ High-Dimensional State Spaces. 32nd AAAI Confer-
+ 03395. arXiv:2207.03395 [cs]. 
+ ence on Artificial Intelligence, AAAI 2018, pp. 1545 
+ 1553, September 2017. doi: 10.48550/arxiv.1709.
+ Ng, A. Y., Russell, S., et al. Algorithms for inverse rein- 
+ 10163. URL https://arxiv.org/abs/1709. 
+ forcement learning. In Icml, volume 1, pp. 2, 2000. 
+ 10163v2. arXiv: 1709.10163 Publisher: AAAI press
+ Ouyang, L., Wu, J., Jiang, X., Almeida, D., Wain- ISBN: 9781577358008. 
+ wright, C. L., Mishkin, P., Zhang, C., Agarwal, S., 
+ Wirth, C., Akrour, R., Neumann, G., and Fu rnkranz, J. A
+ Slama, K., Ray, A., Schulman, J., Hilton, J., Kelton, 
+ survey of preference-based reinforcement learning meth-
+ F., Miller, L., Simens, M., Askell, A., Welinder, P., 
+ ods. J. Mach. Learn. Res., 18(1):4945 4990, jan 2017.
+ Christiano, P., Leike, J., and Lowe, R. Training lan- 
+ ISSN 1532-4435. 
+ guage models to follow instructions with human feedback, March 2022. URL http://arxiv.org/abs/ Ziebart, B. D., Bagnell, J. A., and Dey, A. K. Modeling
+ 2203.02155. arXiv:2203.02155 [cs]. interaction via the principle of maximum causal entropy.
+ 2010. 
+ Raffin, A., Hill, A., Gleave, A., Kanervisto, A., Ernestus, 
+ M., and Dormann, N. Stable-baselines3: Reliable reinforcement learning implementations. Journal of Machine 
+ Learning Research, 22(268):1 8, 2021. URL http:// 
+ jmlr.org/papers/v22/20-1364.html. 
+ Ramachandran, D. and Amir, E. Bayesian inverse reinforcement learning. In Proceedings of the 20th International 
+ Joint Conference on Artifical Intelligence, IJCAI 07, pp. 
+ 2586 2591, San Francisco, CA, USA, 2007. Morgan 
+ Kaufmann Publishers Inc. 
+ Shah, R., Gundotra, N., Abbeel, P., and Dragan, 
+ A. D. On the Feasibility of Learning, Rather 
+ than Assuming, Human Biases for Reward Inference, 
+ June 2019. URL http://arxiv.org/abs/1906. 
+ 09624. arXiv:1906.09624 [cs, stat]. 
+ Sumers, T. R., Hawkins, R. D., Ho, M. K., Griffiths, 
+ T. L., and Hadfield-Menell, D. How to talk so AI will 
+ learn: Instructions, descriptions, and autonomy, October 2022a. URL http://arxiv.org/abs/2206. 
+ 07870. arXiv:2206.07870 [cs]. 
+ Sumers, T. R., Hawkins, R. D., Ho, M. K., Griffiths, 
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ A Workflow 
+
+ In the following section, we want to present the current workflow for potential users of RLHF-Blender. In particular, we
+ outline how an experiment configuration can be created and show how the resulting data is logged and processed.
+
+ 1.Choose desired experiment setup: 
+ Displayed Reward 
+ Feedback Type Environment Information Modeling 
+
+ 
+
+ 
+ { } 
+ , , , 
+
+ BabyAI Safety-Gym HighwayEnv 
+
+ 
+ { , , , , } 
+
+ 
+ Evaluative Comparison Correction Demos Descriptions 
+
+ 2.Configure Application & Framework: 
+
+ 
+
+ 
+ UI Custom 
+ Environment Configuration Reward 
+ Selection Wizard Models 
+
+ 
+
+ 3. Run Experiment 
+
+ 
+
+ Customized 
+ Instruction Feedback User 
+ Interface Sessions 
+
+ 
+
+ 4. Analyze Data 
+
+ Logging 
+ & Persistent 
+ Storage 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ B Technical Specifications 
+
+ RLHF-Blender is implement as a client-server application, with a FastAPI (Tiangolo, 2023) Python web-server and a Reactbased (Facebook, 2023) user interface. 
+ The server is designed to integrate different sub-components, such as custom sampling, translation, or reward models. The
+ framework utilizes data formats compatible with widespread libraries Gym and StableBaselines3 (Raffin et al., 2021). This
+ ensures that we can support various RL environments, algorithms, and data structures and that researchers can integrate
+ our system into established workflows. Furthermore, the library is directly compatible with the library of reward models
+ included in the Imitation library (Gleave et al., 2022). 
+ The user interface is extendable via custom React components, e.g., to integrate custom explainability or information
+ visualizations. In particular, an interface for custom demonstration-generation components is available. Such components
+ could be created for specific RL environments. As a template, a demonstration generation interface for simple navigation
+ tasks used for BabyAI (Chevalier-Boisvert et al., 2019) is provided. 
+ RLHF-Blender can be deployed as a containerized application, potentially connected to a shared data storage for feedback,
+ e.g., an SQL database. This setup allows the application to scale to many clients and servers and could therefore enable
+ larger-scale distributed human experiments. 
+
+ C Code Example for Standardized Data Format 
+
+ The following code example showcases the described standard feedback encoding in Python code. Here, StandardizedFeedback serves as the container for arbitrary feedback that can be specified via the existing options.
+ import enum 
+ import gym 
+ from pedantic import BaseModel 
+ from typing import Union , List 
+ class EpisodeID (BaseModel ): 
+
+ Reference to a specific episode saved in a data buffer 
+
+ env name : str = # e . g .: BreakoutNoFrameskip v4 
+ benchmark type : str = # e . g .: trained 
+ benchmark id : int = 1 # e . g .: 1 
+ checkpoint step : int = 1 # e . g .: 1000000 
+ episode num : int = 1 # 
+ class FeedbackDimension (enum.Enum): 
+ def str ( self ): 
+ # just return the enum value 
+ return self .name 
+ def repr ( self ): 
+ # just return the enum value 
+ return self .name 
+ class Intention ( FeedbackDimension ): 
+ evaluate = 1 
+ instruct = 2 
+ describe = 3 
+ none = 4 
+ class Expression ( FeedbackDimension ): 
+ explicit = 1 
+ implicit = 2 
+ class Actuality ( FeedbackDimension ): 
+
+ 
+
+ 
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+ observed = 1 
+ hypothetical = 2 
+
+ class Relation ( FeedbackDimension ): 
+ absolute = 1 
+ relative = 2 
+
+ class Content ( FeedbackDimension ): 
+ instance = 1 
+ feature = 2 
+
+ class Granularity ( FeedbackDimension ): 
+ state = 1 
+ segment = 2 
+ episode = 3 
+ entire = 4 
+ class Target (BaseModel ): 
+ id : int = 1 
+ origin : str = replay 
+ timestamp : int = 1 
+
+ class Episode ( Target ): 
+ reference : EpisodeID = None 
+
+ class State ( Target ): 
+ reference : EpisodeID = None 
+ step : int = 1 
+
+ class Segment( Target ): 
+ reference : EpisodeID = None 
+ start : int = 1 
+ end : int = 1 
+
+ class StandardizedFeedbackType (BaseModel ): 
+ intention : Intention = Intention . evaluate 
+ actuality : Actuality = Actuality . observed 
+ relation : Relation = Relation . relative 
+ content : Content = Content . instance 
+ granularity : Granularity = Granularity . episode 
+ class Evaluation (BaseModel ): 
+ rating : Union[ float , int , List [ float ] , List [ int ]] = None 
+ comparison : Union[ float , int , List [ float ] , List [ int ]] = None 
+
+ class Instruction (BaseModel ): 
+ actions : Union[ Episode , State , Segment] = None 
+ goal : Union[ Episode , State , Segment] = None 
+ optimalilty : Union[ float , List [ float ]] = None 
+ class Description (BaseModel ): 
+ feature selection : List [gym. Space ] = None 
+ feature importance : Union[ float , List [ float ]] = None 
+ feature ranking : Union[ float , List [ float ]] = None 
+
+ 
+
+ 
+
+ 
+
+ 
+ RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback
+
+ 
+ class StandardizedFeedback (BaseModel ): 
+ feedback id : int = 1 
+ feedback timestamp : int = 1 
+ feedback type : StandardizedFeedbackType = StandardizedFeedbackType () 
+ content : Union[ Evaluation , Instruction , Description ] = None 
+ class AbsoluteFeedback ( StandardizedFeedback ): 
+ episode id : EpisodeID 
+ target : Union[ Episode , State , Segment] = None 
+
+ class RelativeFeedback ( StandardizedFeedback ): 
+ episode ids : List [ EpisodeID ] = [] 
+ target : List [Union[ Episode , State , Segment ]] = []

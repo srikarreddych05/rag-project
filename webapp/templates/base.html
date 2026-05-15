@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Scholar Stream{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="nav-brand" href="/">
+        <span class="brand-icon">&#9670;</span> Scholar Stream
+      </a>
+      <ul class="nav-links">
+        <li><a href="/" class="{% if request.url.path == '/' %}active{% endif %}">Search</a></li>
+        <li><a href="/dashboard" class="{% if request.url.path == '/dashboard' %}active{% endif %}">Dashboard</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>Scholar Stream &mdash; CS5202 Spring 2026 &mdash; Domain B, Project 9</span>
+      <span>Built with FAISS &bull; SentenceTransformers &bull; Anthropic Claude</span>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

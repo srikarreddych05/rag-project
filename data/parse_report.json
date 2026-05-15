@@ -1,145 +1,272 @@
 [
   {
-    "file": "A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf",
-    "status": "ok",
+    "file": "ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large___2510.00071v2.pdf",
+    "topic": "cot_reasoning",
+    "status": "error",
     "extractor": "pdfplumber",
-    "pages": 7,
-    "char_count": 32795,
+    "pages": 0,
+    "char_count": 0,
+    "quality_score": 0.0,
     "spacing_bug": false,
-    "warnings": []
+    "warnings": [
+      "Unexpected EOF"
+    ]
   },
   {
-    "file": "Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf",
-    "status": "ok",
-    "extractor": "pdfplumber",
-    "pages": 15,
-    "char_count": 62921,
-    "spacing_bug": false,
-    "warnings": []
-  },
-  {
-    "file": "ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf",
+    "file": "ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large__2305.17306v1.pdf",
+    "topic": "cot_reasoning",
     "status": "ok",
     "extractor": "pdfplumber",
     "pages": 6,
-    "char_count": 23137,
+    "char_count": 23577,
+    "quality_score": 1.0,
     "spacing_bug": false,
     "warnings": []
   },
   {
-    "file": "ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf",
-    "status": "ok",
-    "extractor": "pdfplumber",
-    "pages": 43,
-    "char_count": 135980,
-    "spacing_bug": false,
-    "warnings": []
-  },
-  {
-    "file": "CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf",
+    "file": "CROP_TokenEfficient_Reasoning_in_Large_Language_Models___2604.14214v1.pdf",
+    "topic": "cot_reasoning",
     "status": "ok",
     "extractor": "pdfplumber",
     "pages": 16,
-    "char_count": 53991,
+    "char_count": 55329,
+    "quality_score": 1.0,
     "spacing_bug": false,
     "warnings": []
   },
   {
-    "file": "DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf",
-    "status": "error",
-    "extractor": "pdfplumber",
-    "pages": 0,
-    "char_count": 0,
-    "spacing_bug": false,
-    "warnings": [
-      "Unexpected EOF"
-    ]
-  },
-  {
-    "file": "Hierarchical_Multiagent_Large_Language_Model_Reasoning_for_A__2512.13930v1.pdf",
-    "status": "error",
-    "extractor": "pdfplumber",
-    "pages": 0,
-    "char_count": 0,
-    "spacing_bug": false,
-    "warnings": [
-      "Unexpected EOF"
-    ]
-  },
-  {
-    "file": "Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf",
-    "status": "error",
-    "extractor": "pdfplumber",
-    "pages": 0,
-    "char_count": 0,
-    "spacing_bug": false,
-    "warnings": [
-      "Unexpected EOF"
-    ]
-  },
-  {
-    "file": "Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf",
+    "file": "DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLM__2601.03559v2.pdf",
+    "topic": "cot_reasoning",
     "status": "ok",
     "extractor": "pdfplumber",
-    "pages": 9,
-    "char_count": 45663,
+    "pages": 16,
+    "char_count": 67217,
+    "quality_score": 1.0,
     "spacing_bug": false,
     "warnings": []
   },
   {
-    "file": "Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf",
+    "file": "Effectiveness_of_ChainofThought_in_Distilling_Reasoning__2511.05184v1.pdf",
+    "topic": "cot_reasoning",
     "status": "ok",
     "extractor": "pdfplumber",
     "pages": 13,
-    "char_count": 51601,
+    "char_count": 53701,
+    "quality_score": 1.0,
     "spacing_bug": false,
     "warnings": []
   },
   {
-    "file": "Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf",
+    "file": "Large_Language_Models_Reasoning_Abilities_Under_NonIdea__2508.04848v1.pdf",
+    "topic": "cot_reasoning",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 9,
+    "char_count": 46008,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf",
+    "topic": "cot_reasoning",
     "status": "ok",
     "extractor": "pdfplumber",
     "pages": 19,
-    "char_count": 63815,
+    "char_count": 64914,
+    "quality_score": 1.0,
     "spacing_bug": false,
     "warnings": []
   },
   {
-    "file": "Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf",
-    "status": "ok",
-    "extractor": "pdfplumber",
-    "pages": 4,
-    "char_count": 13745,
-    "spacing_bug": false,
-    "warnings": []
-  },
-  {
-    "file": "Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf",
+    "file": "Response_Emergent_analogical_reasoning_in_large_languag__2308.16118v2.pdf",
+    "topic": "cot_reasoning",
     "status": "ok",
     "extractor": "pdfplumber",
     "pages": 14,
-    "char_count": 24860,
+    "char_count": 25703,
+    "quality_score": 1.0,
     "spacing_bug": false,
     "warnings": []
   },
   {
-    "file": "Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf",
-    "status": "ok",
-    "extractor": "pdfplumber",
-    "pages": 6,
-    "char_count": 15416,
-    "spacing_bug": false,
-    "warnings": []
-  },
-  {
-    "file": "Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf",
+    "file": "Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_f__2503.09567v5.pdf",
+    "topic": "cot_reasoning",
     "status": "error",
     "extractor": "pdfplumber",
     "pages": 0,
     "char_count": 0,
+    "quality_score": 0.0,
     "spacing_bug": false,
     "warnings": [
       "Unexpected EOF"
     ]
+  },
+  {
+    "file": "Understanding_Reasoning_in_ChainofThought_from_the_Hopf__2410.03595v1.pdf",
+    "topic": "cot_reasoning",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 28,
+    "char_count": 86600,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Conceptual_BeliefInformed_Reinforcement_Learning__2410.01739v4.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 28,
+    "char_count": 78489,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Designing_for_HumanAgent_Alignment_Understanding_what_h__2404.04289v1.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 6,
+    "char_count": 38176,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Language_Alignment_via_Nashlearning_and_Adaptive_feedba__2406.15890v1.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 7,
+    "char_count": 20806,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 19,
+    "char_count": 64914,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Reinforcement_Learning_from_Human_Feedback_Whose_Cultur__2407.17482v2.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 28,
+    "char_count": 80521,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Reinforcement_Learning_Meets_Large_Language_Models_A_Su__2509.16679v1.pdf",
+    "topic": "rlhf_alignment",
+    "status": "error",
+    "extractor": "pdfplumber",
+    "pages": 0,
+    "char_count": 0,
+    "quality_score": 0.0,
+    "spacing_bug": false,
+    "warnings": [
+      "Unexpected EOF"
+    ]
+  },
+  {
+    "file": "RLHFBlender_A_Configurable_Interactive_Interface_for_Le__2308.04332v1.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 14,
+    "char_count": 55573,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "RRHF_Rank_Responses_to_Align_Language_Models_with_Human__2304.05302v3.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 16,
+    "char_count": 57352,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Using_Large_Language_Models_to_Provide_Explanatory_Feed__2306.15498v1.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 12,
+    "char_count": 35376,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Value_Bonuses_using_Ensemble_Errors_for_Exploration_in___2602.12375v1.pdf",
+    "topic": "rlhf_alignment",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 22,
+    "char_count": 78090,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Additive_PowersofTwo_Quantization_An_Efficient_Nonunifo__1909.13144v2.pdf",
+    "topic": "efficient_inference",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 15,
+    "char_count": 50062,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "DREAM_Efficient_Dataset_Distillation_by_Representative___2302.14416v3.pdf",
+    "topic": "efficient_inference",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 14,
+    "char_count": 58121,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Efficient_LLM_Inference_on_CPUs__2311.00502v2.pdf",
+    "topic": "efficient_inference",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 6,
+    "char_count": 18103,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
+  },
+  {
+    "file": "Fewer_Weights_More_Problems_A_Practical_Attack_on_LLM_P__2510.07985v3.pdf",
+    "topic": "efficient_inference",
+    "status": "ok",
+    "extractor": "pdfplumber",
+    "pages": 25,
+    "char_count": 89423,
+    "quality_score": 1.0,
+    "spacing_bug": false,
+    "warnings": []
   }
 ]

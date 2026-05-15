@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Results — Scholar Stream{% endblock %}
+
+{% block content %}
+<div class="results-page">
+
+  <!-- Back + query header -->
+  <div class="results-header">
+    <a href="/" class="back-link">&larr; New Search</a>
+    <h2 class="results-query">&ldquo;{{ query }}&rdquo;</h2>
+  </div>
+
+  {% if error %}
+  <div class="error-card">
+    <strong>Error:</strong> {{ error }}
+  </div>
+
+  {% elif result %}
+
+  {% if result.gen_on and result.answer %}
+  <!-- Generated Answer Card -->
+  <div class="answer-card">
+    <div class="answer-card-header">
+      <span class="answer-label">Cited Answer</span>
+
+      <!-- Grounding badge -->
+      {% if result.grounding >= 0.7 %}
+        <span class="badge badge-green">Grounding: HIGH ({{ "%.2f"|format(result.grounding) }})</span>
+      {% elif result.grounding >= 0.4 %}
+        <span class="badge badge-yellow">Grounding: MEDIUM ({{ "%.2f"|format(result.grounding) }})</span>
+      {% else %}
+        <span class="badge badge-red">Grounding: LOW ({{ "%.2f"|format(result.grounding) }})</span>
+      {% endif %}
+
+      <span class="timing">{{ result.query_ms|int }}ms</span>
+      <button class="copy-btn" onclick="copyAnswer()">Copy</button>
+    </div>
+    <div class="answer-body" id="answerBody">
+      {{ result.answer | replace('\n', '<br>') | safe }}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Source Cards -->
+  <h3 class="sources-heading">Source Documents</h3>
+  <div class="sources-grid">
+    {% for chunk in result.chunks %}
+    <div class="source-card">
+      <div class="source-card-header">
+        <span class="source-rank">#{{ chunk.rank }}</span>
+        <span class="source-score">score {{ "%.3f"|format(chunk.score) }}</span>
+      </div>
+      <div class="source-title">{{ chunk.title }}</div>
+      <div class="source-meta">{{ chunk.authors }} &bull; {{ chunk.year or "n/a" }}</div>
+      <div class="source-excerpt">{{ chunk.excerpt }}...</div>
+      <div class="source-actions">
+        <a class="arxiv-btn"
+           href="https://arxiv.org/abs/{{ chunk.arxiv_id }}"
+           target="_blank">
+          View on arXiv &rarr;
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="error-card">No results found.</div>
+  {% endif %}
+
+</div>
+
+<script>
+function copyAnswer() {
+  const text = document.getElementById('answerBody').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+{% endblock %}

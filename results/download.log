@@ -1,40 +1,82 @@
-[download_papers] query='large language model reasoning chain-of-thought'  max=18
-  [ERR]  Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf: <urlopen error retrieval incomplete: got only 1048576 out of 6695687 bytes>
-  [OK]   Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf
-  [ERR]  Understanding_Reasoning_in_ChainofThought_from_the_Hopfieldi__2410.03595v1.pdf: HTTP Error 429: Unknown Error
-  [ERR]  DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf: <urlopen error retrieval incomplete: got only 1048576 out of 1232052 bytes>
-  [OK]   Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf
-  [OK]   ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf
-  [ERR]  Effectiveness_of_ChainofThought_in_Distilling_Reasoning_Capa__2511.05184v1.pdf: HTTP Error 429: Unknown Error
-  [OK]   CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf
-  [OK]   Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf
-  [OK]   ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf
-  [ERR]  ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large_Reaso__2510.00071v2.pdf: HTTP Error 429: Unknown Error
-  [OK]   Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf
-  [ERR]  Hierarchical_Multiagent_Large_Language_Model_Reasoning_for_A__2512.13930v1.pdf: HTTP Error 429: Unknown Error
-  [OK]   Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf
-  [OK]   Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf
-  [OK]   Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf
-  [ERR]  Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf: <urlopen error retrieval incomplete: got only 2097152 out of 4395376 bytes>
-  [ERR]  A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf: HTTP Error 429: Unknown Error
-[download_papers] query='large language model reasoning chain-of-thought'  max=18
-  [SKIP] Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf
-  [SKIP] Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf
-  [ERR]  Understanding_Reasoning_in_ChainofThought_from_the_Hopfieldi__2410.03595v1.pdf: HTTP Error 429: Unknown Error
-  [SKIP] DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf
-  [SKIP] Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf
-  [SKIP] ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf
-  [ERR]  Effectiveness_of_ChainofThought_in_Distilling_Reasoning_Capa__2511.05184v1.pdf: HTTP Error 429: Unknown Error
-  [SKIP] CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf
-  [SKIP] Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf
-  [SKIP] ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf
-  [ERR]  ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large_Reaso__2510.00071v2.pdf: HTTP Error 429: Unknown Error
-  [SKIP] Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf
-  [ERR]  Hierarchical_Multiagent_Large_Language_Model_Reasoning_for_A__2512.13930v1.pdf: <urlopen error retrieval incomplete: got only 2097152 out of 3997428 bytes>
-  [SKIP] Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf
-  [SKIP] Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf
-  [SKIP] Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf
-  [SKIP] Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf
-  [OK]   A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf
+2026-05-15 20:29:53,602  [cot_reasoning] query='chain-of-thought reasoning large language models'  max=10
+2026-05-15 20:29:53,603  Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=chain-of-thought+reasoning+large+language+models&id_list=&sortBy=relevance&sortOrder=descending&start=0&max_results=100
+2026-05-15 20:29:56,468  Got first page: 100 of 1478267 total results
+2026-05-15 20:29:56,792    [OK]   Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf
+2026-05-15 20:29:59,787    [ERR]  Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_f__2503.09567v5.pdf: <urlopen error retrieval incomplete: got only 2097152 out of 6695687 bytes>
+2026-05-15 20:30:01,739    [OK]   Understanding_Reasoning_in_ChainofThought_from_the_Hopf__2410.03595v1.pdf
+2026-05-15 20:30:04,073    [OK]   CROP_TokenEfficient_Reasoning_in_Large_Language_Models___2604.14214v1.pdf
+2026-05-15 20:30:07,170    [ERR]  ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large___2510.00071v2.pdf: <urlopen error retrieval incomplete: got only 1048576 out of 2301186 bytes>
+2026-05-15 20:30:07,235    [OK]   Large_Language_Models_Reasoning_Abilities_Under_NonIdea__2508.04848v1.pdf
+2026-05-15 20:30:09,334    [OK]   Response_Emergent_analogical_reasoning_in_large_languag__2308.16118v2.pdf
+2026-05-15 20:30:11,657    [OK]   DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLM__2601.03559v2.pdf
+2026-05-15 20:30:13,992    [OK]   ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large__2305.17306v1.pdf
+2026-05-15 20:30:16,322    [OK]   Effectiveness_of_ChainofThought_in_Distilling_Reasoning__2511.05184v1.pdf
+2026-05-15 20:30:18,324  [cot_reasoning] Done. 8 new downloads.
 
-[download_papers] Done. 1 new files. metadata → C:\Users\srika\rag-project\data\metadata.json
+2026-05-15 20:30:18,327  [rlhf_alignment] query='reinforcement learning human feedback alignment large language models'  max=10
+2026-05-15 20:30:18,329  Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=reinforcement+learning+human+feedback+alignment+large+language+models&id_list=&sortBy=relevance&sortOrder=descending&start=0&max_results=100
+2026-05-15 20:30:30,229  Got first page: 100 of 1635065 total results
+2026-05-15 20:30:41,251    [ERR]  Reinforcement_Learning_Meets_Large_Language_Models_A_Su__2509.16679v1.pdf: <urlopen error retrieval incomplete: got only 2097152 out of 3722540 bytes>
+2026-05-15 20:30:41,911    [OK]   Language_Alignment_via_Nashlearning_and_Adaptive_feedba__2406.15890v1.pdf
+2026-05-15 20:30:44,907    [OK]   RRHF_Rank_Responses_to_Align_Language_Models_with_Human__2304.05302v3.pdf
+2026-05-15 20:30:47,028    [OK]   Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf
+2026-05-15 20:30:49,373    [ERR]  RLHFBlender_A_Configurable_Interactive_Interface_for_Le__2308.04332v1.pdf: HTTP Error 429: Unknown Error
+2026-05-15 20:30:55,142    [OK]   Reinforcement_Learning_from_Human_Feedback_Whose_Cultur__2407.17482v2.pdf
+2026-05-15 20:30:57,455    [OK]   Using_Large_Language_Models_to_Provide_Explanatory_Feed__2306.15498v1.pdf
+2026-05-15 20:30:59,796    [ERR]  Conceptual_BeliefInformed_Reinforcement_Learning__2410.01739v4.pdf: HTTP Error 429: Unknown Error
+2026-05-15 20:31:00,213    [ERR]  Value_Bonuses_using_Ensemble_Errors_for_Exploration_in___2602.12375v1.pdf: HTTP Error 429: Unknown Error
+2026-05-15 20:31:00,516    [OK]   Designing_for_HumanAgent_Alignment_Understanding_what_h__2404.04289v1.pdf
+2026-05-15 20:31:02,517  [rlhf_alignment] Done. 6 new downloads.
+
+2026-05-15 20:31:02,520  [efficient_inference] query='efficient inference LLM quantization pruning distillation'  max=5
+2026-05-15 20:31:02,521  Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=efficient+inference+LLM+quantization+pruning+distillation&id_list=&sortBy=relevance&sortOrder=descending&start=0&max_results=100
+2026-05-15 20:31:11,972  Got first page: 100 of 507587 total results
+2026-05-15 20:31:12,289    [ERR]  Fewer_Weights_More_Problems_A_Practical_Attack_on_LLM_P__2510.07985v3.pdf: HTTP Error 429: Unknown Error
+2026-05-15 20:31:12,625    [ERR]  DREAM_Efficient_Dataset_Distillation_by_Representative___2302.14416v3.pdf: HTTP Error 429: Unknown Error
+2026-05-15 20:31:12,939    [ERR]  Additive_PowersofTwo_Quantization_An_Efficient_Nonunifo__1909.13144v2.pdf: HTTP Error 429: Unknown Error
+2026-05-15 20:31:13,420    [ERR]  Pruning_Ternary_Quantization__2107.10998v5.pdf: HTTP Error 429: Unknown Error
+2026-05-15 20:31:14,286    [OK]   Efficient_LLM_Inference_on_CPUs__2311.00502v2.pdf
+2026-05-15 20:31:16,287  [efficient_inference] Done. 1 new downloads.
+
+2026-05-15 20:31:16,366  Topic breakdown: cot_reasoning=8, rlhf_alignment=6, efficient_inference=1
+2026-05-15 22:26:34,052  [cot_reasoning] query='chain-of-thought reasoning large language models'  max=10
+2026-05-15 22:26:34,054  Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=chain-of-thought+reasoning+large+language+models&id_list=&sortBy=relevance&sortOrder=descending&start=0&max_results=100
+2026-05-15 22:26:36,427  Got first page: 100 of 1478267 total results
+2026-05-15 22:26:36,429    [SKIP] Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf
+2026-05-15 22:26:36,431    [SKIP] Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_f__2503.09567v5.pdf
+2026-05-15 22:26:36,433    [SKIP] Understanding_Reasoning_in_ChainofThought_from_the_Hopf__2410.03595v1.pdf
+2026-05-15 22:26:36,434    [SKIP] CROP_TokenEfficient_Reasoning_in_Large_Language_Models___2604.14214v1.pdf
+2026-05-15 22:26:36,435    [SKIP] ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large___2510.00071v2.pdf
+2026-05-15 22:26:36,436    [SKIP] Large_Language_Models_Reasoning_Abilities_Under_NonIdea__2508.04848v1.pdf
+2026-05-15 22:26:36,438    [SKIP] Response_Emergent_analogical_reasoning_in_large_languag__2308.16118v2.pdf
+2026-05-15 22:26:36,439    [SKIP] DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLM__2601.03559v2.pdf
+2026-05-15 22:26:36,441    [SKIP] ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large__2305.17306v1.pdf
+2026-05-15 22:26:36,442    [SKIP] Effectiveness_of_ChainofThought_in_Distilling_Reasoning__2511.05184v1.pdf
+2026-05-15 22:26:36,443  [cot_reasoning] Done. 0 new downloads.
+
+2026-05-15 22:26:36,447  [rlhf_alignment] query='reinforcement learning human feedback alignment large language models'  max=10
+2026-05-15 22:26:36,448  Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=reinforcement+learning+human+feedback+alignment+large+language+models&id_list=&sortBy=relevance&sortOrder=descending&start=0&max_results=100
+2026-05-15 22:26:39,529  Got first page: 100 of 1635065 total results
+2026-05-15 22:26:39,530    [SKIP] Reinforcement_Learning_Meets_Large_Language_Models_A_Su__2509.16679v1.pdf
+2026-05-15 22:26:39,531    [SKIP] Language_Alignment_via_Nashlearning_and_Adaptive_feedba__2406.15890v1.pdf
+2026-05-15 22:26:39,533    [SKIP] RRHF_Rank_Responses_to_Align_Language_Models_with_Human__2304.05302v3.pdf
+2026-05-15 22:26:39,534    [SKIP] Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf
+2026-05-15 22:26:41,003    [OK]   RLHFBlender_A_Configurable_Interactive_Interface_for_Le__2308.04332v1.pdf
+2026-05-15 22:26:43,011    [SKIP] Reinforcement_Learning_from_Human_Feedback_Whose_Cultur__2407.17482v2.pdf
+2026-05-15 22:26:43,012    [SKIP] Using_Large_Language_Models_to_Provide_Explanatory_Feed__2306.15498v1.pdf
+2026-05-15 22:26:45,029    [OK]   Conceptual_BeliefInformed_Reinforcement_Learning__2410.01739v4.pdf
+2026-05-15 22:26:48,067    [OK]   Value_Bonuses_using_Ensemble_Errors_for_Exploration_in___2602.12375v1.pdf
+2026-05-15 22:26:50,075    [SKIP] Designing_for_HumanAgent_Alignment_Understanding_what_h__2404.04289v1.pdf
+2026-05-15 22:26:50,075  [rlhf_alignment] Done. 3 new downloads.
+
+2026-05-15 22:26:50,078  [efficient_inference] query='efficient inference LLM quantization pruning distillation'  max=5
+2026-05-15 22:26:50,079  Requesting page (first: True, try: 0): https://export.arxiv.org/api/query?search_query=efficient+inference+LLM+quantization+pruning+distillation&id_list=&sortBy=relevance&sortOrder=descending&start=0&max_results=100
+2026-05-15 22:26:52,724  Got first page: 100 of 507587 total results
+2026-05-15 22:26:55,462    [OK]   Fewer_Weights_More_Problems_A_Practical_Attack_on_LLM_P__2510.07985v3.pdf
+2026-05-15 22:26:59,884    [OK]   DREAM_Efficient_Dataset_Distillation_by_Representative___2302.14416v3.pdf
+2026-05-15 22:27:02,529    [OK]   Additive_PowersofTwo_Quantization_An_Efficient_Nonunifo__1909.13144v2.pdf
+2026-05-15 22:27:04,827    [ERR]  Pruning_Ternary_Quantization__2107.10998v5.pdf: HTTP Error 404: Not Found
+2026-05-15 22:27:04,831    [SKIP] Efficient_LLM_Inference_on_CPUs__2311.00502v2.pdf
+2026-05-15 22:27:04,833  [efficient_inference] Done. 3 new downloads.
+
+2026-05-15 22:27:04,854  Topic breakdown: cot_reasoning=10, rlhf_alignment=10, efficient_inference=4

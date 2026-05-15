@@ -1,0 +1,422 @@
+4202 
+
+ 
+ rpA 
+
+ 
+ 4 
+ ]IA.sc[ 
+
+ 
+
+ 
+ 1v98240.4042:viXra 
+ Designing for Human-Agent Alignment: Understanding what 
+ humans want from their agents 
+ Nitesh Goyal Minsuk Chang Michael Terry 
+ niteshgoyal@acm.org minsukchang@google.com michaelterry@google.com 
+ Google Research, Google Google Research, Google Google Research, Google
+ New York, USA Seattle, USA Cambridge, USA 
+ ABSTRACT source framework that allows users to create agents that trans-
+ Our ability to build autonomous agents that leverage Generative form natural language requests into a series of actions executed
+ AI continues to increase by the day. As builders and users of such by software[1].
+ agents it is unclear what parameters we need to align on before While recent advances in AI have significantly lowered thebarthe agents start performing tasks on our behalf. To discover these rier to create highly capable agents, there are opportunities tobetparameters, we ran a qualitative empirical research study about ter understand what information is needed to design user interdesigning agents thatcannegotiate duringa fictional yet relatable faces,evenforagentsthataremeanttooperatefullyautonomously.
+ task of selling a camera online. We found that for an agent to per- Forexample,consideranagentthatistaskedtosellauseditemfor
+ form thetask successfully, humans/users and agents need to align apersononamarketplace.Howmightthepersonwanttodefineor
+ over 6dimensions: 1)KnowledgeSchema Alignment 2)Autonomy refine the behavior of this seller agent? How might they want the
+ and Agency Alignment 3) Operational Alignment and Training 4) agenttointeractwithotherhumansandAI?Howandwhenmight
+ ReputationalHeuristicsAlignment 5)EthicsAlignment and6) Hu- they want it to communicate with the user selling the item? In
+ manEngagementAlignment.Theseempiricalfindingsexpandpre- short,much likethetopic ofAI alignment [8],theoverall research
+ vious work related to process and specification alignment and the question we pose is: What are the most important constituents to
+ needforvaluesandsafetyinHuman-AIinteractions.Subsequently Human-Agent alignment, as perceived by the human collaborator?
+ wediscussthreedesigndirectionsfordesignerswhoareimagining We want to learn what is important to humans in terms of 1)
+ a world filled with Human-Agent collaborations. Defining the agent and its behavior, 2) How the agent conducts itself in a negotiation, 3) How it deals with exceptional cases, and
+ CCS CONCEPTS 4) How it interacts with the user (i.e., the human collaborator).
+ To understand these user-centered needs in the deployment of au-
+ Human-centered computing Collaborative and social 
+ tonomous agents, we conducted a think aloud study with 10 parcomputing; Computing methodologies Artificial intelticipants. Participants were asked to imagine that they had an auligence. 
+ tonomous agent that would sell a used camera for them. Participants were shown transcripts where the agent performed badly
+ KEYWORDS 
+ duringa fictionalnegotiation occurringbetweentheir agent and a
+ Human-AI Alignment, Human-Agent Alignment, Agents, Genera- potentialbuyer.Astheparticipantsreadthroughthesebuyer/seller
+ tive AI, Large Language Models interactions, they were asked to think aloud and provide feedback
+ ACMReference Format: on how such situations could have been handled appropriately.
+ NiteshGoyal,MinsukChang,andMichaelTerry.2024.DesigningforHuman- Our findings highlight the complexities and nuances in defin-
+ AgentAlignment:Understandingwhathumanswantfromtheiragents.In ing an autonomous agent s behavior in conducting the negotia-
+ Extended Abstracts of the CHI Conference on Human Factors in Computing tion, and in communicating with the user it represents. We found
+ Systems(CHIEA 24),May11 16, 2024,Honolulu,HI,USA.ACM,NewYork, that there is diversity amongst the participants related to 1) The
+ NY, USA,6 pages. https://doi.org/10.1145/3613905.3650948 degree to which the agent should operate fully autonomously, or
+ have an agency to make decisions outside the boundaries of the
+ 1 INTRODUCTION 
+ predefined behavior (e.g., whether it was OK to accept an offer
+ Autonomous agents are systems that can make decisions and take slightly lower than the lowest desired price), 2) Preferred negotiactions in pursuit of a goal [21]. In recent years, the ability for ation strategies enacted by the agent (e.g., should the agent enact
+ large language models (LLMs) [5] to interpret and act on natural dynamic pricing strategies based on perceived demand) and need
+ language requests has created significant interest in the develop- fortraining theagent appropriatelyand 3) Opinions aboutwhatis
+ ment of autonomous agents. For example, AutoGPT is an open ethical behavior for an agent. We also discovered that all participantswereconcernedwithimplicationsoftheagent sbehavioron
+ Permissionto makedigitalor hardcopies of partor allof this workfor personal or the human collaborator sreputation; had preferences for aligning
+ classroomuseisgrantedwithoutfeeprovidedthatcopiesarenotmadeordistributed 
+ on when and how the agent should communicate with the particforprofitorcommercialadvantageandthatcopiesbearthisnoticeandthefullcitation 
+ onthefirstpage.Copyrightsforthird-partycomponentsofthisworkmustbehonored. ipant; and felt a need for aligning on what is considered ethically
+ Forallotheruses,contacttheowner/author(s). appropriatebehavior. Subsequently,wediscuss threedesign direc-
+ CHIEA 24,May11 16,2024,Honolulu,HI,USA 
+ tionsfordesigners ofhuman-agent collaborations.Byexamining a
+ 2024Copyrightheldbytheowner/author(s). 
+ ACMISBN979-8-4007-0331-7/24/05. 
+ https://doi.org/10.1145/3613905.3650948 
+
+ 
+
+ 
+
+ CHIEA 24,May11 16,2024,Honolulu,HI,USA 
+
+ tangibleandrelatabletask,thisqualitativestudybuildsuponexist- we briefly describe the recruitment and participant details, study
+ ing works [20, 24] and underscores the need for human-centered design and materials, and analysis.
+ research in the design of agents. 
+ 3.1 Recruitment and Participant Details 
+ To recruit participants, we sent out surveys asking about famil-
+ 2 BACKGROUND 
+ iarity with the concept of an agent, and past experiences while
+ Autonomous agents offer a promise to automateroutine and muntransacting in an online marketplace. Using a random sampling
+ dane tasks. There has been a long history of building, deploying, 
+ technique, we selected a subsection of the respondents and used
+ and evaluating agents [21], and notable work examining user inquotasamplingrelatedtogendertoshortlist11(1backup).Weconterfaceneedsforagents [14].Recentadvances inLLMs[5]provide 
+ ductedstudysessionswith10participantsataU.S.-basedorganizaan opportunity to re-examine the UI needs of agents intended to 
+ tion. The self-reported roles of participants were UX designer (1),
+ performrelativelycomplextasksontheuser sbehalf.Inthispaper, 
+ prototyper(1),researcher (3),writer(1),softwareengineer (3),and
+ we focus on these UI needs of agents when an agent is tasked to 
+ dataanalyst(1).Fourofthe10participantsidentifiedthemselvesas
+ sell an item on the user s behalf in a marketplace (e.g., Facebook 
+ women, 1 as African-American, and 4 identified themselves to be
+ Marketplace, Craigslist, etc.). 
+ of South-Asian descent. Participants worked across multiple sec-
+ One feature of many such online marketplaces is that potential 
+ tors, including responsible AI, health, news, internet-fiber cables,
+ buyers caninteract withsellers. For example, a buyer may request 
+ and AI. Each participant filled out an informed consent, and was
+ additional information about an item, or offer a different amount 
+ offered a previously disclosed thank you gift worth 40 USD at the
+ fortheitem.Thesecommunicationsaretypicallyhandledbyaperend of the forty-five minute session. 
+ son, but it is now conceivable to design agents using LLMs that 
+ represent either party (i.e., a buyer agent or a seller agent). For ex- 3.2 Study Materials
+ ample, a seller agent may answer questions about an item, or han- 
+ To understand what constitutes human-AI alignment for users dedle some or all of the negotiations in price. While the general area 
+ ploying agents to sell an item in an online marketplace, we creof online marketplaces is home toa diverse set of research (e.g., in 
+ ated "sales agents" and "buyer agents" using prompt engineering
+ auction design, bidding, negotiation), it also offers a rich space to 
+ [27, 30] and MakerSuite 1 to create the agents and transcripts of
+ uncover user needs in the design of autonomous agents intended 
+ agent interactions. The goal of the agents was to sell/buy a used
+ to act on the user s behalf in relatively complex real-world envi- 
+ Nikoncameraonbehalfofthehumans.Eachside(buyerandseller)
+ ronments. 
+ hadasetofboundariesand rulesaboutpricingand shippinglisted
+ Whenconsideringuserneedsinthedesignofautonomousagents, 
+ in the prompt: Prompts included information about the type of
+ oneparticularlyrelevant areaofresearch isAIalignment.AIaligncamera, the goal to optimize for price and safety, the need to sell
+ ment refers to the overall goal of ensuring an AI produces desired 
+ quickly, price thresholds, clarity about what is in the package, the
+ outcomes,withoutundesirablesideeffects [7].Thereis significant 
+ need to disclose self-identity as an agent operating on seller s beworkinthisspace,includingcomputationaltechniquesforhumanhalf with human oversight, and agency to call the human collaboagent collaborations [6, 18, 23], theoretical frameworks of humanrator in when needed. Given these parameters, we simulated 30+
+ agent alignment [3, 24], HCI guidelines [2, 14], and an emphasis 
+ buy/sell negotiations with the agents. 
+ on ethics, human values and safety [10, 26, 29] and evaluating the 
+ Across the simulations, we observed six common types of faildesigns responsibly [4]. In the context of this research, we are inures:1)Stayingwithinboundariesbutnotnegotiatingwell,2)Agreeterested in understanding how participants think about and opering to sell just below the agreed upon price boundaries, 3) Halluationalize alignment as they consider the design of an agent incinating a new process of transaction by agreeing to jump on a
+ tended to represent them. We are focused on identifying missing 
+ phone call beyond the text chat, agreeing to ship the camera on
+ gaps at the boundary of human and agent collaborations that are 
+ the call, or violating previously set rules to not ship and meet in
+ necessaryforaneffectivedesign.Tothisend,weconductedaqualperson,4) Pursuinga processthatwas notlistedintheboundaries
+ itative study and present the methodological details of the study 
+ but was also not consequently forbidden (e.g., accepting engagenext. 
+ ment with a professional negotiator from the buyer), 5) The buyer
+ disclosing that they are an agent, leading to a lack of response by
+ 3 METHOD the seller agent, and 6) The seller agent creating a side channel
+ with the human to identify appropriate next steps.
+ To understand what constitutes human-AI alignment for users deploying agents, we conducted a qualitative study consisting of 10 
+ 3.3 Study Design and Analysis 
+ think-aloudinterviews. Ourpoolofparticipantsreportedbeingfamiliar with the concept of an agent performing tasks on the hu- Each of the six failures were presented as a separate transcript to
+ man s behalf. Since this work is situated in the context of sell- the participant. During the forty five minute session, participants
+ ing an item in an online marketplace, recruited participants also wereencouragedtoreadthetranscriptofafailureandthink-aloud
+ reported having a less-than-satisfactory experience in an online tounderstandtheirthoughtsontheappropriatenessoftheagent s
+ marketplace negotiation while buying or selling a product. After behavior and what could have been done differently during task
+ receiving internal ethics approval from our organization, we invited them to a video call or an in-person meeting. In this section, 1www.makersuite.google.com
+
+ 
+
+ 
+
+ DesigningforHuman-AgentAlignment: Understandingwhathumanswantfromtheiragents CHIEA 24,May11 16,2024,Honolulu,HI,USA
+
+ definition and execution. We recorded audio/video and took ex- pricing, location to meet, time to meet, safety concerns, etc. Partensive notes for all the interviews. ticipants also mentioned that it is hard to imagine all such scenar-
+ Interviews were transcribed using automated transcription ser- ios upfront, leading to challenges in fully defining autonomy and
+ vice provided by the video capture platform and were corrected agency when an unexpected situation occurs.
+ subsequently.Throughthematicanalysis,weconductedopen-coding For example, one participant discussed the autonomous behavleading to over 30 codes. Over iterations, using an abductive ap- iorofgoingbelowtheasking priceas"breakingtherulesandunacproach [25] these codes were then resolved into six themes associ- ceptable," yet another participant reflected on the performance as
+ ated with alignment needs, as presented in the next section. satisfactorybecausea"negotiationbetweenbuyerandsellerismore
+ malleable." These observations suggest the importance of aligning
+ on autonomy: the guardrails / boundaries to operate within and not
+ 4 FINDINGS 
+ to step out of. 
+ We found six high-level themes that suggest key dimensions to Another participant reflected on the agency of the agent when
+ consider in human-agent alignment: 1) Knowledge Schema Align- engaging with situations close to the boundaries: "I don t mind that
+ ment, 2) Autonomy and Agency Alignment, 3) Operational Align- the agent agreed to engage on the phone with the buyer...or that it
+ mentandTraining,4)ReputationalHeuristicsAlignment,5)Ethics feltcomfortable negotiatingwithaprofessional negotiator...theseare
+ Alignment, and6)HumanEngagement Alignment. Thesefindings beyond the initially specified rules. But it would have been better
+ expand previous work related to process and specification align- to have been consulted, or looped in. I do not know what is being
+ ment [24]and theneed forvalues andsafety inHuman-AI interac- discussed in the phone call as I am not part of the call. On the other
+ tions [15]. hand, it might be a Gen-Z thing but I hate taking phone calls. So, in
+ a way it is good that it is taking the call on my behalf" - P4
+ Be it autonomy or agency, it is important to specify desired be-
+ 4.1 Knowledge Schema Alignment 
+ havior early on in the process. However, all the participants ac-
+ Multiple participants reflected on their experience while selling knowledged that it is hard for them to imagine and preconceive
+ itemsonlineanddescribednotknowingtheinformationtheyshould multiplepotentialscenariosapriori,anddiscussedaneedforagents
+ provide in the listing, or to a hypothetical agent. They mentioned toproposepotentialsetsofboundariesandsuggestoperationaldethat agents should be aware of informational needs related to the faults to aid human-AI alignment. In the next section, we discuss
+ task, and ensure those are gathered from the user early on in the needs related to operationalizing this autonomy and agency.
+ process. This may include logistical knowledge to ensure that the 
+ proposed in-person transaction is possible, as highlighted by P8: 
+ 4.3 Operational Alignment and Training 
+ Transportation concerns, that is the agent should know my location, 
+ andbasedonthatinformation,itshouldbeabletoclarifyifthetrans- Alltheparticipantsweredrawntohowtheagentnegotiatedpoorly,
+ action location is subway-accessible as that is important to me. An- and were expecting better. They were reminded that this was part
+ other participant further expanded: "If I am trying to sell the cam- of the study and a goal was to understand what happens when
+ era, it should know about the flaws. For example, if there are any an agent doesn t perfectly execute the negotiation. Consequently,
+ scratches, it should know. It should be aware of the warranty or lack participants reflected on how they would have negotiated differof it. I have also noticed that for high value items, like when I was ently and alludedtothe lack of alignment between their preferred
+ selling a car, buyers don t really care so much about extra documen- negotiation strategy and the one executed by the agent.
+ tation up-front. They require it when the transaction is executed in However, there was diversity in the strategies they wished the
+ person. For lower value items, more documentation needs to be pro- agent to pursue. For example, multiple participants aligned with
+ vided by the seller as the buyers ask all those questions up front" - P3: "I want the agent to pursue dynamic pricing like that of Airbnb
+ P10 andchangeitbasedonengagementvolume.Itcouldconsiderdynam-
+ While it is evident that there is a need for anagent toknow suf- ically changing the sale price. Maybe if I don t care about the time,
+ ficient information, these participants were pointing to a deeper it could go down slowly, drop the target price kind of like AirBnb."
+ need:Theagentshouldidentifywhatinformationmightbeneeded Others wanted to first be informed by the agent on what is the
+ forasuccessfultransaction,andsharethatanticipatedschema(i.e., appropriate price based on data analytics.
+ information needs) with the user prior to launching the negoti- Due to the diversity in strategies, there is a need for an agent
+ ation. Taking this proactive step could alleviate future back-and to confirm the strategy an agent should follow. This requires first
+ forth between the collaborators and encourage efficiency. In the identifyingpotentialstrategiesandthenreachingalignment about
+ next section, we discuss how such efficiency may be improved by which strategy to execute. Subsequently, P1 suggested that "It is
+ aligning on autonomy and agency. also importantto ensure that the bot knows what skills it needs,and
+ trainsonthem.Itshouldbegivenextracoachingforskillsneededlike
+ negotiation, game dynamics, etc." 
+ 4.2 Autonomy and Agency Alignment 
+ Despite alignment, LLMs may not fully deterministic (depend-
+ All participants discussed the role of boundaries to define when ing on configuration). They may also learn unintended behaviors
+ the agent should(and shouldnot) autonomouslyfunctionon their andexhibitthem.Somesuchbehaviorscanleadtounforeseenoutbehalf. Participants reflected on how this is a complex situation comes, leading to negative outcomes, such as negatively affecting
+ where multiplepathways are possibleat each stage of negotiation: the reputation of the human collaborator.
+
+ 
+
+ 
+
+ CHIEA 24,May11 16,2024,Honolulu,HI,USA 
+
+ 4.4 Reputational Heuristics Alignment "it is important to know when to not pursue a sub-task if the sub-
+ Whenexposedtoless-than-perfectnegotiations,mostofthepartic- task doesnotseemtobeworth it.However, itisimportanttoidentify
+ ipantswereconcernedabouthowtheagent s behaviormayreflect andalignonsuchsub-tasksearlyontoconserveresources. Iwantthe
+ on their representation in the world as a seller. In particular, they agent to know when to step in...For example, for some customers it is
+ reflected on how it is important to align on the interpersonal be- not worth negotiating when they start negotiation at half the stated
+ havior exhibited by the agent, and how the agent s actions may price." 
+ impact the person s representational metrics/persona. P1 referred This diversity highlights a need to align about what is considto themselves as the "gold standard and [that they] want the agent eredethicalbehavior,identifyandcreateboundariesofsafeethical
+ to perform as close as possible to how I would". Another participant behavior for self, and validate responses within those boundaries.
+ reflected on the agentic behavior such as, "I don t want it to be su- While one can specify alignment across these dimensions, participerrude.Thisgoesintothatideaofreputation.Ifthebotwilltakean pantsalsopointedtoanotherneed:Howtoalignwheninitialalignhour to sell you stuff, that might harm your reputation". This was ment fails, and they better understand the problem space?
+ perhaps, best illustrated by P6 who had experience selling a cameraherselfonanonlinemarketplace:"One,thebotcouldbemessing 
+ 4.6 Human Engagement Heuristics 
+ with my money. Second, it could be messing with my reputation - it 
+ mattersawholelot.Yougetratings.IfIhadabotthatwouldgorogue While the above findings reflect on initial alignment of the task
+ on me, then I would need human oversight. Last thing I would want specification and process (how to perform it), every participant
+ is a bot saying something and then I have to back out of the agree- had deep concerns about the agent engaging with them during
+ ment. I do not want it to make me look stupid. Selling things take a thenegotiation process. We observed diversity in the participants 
+ lot of trust. Maybe if the bot doesn t know something it should say I appetite to be engaged: some participants like to be "in control"
+ don t know! I want to manage expectations as a seller. It is better for andwant tobeappraisedoftheprocessinreal-time, somewantto
+ a buyer to find the sale to be better than they expected." - P6 be consulted when the agent needs to exercise agency, and some
+ Whilediscussingtrust,P7pointedtoalopsidednessinthisnego- expected the agent to have full autonomy and agency to execute
+ tiation: "Me using a bot with a human buyer...potentially, this com- without being consulted.
+ municates that my time (seller) is more valuable than the buyer s Our participants reflected on identifying a set of engagement
+ time." As is evident, reputation is impacted by multiple heuristics heuristics:whenshouldtheagentengagewiththehuman?Thisinthatneedtobedefined,prioritized,andaligned,includingtonality, cludedsetting upheuristics likethebest time inthe dayto engage
+ timeliness, agreements made (and kept), perception management, withtheuser.Theseheuristicsalsoincludedparametersaboutwhat
+ accountability,trust-building,andexpectationsetting.Beyondrep- such an engagement should include. For example, all the particiutation management, many of these questions touch on issues of pants mentioned that a notificationlacking contextualdata would
+ ethics in the design of the agents, discussed next. be unhelpful. P6 stated that it would be helpful if it summarizes
+ and tells me: hey - the best price I found so far is XXX based on all
+ the other ongoing sales, and based on the engagement volume with
+ this listing." P10 also noted that "there should be a way to show my
+ 4.5 Ethics Alignment 
+ levelofengagementexpectationtothebot.ForexampleifIamselling
+ Abouthalfoftheparticipantsbroughtupquestionsrelatedtosafety a house, I want to be involved in every conversation. If it is a camand ethics. For example, one person wondered if it was unsafe for era,Iamokay withitmakingmoreautonomousdecisionswithinthe
+ their agent to engage with a buyer with low ratings on the mar- boundaries." This suggests that the expectation needs to be potenketplace, while subsequently highlighting the ethical conflict that tially (re)set for each task.
+ some members of the society potentially get worse ratings owing Whileparticipantsdidnotshowaversiontobeingengaged,there
+ to their identity. Conversely, they wanted to make sure that the wasnosinglepreferredchoiceforengagement andtheywantedto
+ agent did not inadvertently impact the reputation of the buyer. definea set of parameters aboutwhento beengaged, how,and for
+ Similarly, while P3 mentioned that "as a seller I would rather what reasons.
+ ethically disclose that this is a bot," P7 presented a contrast when 
+ they said that "As a seller, I would not like to disclose that this is 
+ 5 DISCUSSION 
+ a bot...that can open it up to being cracked. I do not feel bad about 
+ lackofdisclosureifitimprovesefficiencyforeveryone.Banksdohave This paper presents findings of a think-aloud study with ten parthose bots too". Evidently, while most participants agreed with P3, ticipantswhenfacedwith6differentwaysofagent-ledlesser-thantwo participants (including P7) were increasingly worried about idealnegotiations.Wefoundthattherearesiximportantconstituents
+ getting "gamed" by the buyers who might identify weaknesses in to Human-Agent alignment in a Human-Agent negotiation task.
+ the agent behavior "and break it to take advantage." Multiple par- Wealsodiscovered thatthereisdiversityamongst theparticipants
+ ticipants were worried that such gaming could lead to harms like related to 1) Levels of acceptable boundaries where agents may
+ personally identifiable information (PII, e.g., phone number, or ad- take decisions (autonomy and agency), 2) Modalities of how to
+ dress) disclosure by the agent. perform the task appropriately (and need for training), and 3) Eth-
+ Another factor relevant to ethics is related to ethically manag- ical values in semi-cooperativecontexts including implications on
+ ing AI resources. We refer to this as Resource Expenditure Align- being hacked. Conversely, all the participants suggested that it is
+ ment, a concern mentioned by two participants. P6 described that important to identify the impact of agent behavior on 1) Human
+
+ 
+
+ 
+
+ DesigningforHuman-AgentAlignment: Understandingwhathumanswantfromtheiragents CHIEA 24,May11 16,2024,Honolulu,HI,USA
+
+ reputation and need to align on heuristics and 2) Rules of engage- even experts are known to fail at [13], even when they have been
+ ment for an efficient and performant system. Next we reflect on providedwithdesignsupportlikevisualizations[11].Ontheother
+ these findings and provide design directions to Human-Agent col- hand, agents can perform simulations of negotiations, and can polaboration systems for appropriate alignment. tentially identify information and parameters needed to successfully execute negotiations [16]. Based on this information, agents
+ 5.1 Alignment is a Longitudinal Process can create a knowledge schema of known information and additional information to be supplied by the user.
+ Recent HCI/AI scholarship is beginning to design for alignment. 
+ Agents can take on the role of ensuring appropriate alignment
+ For example, recent work such as ConstitutionMaker offers a UI 
+ on when to pursue autonomy over fixed boundaries and when to
+ that enables users to provide high-level critiques of model outexercise agency beyond the boundaries. One such way is creating
+ puts [20]. This feedback is then converted to high-level principles 
+ asetofinitialhypotheticalquestionsformostlikelycircumstances
+ to guide future behavior. Our findings build upon this previous 
+ and asking their human collaborator for answers. Another way is
+ worktohighlightthattherearemultipletypesofalignmentneeded 
+ for the agent to create a default set of alignment configurations,
+ for successful human-agent collaboration.These findings point to 
+ andsharingthemwiththeusertoprovideanopportunityforthem
+ a larger design space where multiple types of alignment can be 
+ to customize the agent s behavior. Similar design approaches are
+ sought, and updated. We also found that these alignment dimenused by AI based financial planners to create recommendations2.
+ sions vary with context (e.g., selling a house vs. a camera). 
+ Educatinghuman collaboratorswith different potential options of
+ Similarly, agents have an opportunityto self-reflect on their behow a negotiation process may progress, and what can go awry
+ havior and associated outcomes with longitudinal data of their 
+ duringthatprocesscanprepareuserstomanagetheirexpectations
+ performance. Chain-of-thought [9, 28] and reinforcement learnandtaskoutcomesbetter.Consequently,theagents willhaveabeting [19] provide exciting avenues for developers and designers to 
+ ter definition of the expected behavior in different circumstances.
+ pursue developing agents that learn from past behavior and collaborations. As shown by prior work, interrupting a person nega- 
+ 6 LIMITATIONS 
+ tivelyimpactstheirwork,suggestingthatthereisvalueinsystems 
+ thatcanreasonaboutinterruptionstoreducetheirnegativeimpact Our study focused on participants that showed an understanding
+ [12, 17, 22]. ofwhat anagent is, and were engaged in employment witha technologycompanyintheUS.Thetaskathand wasrelatable,butnei-
+ 5.2 Human Cost of Non-Alignment therlifecriticalnorcausedrealfinancialdistress.Additionally,realworld marketplaces are not single-shot instances or independent
+ Ourparticipantswereconcernedabouttherisksofnon-alignment 
+ conversations. They include simultaneous parallel conversations
+ whenreputationalheuristicsarenotdefined.Whiletheparticipants 
+ with multiple parties, all of which can affect each participant s beillustratedthatnon-alignedbehaviorbyanagentcanrisktheirrephavior.Futureworkshouldaddresstheselimitationsbypotentially
+ utation on the marketplace platform, it is important to also conpursuing non-simulated tasks across other sections of the wider
+ sider scaling this scenario in other contexts. For example, when 
+ community. 
+ someone s livelihood depends upon sales on such platforms, or 
+ whenreputationaldamagemaytranslateacrossplatforms,thestakes 
+ 7 CONCLUSION 
+ can increase. As pointed out by the P6: "Selling things take a lot of 
+ Highly capable agents are becoming possible. However, creating
+ trust. Maybe if the bot doesn t know something, it should say I don t 
+ agents that can perform well and meet user needs requires attenknow".Accordingly,itisimportantforGenerativeAIagentstocontion to human-AI alignment challenges. In this work, we sought
+ sider potential implications of its actions on the user s reputation. 
+ answers to the question: What are the most important considera-
+ As reflected in the dichotomy between P3 and P7 over ethics 
+ tions for human-agent alignment during a fictitious marketplace
+ alignment,disclosureofanagent sself-identityduringnegotiation 
+ transaction, as perceived by the human collaborator? Using six
+ itself can be divisive. While the former participant might consider 
+ scenarios and a think-aloud study with 10 participants involving
+ it important to disclose, the latter participant presents a conunnegotiations, we found six dimensions of human-agent alignment
+ drum: Does disclosure of the agent s identity lead to an increase 
+ to consider: 1) Knowledge Schema Alignment, 2) Autonomy and
+ inunethical behavior bycompetingbuyers tohack ordiscover the 
+ AgencyAlignment,3)OperationalAlignmentandTraining,4)Replimitations and weaknesses oftheseller s agent? Itseems tobeimutational Heuristics Alignment, 5) Ethics Alignment, and 6) Huportantforhumanstoensurethatagent behavioraligns withtheir 
+ man Engagement Alignment. These results suggest design impliown personal beliefs and values, and points to the value of a decationsforagent designers,suchastheneedtohelpusersdiscover
+ sign approach that upholds finding such answers early on in the 
+ the various scenarios an agent may encounter, and how it should
+ process. One such approach is discussed next. 
+ handle those scenarios. 
+ 5.3 Designing Agents as Alignment Leaders 
+ ACKNOWLEDGMENTS 
+ Throughalltheinterviews,onecommonthemesurfacedquiteclearly: 
+ We would like to thank Aaron Donsbach for providing feedback
+ Users cannot always imagine different ways negotiations may falin further unpacking the nuances within research findings, and
+ terandsometimesdon tknowhowtotranslatethesewaysinto"in- 
+ Shantanu Pai for providing guidance on challenges at scale.
+ struction prompts" [31]. Thus, they cannot plan for these failures 
+ upfront. This is a classic challenge of sensemaking with AI that 2www.personalcapital.com
+
+ 
+
+ 
+
+ CHIEA 24,May11 16,2024,Honolulu,HI,USA 
+
+ REFERENCES [24] MichaelTerry,ChinmayKulkarni,MartinWattenberg,LucasDixon,andMered-
+ [1] [n.d.]. AutoGPT. https://github.com/Significant-Gravitas/AutoGPT. Accessed: ith Ringel Morris.2023. AI Alignment inthe Designof Interactive AI: Specifi-
+ 2024-01-25. cation Alignment, Process Alignment, and Evaluation Support. arXiv preprint
+ [2] Saleema Amershi, Dan Weld, Mihaela Vorvoreanu, Adam Fourney, Besmira arXiv:2311.00710(2023).
+ Nushi, Penny Collisson, Jina Suh, Shamsi Iqbal, Paul N Bennett, Kori Inkpen, [25] StefanTimmermansandIddoTavory.2012. TheoryConstructioninQualitative
+ etal.2019. Guidelines for human-AI interaction. InProceedings of the 2019chi Research:FromGroundedTheorytoAbductiveAnalysis.SociologicalTheory30,
+ conferenceonhumanfactorsincomputingsystems.1 13. 3(Sep2012),167 186. https://doi.org/10.1177/0735275112457914
+ [3] Yuntao Bai, Saurav Kadavath, Sandipan Kundu, Amanda Askell, Jackson [26] Rama Adithya Varanasiand Nitesh Goyal. 2023. It is currently hodgepodge :
+ Kernion, Andy Jones, Anna Chen, Anna Goldie, Azalia Mirhoseini, Cameron ExaminingAI/MLPractitioners ChallengesduringCo-productionofResponsi-
+ McKinnon,etal.2022. Constitutionalai:Harmlessnessfromaifeedback. arXiv ble AI Values. In Proceedings of the 2023 CHI Conference on Human Factors in
+ preprintarXiv:2212.08073(2022). ComputingSystems.1 17. 
+ [4] GlenBerman,NiteshGoyal,andMichaelMadaio.2024.AScopingStudyofEval- [27] Yunlong Wang, Shuyuan Shen, and Brian Y Lim. 2023. RePrompt: Automatic
+ uationPracticesforResponsible AI Tools: Steps TowardsEffectiveness Evalua- Prompt Editing to Refine AI-Generative Art Towards Precise Expressions. In
+ tions. arXivpreprintarXiv:2401.17486(2024). Proceedingsofthe2023CHIConferenceonHumanFactorsinComputingSystems.
+ [5] Tom B. Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, 1 29.
+ PrafullaDhariwal,ArvindNeelakantan,PranavShyam,GirishSastry,Amanda [28] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi,
+ Askell,SandhiniAgarwal,ArielHerbert-Voss,GretchenKrueger,TomHenighan, QuocVLe,DennyZhou,etal.2022. Chain-of-thoughtpromptingelicitsreason-
+ Rewon Child, Aditya Ramesh, Daniel M. Ziegler, Jeffrey Wu, Clemens Winter, inginlargelanguagemodels.AdvancesinNeuralInformationProcessingSystems
+ Christopher Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Ben- 35(2022),24824 24837.
+ jamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, [29] Nur Yildirim, Mahima Pushkarna, Nitesh Goyal, Martin Wattenberg, and Fer-
+ IlyaSutskever,andDarioAmodei.2020. LanguageModelsareFew-ShotLearn- nandaVi gas.2023. Investigatinghowpractitionersusehuman-aiguidelines:A
+ ers. arXiv:2005.14165[cs.CL] casestudyonthepeople+aiguidebook.InProceedingsofthe2023CHIConference
+ [6] Kris Cao, Angeliki Lazaridou, Marc Lanctot, Joel Z Leibo, Karl Tuyls, and onHumanFactorsinComputingSystems.1 13.
+ Stephen Clark. 2018. Emergent communication through negotiation. arXiv [30] JD Zamfirescu-Pereira, Heather Wei, Amy Xiao, Kitty Gu, Grace Jung,
+ preprintarXiv:1804.03980(2018). Matthew G Lee, Bjoern Hartmann, and Qian Yang. 2023. Herding AI Cats:
+ [7] BrianChristian.2020. Thealignmentproblem:Machinelearningandhumanval- LessonsfromDesigningaChatbotbyPromptingGPT-3. (2023).
+ ues. WWNorton&Company. [31] JD Zamfirescu-Pereira,Richmond Y Wong, Bjoern Hartmann, and Qian Yang.
+ [8] Paul Christiano. [n.d.]. Clarifying AI Alignment . 2023. Why Johnny can t prompt: how non-AI experts try (and fail) to design
+ https://www.alignmentforum.org/posts/ZeE7EKHTFMBs8eMxn/clarifying-ai-alignment. LLM prompts. In Proceedings of the 2023 CHI Conference on Human Factors in
+ Accessed:2023-08-23. ComputingSystems.1 21. 
+ [9] YaoFu,HaoPeng,TusharKhot,andMirellaLapata.2023. Improvinglanguage 
+ modelnegotiationwithself-playandin-contextlearningfromaifeedback.arXiv 
+ preprintarXiv:2305.10142(2023). 
+ [10] Iason Gabriel. 2020. Artificial intelligence, values, and alignment. Minds and
+ machines30,3(2020),411 437. 
+ [11] NiteshGoyalandSusanRFussell.2016. Effectsofsensemakingtranslucenceon 
+ distributedcollaborativeanalysis.InProceedingsofthe19thACMConferenceon 
+ Computer-SupportedCooperativeWork&SocialComputing.288 302. 
+ [12] Nitesh Goyaland Susan R Fussell. 2017. Intelligent interruption management
+ usingelectrodermalactivitybasedphysiologicalsensorforcollaborativesensemaking. ProceedingsoftheACMoninteractive,mobile,wearable andubiquitous 
+ technologies1,3(2017),1 21. 
+ [13] NiteshGoyal, Gilly Leshed, andSusanR Fussell. 2013. Effects of Visualization
+ and Note-taking on Sensemaking and Analysis. In Proceedings of the SIGCHI 
+ ConferenceonHumanFactorsinComputingSystems.2721 2724. 
+ [14] EricHorvitz.1999. PrinciplesofMixed-InitiativeUserInterfaces.InProceedings
+ of the SIGCHI Conference on Human Factors in Computing Systems (Pittsburgh,
+ Pennsylvania,USA)(CHI 99).AssociationforComputingMachinery,NewYork, 
+ NY,USA,159 166. https://doi.org/10.1145/302979.303030 
+ [15] GeoffreyIrving,PaulChristiano,andDarioAmodei.2018. AIsafetyviadebate. 
+ arXivpreprintarXiv:1805.00899(2018). 
+ [16] MikeLewis,DenisYarats,YannNDauphin,DeviParikh,andDhruvBatra.2017. 
+ Dealor no deal? end-to-end learning fornegotiation dialogues. arXiv preprint
+ arXiv:1706.05125(2017). 
+ [17] GloriaMark,DanielaGudith, andUlrich Klocke. 2008. Thecostofinterrupted 
+ work:morespeedandstress.InProceedingsoftheSIGCHIconferenceonHuman 
+ FactorsinComputingSystems.107 110. 
+ [18] MichaelNoukhovitch,TravisLaCroix,AngelikiLazaridou,andAaronCourville. 
+ 2021. Emergent communication under competition. arXiv preprint 
+ arXiv:2101.10276(2021). 
+ [19] BaolinPeng,ChunyuanLi,PengchengHe,MichelGalley,andJianfengGao.2023. 
+ Instructiontuningwithgpt-4. arXivpreprintarXiv:2304.03277 (2023). 
+ [20] SavvasPetridis,BenWedin,JamesWexler,AaronDonsbach,MahimaPushkarna, 
+ NiteshGoyal,CarrieJCai,andMichaelTerry.2023. ConstitutionMaker:InteractivelyCritiquing LargeLanguageModels by Converting Feedback into Principles. arXivpreprintarXiv:2310.15428(2023). 
+ [21] StuartRussellandPeterNorvig.2009. ArtificialIntelligence:AModernApproach
+ (3rded.). PrenticeHallPress,USA. 
+ [22] AlirezaSahamiShirazi,NielsHenze,TilmanDingler,MartinPielot,DominikWeber,andAlbrechtSchmidt.2014. Large-scaleassessmentofmobilenotifications. 
+ InProceedings oftheSIGCHIconferenceonHumanfactorsincomputingsystems. 
+ 3055 3064. 
+ [23] Ashish Sharma, Sudha Rao, ChrisBrockett, AkankshaMalhotra, NebojsaJojic,
+ and Bill Dolan. 2023. Towards Dialogue Systems with Agency in Human-AI 
+ CollaborationTasks. arXivpreprintarXiv:2305.12815(2023).

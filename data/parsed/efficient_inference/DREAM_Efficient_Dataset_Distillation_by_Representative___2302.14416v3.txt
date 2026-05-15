@@ -1,0 +1,1002 @@
+DREAM: Efficient Dataset Distillation by Representative Matching 
+
+ 
+ Yanqing Liu 1,2* Jianyang Gu1,2* Kai Wang1 Zheng Zhu3 Wei Jiang2 Yang You1 
+ 1National University of Singapore 2Zhejiang University 3Tsinghua University
+ {yanqing liu, gu jianyang, jiangwei zju}@zju.edu.cn 
+
+ {kai.wang, youy}@comp.nus.edu.sg zhengzhu@ieee.org 
+ Code: https://github.com/lyq312318224/DREAM 
+
+ 
+ Abstract 
+ 250 
+ 200 
+ Dataset distillation aims to synthesize small datasets 150 
+ with little information loss from original large-scale ones 100 
+ for reducing storage and training costs. Recent state-of- 50 
+ 0 
+ the-art methods mainly constrain the sample synthesis pro- 0 10 20 30 40 
+ * U D G L H Q W 1 R U P / 
+
+ cess by matching synthetic images and the original ones 
+ regarding gradients, embedding distributions, or training 
+ trajectories. Although there are various matching objectives, currently the strategy for selecting original images 
+ is limited to naive random sampling. We argue that random sampling overlooks the evenness of the selected sample distribution, which may result in noisy or biased matching targets. Besides, the sample diversity is also not constrained by random sampling. These factors together lead 
+ to optimization instability in the distilling process and degrade the training efficiency. Accordingly, we propose a 
+ novel matching strategy named as Dataset distillation by 
+ REpresentAtive Matching (DREAM), where only representative original images are selected for matching. DREAM 
+ is able to be easily plugged into popular dataset distillation frameworks and reduce the distilling iterations by more 
+ than 8 times without performance drop. Given sufficient 
+ training time, DREAM further provides significant improvements and achieves state-of-the-art performances. 
+ 1. Introduction 
+ Deep learning has made remarkable achievements in the 
+ computer vision society [21, 12, 39, 30, 46, 17, 8, 59], and 
+ the success is closely related to a large amount of efforts in 
+ data collection and annotation. But along with the progress 
+ of these efforts, the huge amount of data, in turn, becomes a 
+ barrier to both storage and training [56, 20]. Many methods 
+ are introduced to reduce the scale of datasets [51, 43, 37, 
+ *Equalcontribution. 
+ Projectlead. 
+ Correspondingauthor. 
+ U H E P X 1 H O S P D 6 ' 5 ( $ 0 0 H D Q 6 W G $ O O V D P S O H V
+ 5 D Q G R P V D P S O H V 5 D Q G R P 0 H D Q 6 W G 
+ ' 5 ( $ 0 V D P S O H V
+ (a) The gradient norm distribution of the plane class in CIFAR10.
+ Random 
+ DREAM 
+ Sampling 
+ Matched original images Synthetic images
+ (b) The migration of synthetic samples during training.
+ Figure 1: Samples on the decision boundaries usually provide larger gradients, which biases the gradient matching
+ optimization. Random sampling (left) overlooks the evenness of of the selected sample distribution, resulting in unstable optimization process of the synthesized samples. By
+ only matching with proper gradients from representative
+ original samples, our proposed DREAM (right) greatly improves the training efficiency of dataset distillation tasks.
+ Best viewed in color. 
+ 9]. Among these, dataset distillation, aiming at condensing
+ large-scale datasets into smaller ones with little information
+ loss, has become a hot topic to tackle the problem of data
+ burden [4, 50, 25, 6, 13]. 
+ Dataset distillation methods are roughly divided into two
+ categories: coreset-based and optimization-based. Coresetbased method employ certain metrics to heuristically select
+ samples for representing the original dataset [27, 44]. How-
+ 3202 
+ guA 
+ 03 
+ ]VC.sc[ 
+ 3v61441.2032:viXra 
+
+ 
+
+ 
+
+ 
+ ever, it is difficult to rely on a small proportion of original We propose a Dataset distillation by REpresentAtive
+ samples to contain the information of the whole dataset, re- Matching (DREAM) strategy. By only matching repsulting in low compression rate. Optimization-based meth- resentative images, DREAM accelerates the training
+ ods alleviate the defect by incorporating image synthesis to process by more than 8 without performance drop.
+ introduce more information into single images [51]. Specifically, these methods initialize a small amount of learnable DREAM is able to be easily plugged into a variety of
+ image tensors and update them through matching the train- datasetdistillationframeworks. Extensiveexperiments
+ ing gradients [56, 25], embedding distributions [55, 50] or prove that DREAM consistently improves the perfortraining trajectories [4, 13] with the original images. mance of the distilled dataset.
+ Although the optimization-based methods achieve considerable performance as well as compression ratio, the dis- 2. Related Works
+ tillation process itself still requires a large amount of time. 
+ We analyze the problem from the strategy of selecting orig- 2.1. Dataset Distillation
+ inal images for matching, which is mostly set as random 
+ Dataset distillation can be roughly divided into 2 catesampling in previous works [56]. We argue that random 
+ gories: coreset-based and optimization-based.
+ sampling overlooks the evenness of the selected sample dis- 
+ Coreset-based methods select a certain proportion of
+ tribution. On the one hand, the matching optimization may 
+ data based on certain metrics [18, 5]. Lapedriza et al. meabe overly prone to certain samples with dominant matching 
+ sure the importance of the sample by the benefits obtained
+ targets, such as boundary samples with larger training grafrom training the model on the sample [27]. Toneva et al.
+ dients [50]. On the other hand, the sample diversity inside 
+ find that samples have different forgetting characteristics
+ a mini-batch is also not constrained, leading to potential inand the easily forgotten samples have larger information
+ formation insufficiency. These factors together result in opamount [44]. Coresets are also utilized to solve continual
+ timization instability of the dataset distillation process, and 
+ learning [38, 1, 52] and active learning tasks [41]. Besides,
+ degrade the training efficiency. 
+ Shleifer et al. accelerate the search of neural network ar-
+ Accordingly, we propose a novel matching strategy 
+ chitecture by selecting a group of easier samples [42].
+ named as Dataset distillation by REpresentAtive Matching 
+ Although coreset-based methods are practical to apply, it
+ (DREAM)toaddresstheaforementionedtrainingefficiency 
+ is hard to obtain rich information from a small amount of
+ issue. Specifically, a clustering process inside each class is 
+ original samples. Therefore, coreset-based methods are reconducted at intervals to generate sub-clusters reflecting the 
+ stricted from further reducing the compression ratio.
+ sample distribution. The sub-cluster centers, which not only 
+ Optimization-based methods implement dataset distilare representative for surrounding samples, but also evenly 
+ lation by synthesizing image samples constrained by varicover the whole class distribution, are selected for matchous optimization targets. Wang et al. raise the dataset dising. As shown in Fig. 1a, the gradient distribution of the 
+ tillation concept from the optimization aspect, and update
+ selected samples contains less variation. By only matchthe synthetic images in a meta-learning style [51]. Multiple
+ ing with representative samples, DREAM largely reduces 
+ works are then proposed to constrain the image generation
+ the instability during training, and provides a smoother and 
+ by matching training gradients [56, 54, 23], embedding dismore robust distillation process. For the synthetic image 
+ tributions [55, 50] and training trajectories [4] with original
+ initialization, we adopt a similar clustering-based strategy, 
+ images. IDC injects more information into synthetic samwhere the center sample is selected from each sub-cluster, 
+ ples under the limit of fixed storage size [25]. Nguyen et
+ which further accelerates the training process. 
+ al. build up a distributed meta-learning framework and in-
+ DREAM can be easily plugged into popular dataset discorporate the kernel approximation methods [35]. RFAD
+ tillation frameworks. Compared with commonly adopted 
+ speeds up the computation by introducing a random fearandom matching, DREAM significantly improves the 
+ ture approximation [31]. HaBa employs data hallucination
+ training efficiency in the distilling process. We conduct exnetworks to construct base images and improves the repretensive experiments to validate that it only takes less than 
+ sentation capability of distilled datasets [29]. FRePo introone eighth of the iterations for DREAM to obtain compaduces an efficient meta-gradient computation method and
+ rable performance with the baseline methods. In addition, 
+ a model pool to alleviate the overfitting [60]. DiM [49]
+ given sufficient training iterations, DREAM further boosts 
+ transfers knowledge by distilling datasets into generative
+ the performance to surpass other state-of-the-art methods. 
+ models. Optimization-based methods largely improve the
+ Our main contributions are summarized as: 
+ compression ratio via fusing more information into syn-
+ We analyze the training efficiency of optimization- thetic images. However, recent state-of-the-art methods rebased dataset distillation from the strategy of selecting quire a large number of iterations to obtain desired valioriginal samples for matching. dation accuracy, indicating low training efficiency. In this
+
+ 
+
+ 
+
+ 
+ work, we focus on designing a novel matching strategy for where L( , ) is the training loss, and A is the differenmore efficient dataset distillation training. tiable augmentation [24, 57, 45, 58]. Practically, the matching objectives are calculated on the synthetic images and a
+ 2.2. Clustering 
+ mini-batch of original images {(xi,yi)}N sampled from
+ t t i=1 
+ Clustering divides samples into groups in an unsuper- T with the same class labels. The objective matching and
+ vised manner [40]. K-means [15, 2] specifies the number of M training is conducted alternatively, such that gradients
+ target clusters, and optimizes the partition to obtain clusters at different training stages are matched, which forms the
+ with similar sizes [19]. DBSCAN, based on density, does inner optimization loop. The inner loop is iterated with difnot require the number of target clusters in advance. The ferent random M for more varied matching gradients.
+ clusters are formed by gradually adding data points within Recent literature offers various matching objectives and
+ the tolerance range. [14]. It is applicable to dataset of any achieves significant testing accuracy via training in the
+ shape, yet the size of the generated clusters is unstable, out- small synthetic dataset [50, 4, 25]. However, the distillation
+ liers are excluded from clusters, and close clusters may be process itself still requires a large amount of training time,
+ merged. Hierarchical clustering methods include Agglom- indicating low training efficiency. We analyze the relationerative and Divisive. The former fuses multiple clusters un- ship between the training efficiency and the sampled origitil a certain condition is met, and the latter divides a cluster nal images for matching, and accordingly propose a novel
+ through segmentation [11]. matching strategy. 
+ 3. Method 3.2. Observations on Training Efficiency 
+ Aiming at addressing the training efficiency problem In the dataset distillation process, the knowledge is disfor dataset distillation tasks, we propose a novel Dataset tilled from sampled original images by matching certain obdistillation by REpresentAtive Matching (DREAM) strat- jectives. The selection of original images thereby has large
+ egy. By only matching the representative original images, influences on the training efficiency. Recent literature usu-
+ DREAM reduces the optimization instability, and achieves ally adopts random sampling for selecting the original imasmootherandmorerobusttrainingprocess. Inthissection, ages [56, 25]. We set gradient matching as an example and
+ we orderly introduce the basic training schemes of dataset carefully illustrate that random sampling disturbs efficient
+ distillation, our observations on the training efficiency and training of the dataset distillation.
+ the detailed design of DREAM. Firstly, we analyze the matching effects of samples in
+ different regions. Among all the samples in a class, those
+ 3.1. Preliminaries 
+ near the distribution center have higher prediction accuracy,
+ Given a large-scale dataset T = {(xi,yi)}|T| , the tar- indicating smaller backward gradients, while those on the
+ t t i=1 
+ get of dataset distillation is generating a small surrogate decision boundaries have the contrary condition. For gradidataset S = {(xi,yi)}|S| with as little information loss ent matching, the central samples provide less effective sus s i=1 pervision, while the gradients of the boundary ones largely
+ as possible, where |S| |T |. The information loss is usudominate the optimization direction. We show the training
+ ally measured by the performance drop between training a 
+ accuracy curve of matching the synthetic images with only
+ model with the original images T and the surrogate set S. 
+ the central or boundary samples in Fig. 2b. The small gradi-
+ The commonly adopted optimization-based methods follow 
+ ents provided by central samples soon fail to provide effeca synthetic pipeline. The surrogate set S is first initialized 
+ tive supervision. On the other hand, although the boundary
+ with random original images from T . Under the constraints 
+ samples are essential for building decision boundaries, only
+ of matching objectives ( ), the synthetic images are upmatching with them brings chaotic matching targets, which
+ dated to mimicking the distribution of the original images, 
+ degrades the distillation performance. 
+ which is formulated as: 
+ Secondly, we demonstrate that random sampling cannot
+ S = argminD( (S), (T )), (1) guarantee an evenly distributed mini-batch along the train-
+ S 
+ ing process. We record the Maximum Mean Discrepancy
+ where D is the matching metric. Typically, we select the (MMD) between the selected mini-batch and the whole
+ training gradients as the matching objective ( ). Given a class distribution during training in Fig. 2c. It can be obrandom model M with training parameters , S is sup- served that the MMD is kept at a relatively high level, with
+
+ posed to give similar gradients to T throughout the training large fluctuations during the training process. For the gradiprocess of M , that is: ent matching, as the mini-batch cannot effectively and con-
+
+ sistently cover the original class sample distribution, the
+ S = argminD( L(M (A(S))), L(M (A(T )))), 
+ gradient difference of different samples are not balanced.
+ S 
+ (2) The matching target of a mini-batch may be biased by
+
+ 
+
+ 
+
+ 
+ C Original Images 
+ ets 
+ ul 
+
+ 
+ ( ) 
+
+ Match 
+ forward 
+ g 
+ nir Synthetic Images 
+
+ 
+
+ backward 
+ (a) The training pipeline of the proposed DREAM strategy. 
+ 68 
+ 64 
+ 60 
+ 56 
+ 52 
+ 48 
+ 44 
+ 40 
+ 0 100 200 300 400 500 600 700 800 9001000 Iteration 
+ ycaruccA 
+ Accuracy-Iteration 
+ 4 
+ Ours 3 
+ Random 
+ Central 
+ Boundary 2 
+ 1 0 10 20 30 40 50 60 70 80 90 , W H U D W L R Q 
+ (b) The accuracy curve with different strategies for selecting original images. 
+ ' 0 0 
+ 0 0 ' , W H U D W L R Q 
+ 40 
+ 20 
+ 2 X U V 
+ 5 D Q G R P 0 
+ 20 
+ 40 
+ 40 20 0 20 40 F R P S 
+ (c) The MMD curve between the sampled 
+ mini-batchandthecorrespondingclassdata. 
+ S P R F 
+ & O X V W H U L Q J W 6 1 (
+ (d) Example clustering and sub-cluster center results of DREAM. 
+ Figure 2: The original images obtained by random sampling have uneven distributions, which may result in noisy or biased
+ matching targets. Besides, the coverage of random sampling on the whole sample space is low and has large fluctuations
+ during training. Comparatively, the centers selected by DREAM (stars) are representative for corresponding sub-clusters,
+ and are evenly distributed over the whole class feature space. Experiments for (b) and (c) are conducted under 10 imagesper-class setting on CIFAR-10. Best viewed in color. 
+ boundary samples with larger training gradients, which re- of generality, we adopt K-Means [15, 2, 36] for dividing
+ sults in unstable supervision. sub-clusters. As shown in Fig. 2d, the clustering is con-
+ Besides, an unevenly distributed mini-batch also indi- ducted inside each class to generate N sub-clusters that recates relatively poor sample diversity. Information redun- flect the sample density. N is a pre-defined hyper-parameter
+ dancy at dense regions and information lack at sparse re- for the mini-batch size of real images. The sub-cluster cengions make the mini-batch insufficient to represent the orig- ters evenly cover the sample space of the whole class, and
+ inal data. The above factors result in optimization instabil- simultaneously provide sufficient diversity, which perfectly
+ ity ofthe distillation process, and hencedegrade the training meets the above principles.
+ efficiency. Since randomly sampling original images disturbs the training efficiency for dataset distillation training, The complete training pipeline is illustrated in Fig. 2a.
+ we propose to design a novel strategy to construct mini- The clustering-selected original mini-batch and the synbatches with even and diverse distribution for matching. thetic images with the same class label are passed through
+ the random model M to obtain prediction scores p and
+ t 
+ 3.3. Representative Matching p s . Subsequentlycalculatetheclassificationlossesandtheir
+ corresponding gradients. The gradient differences are back-
+ Based on the purpose of achieving stable and fast opti- warded to update synthetic images according to Eq. 2. Conmization, only representative original images are selected sidering the brought extra time cost, the clustering process
+ for gradient matching. The selection of representative im- is conducted every I iterations.
+ int 
+ ages are supposed to obey the following two principles. On 
+ the one hand, the selected images should be evenly dis- Additionally, at the beginning of the training process, we
+ tributed to avoid biased matching targets. On the other cluster the data of each class into sub-clusters correspondhand, while ensuring diversity, the selected samples should ing to the pre-defined images-per-class number. We select
+ reflect the overall sample distribution of the class as accu- the center samples of each sub-cluster as the initialization
+ rately as possible. of the synthetic images. A more balanced clustering-based
+ Therefore, we employ a clustering process for selecting initialization better reflects the data distribution, and accelrepresentative original images. Out of the considerations erates the convergence from the very beginning of the trainof uniform sub-cluster sizes and distribution, without loss ing process. 
+
+ 
+
+ 
+
+ 
+ 4. Experiments Component Combination Evaluation. Firstly, we verify the isolated effects of each component in our proposed
+ 4.1. Datasets and Implementation Details 
+ DREAM strategy in Tab. 3. Under the same initialization,
+ our proposed representative matching strategy largely im-
+ We verify the effectiveness of our method on multiproves the final dataset performance. Comparatively, the
+ ple popular dataset distillation benchmarks, including CIclustering-based initialization offers a large performance
+ FAR10 [26], CIFAR100 [26], SVHN [33], MNIST [28], 
+ lead before the training begins, yet eventually brings limited
+ FashionMNIST [53] and TinyImageNet [10]. For evaluaimprovements. Nevertheless, it still provides stable boosts
+ tion, we train a model on the distilled synthetic images and 
+ and accelerates the training convergence added on the reptest it on the original testing images. Top-1 accuracy is reresentative matching to form the whole DREAM method.
+ ported to show the performance. 
+ Combining all the components, the full DREAM method
+ Without specific designation, the experiment is concuts the required iterations to achieve the baseline perforducted on 3-layer convolutional networks (ConvNet-3) [16] 
+ mance by more than 8 times. 
+ with128filtersandinstancenormalization[47]. Thematch- 
+ Additionally, in Fig. 2 we further illustrate the effecing mini-batch size for original images is set as 128. By 
+ tiveness of DREAM. Fig. 2b shows that by simply assigndefault we set IDC [25] as the baseline method. The graing samples from the sub-clusters as initialization of syndient matching metric D in Eq. 2 is empirically set as the 
+ thetic images, the validation performance surpasses random
+ mean squared error for CIFAR-10, CIFAR-100, TinyImainitialization by a large margin. Under the joint effect of
+ geNet and SVHN. For MNIST and FashionMNIST, D is set 
+ representative matching and clustering-based initialization,
+ asthemeanabsoluteerror[25]. Weconduct1,200matching 
+ DREAM achieves the final performance of random samiterations in total, inside each of which 100 inner loops are 
+ pling with less than eighth of training iterations, demonconducted. SGD is set as the optimizer, with a learning rate 
+ strating a significant training efficiency improvement. Conof 0.005. For clustering, we employ the matching model 
+ tinuing increasing the training iterations, DREAM further
+ for feature extraction. The clustering interval I is set as 
+ int 
+ improves the dataset performance by applying proper gra-
+ 10 iterations, whose sensitiveness is analyzed in Sec. 4.3. 
+ dient as supervision. 
+ We also analyze the influence of different sampling strategy 
+ from the sub-clusters in Sec. 4.3. For evaluation, we train Fromthesampledistributionperspective, Fig.2cdemona network for 1,000 epochs on the distilled images with a strates that the original images selected by DREAM conlearning rate of 0.01. We perform 5 experiments and report sistently show lower MMD scores with the original distrithe mean and standard deviation of the results. bution with less fluctuations, compared with random sampling. The smaller fluctuations validates that sub-cluster
+ 4.2. Comparison with State-of-the-art Methods centers effectively and stably cover the feature distribution,
+ and reduces the noise at the sample level during the training
+ We compare the distilled synthetic dataset performance process. With sufficient sample diversity, distribution evenof DREAM and other state-of-the-art (SOTA) coreset-based ness and appropriate gradient supervision, DREAM ensures
+ and optimization-based methods on multiple datasets with asmootherandmorerobustoptimizationprocessfordataset
+ different images-per-class (IPC) settings in Tab. 1. Besides, distillation training.
+ on TinyImageNet, we compare DREAM with DM [55] and 
+ For better illustration of the universality of DREAM,
+ MTT [4] in Tab. 2. Under all experiment circumstances, 
+ we apply the representative matching and clustering-based
+ the proposed DREAM consistently surpasses other SOTA 
+ initialization to some other baseline methods and receive
+ methods. With a small IPC setting especially, under the 
+ similar effects in Tab. 3. The accuracy curve comparisons
+ guidance of proper gradients, DREAM is more robust than 
+ are presented in the supplementary material. It proves that
+ other methods, which proves the effectiveness of the rep- 
+ DREAM is able to be easily plugged into dataset distillation
+ resentative matching strategy. Further narrowing the perframeworks and help improve the training efficiency.
+ formance gap between small-scale distilled datasets and the 
+ Cross Architecture Generalization Analysis. It has
+ original ones indicates that the information loss of dataset 
+ been a problem for previous optimization-based dataset disdistillation is reduced. More detailed comparisons are intillation works to generalize across architectures as the syncluded in the supplementary material. 
+ thetic images would over-fit to the model utilized for gradient matching [56, 25]. In Tab. 4 we demonstrate the cross
+ 4.3. Ablation Study and Analysis 
+ architectureperformanceofourproposedDREAMstrategy.
+ Extended experiments are designed to verify the effec- We distill the dataset with ConvNet-3 and ResNet-10 [21],
+ tiveness of our proposed DREAM strategy. Without spe- and validate the performance on ConvNet-3, ResNet-10 and
+ cific designation, the experiment is conducted under the 10 DenseNet-121 [22].
+ IPC setting on CIFAR-10 dataset. DREAM surpasses the compared methods on both the
+
+ 
+
+ 
+
+ 
+ Table 1: Top-1 accuracy of test models trained on distilled synthetic images on multiple datasets. The distillation training is
+ conducted with ConvNet-3. denotes the reported error range is reproduced by us.
+ CoresetSelection TrainingSetSynthesis Whole 
+ IPC Ratio% 
+ Random Herding DC[56] DSA[54] DM[55] CAFE[50] MTT[4] IDC[25] DREAM Dataset
+ 1 0.017 64.9 3.5 89.2 1.6 91.7 0.5 88.7 0.6 89.7 0.6 93.1 0.3 - 94.2 0.2 95.7 0.3
+ MNIST 10 0.17 95.1 0.9 93.7 0.3 97.4 0.2 97.8 0.1 97.5 0.1 97.2 0.3 - 98.4 0.1 98.6 0.1 99.6 0.0
+ 50 0.83 97.9 0.2 94.8 0.2 98.8 0.2 99.2 0.1 98.6 0.1 98.6 0.2 - 99.1 0.1 99.2 0.1
+ 1 0.017 51.4 3.8 67.0 1.9 70.5 0.6 70.6 0.6 - 77.1 0.9 - 81.0 0.2 81.3 0.2
+ FashionMNIST 10 0.17 73.8 0.7 71.1 0.7 82.3 0.4 84.6 0.3 - 83.0 0.4 - 86.0 0.3 86.4 0.3 93.5 0.1
+ 50 0.83 82.5 0.7 71.9 0.8 83.6 0.4 88.7 0.2 - 84.8 0.4 - 86.2 0.2 86.8 0.3
+ 1 0.014 14.6 1.6 20.9 1.3 31.2 1.4 27.5 1.4 - 42.6 3.3 - 68.5 0.9 69.8 0.8
+ SVHN 10 0.14 35.1 4.1 50.5 3.3 76.1 0.6 79.2 0.5 - 75.9 0.6 - 87.5 0.3 87.9 0.4 95.4 0.1
+ 50 0.7 70.9 0.9 72.6 0.8 82.3 0.3 84.4 0.4 - 81.3 0.3 - 90.1 0.1 90.5 0.1
+ 1 0.02 14.4 2.0 21.5 1.2 28.3 0.5 28.8 0.7 26.0 0.8 30.3 1.1 46.3 0.8 50.6 0.4 51.1 0.3
+ CIFAR10 10 0.2 26.0 1.2 31.6 0.7 44.9 0.5 52.1 0.5 48.9 0.6 46.3 0.6 65.3 0.7 67.5 0.5 69.4 0.4 84.8 0.1
+ 50 1.0 43.4 1.0 40.4 0.6 53.9 0.5 60.6 0.5 63.0 0.4 55.5 0.6 71.6 0.2 74.5 0.1 74.8 0.1
+ 1 0.2 4.2 0.3 8.4 0.3 12.8 0.3 13.9 0.3 11.4 0.3 12.9 0.3 24.3 0.3 - 29.5 0.3
+ CIFAR100 10 2 14.6 0.5 17.3 0.3 25.2 0.3 32.3 0.3 29.7 0.3 27.8 0.3 40.1 0.4 45.1 0.4 46.8 0.7 56.2 0.3
+ 50 10 30.0 0.4 33.7 0.5 - 42.8 0.4 43.6 0.4 37.9 0.3 47.7 0.2 - 52.6 0.4
+ Table 2: Top-1 accuracy of test models trained on distilled Table 4: Ablation study on cross architecture distilled
+ syntheticimagesonTinyImageNet. Thedistillationtraining dataset performance of the proposed DREAM strategy. The
+ is conducted with ConvNet-3. dataset is first distilled on a model D and then validated on
+ another model T. denotes the result is reproduced by us.
+ IPC Ratio % DM [55] MTT [4] DREAM Whole 
+ D\T Conv-3 Res-10 Dense-121 
+ 1 0.017 3.9 8.8 10.0 
+ 0.2 0.3 0.4 37.6 
+ 50 0.83 24.1 0.3 28.0 0.3 29.5 0.3 0.4 MTT [4] Conv-3 64.3 0.7 34.5 0.6 41.5 0.5 
+ Res-10 44.2 20.4 24.2 
+ 0.3 0.9 1.3 
+ Table 3: Ablation study on the components of the proposed Conv-3 67.5 63.5 61.6
+ IDC [25] 0.5 0.1 0.6 
+ DREAM. RM indicates Representative Matching, and Init Res-10 53.6 50.6 51.7 
+ 0.6 0.9 0.6 
+ stands for clustering-based initialization. Iter stands for 
+ Conv-3 69.4 66.3 65.9 
+ the required iterations to achieve the baseline performance. DREAM 0.4 0.8 0.5
+ Res-10 53.7 51.0 52.8 
+ 0.6 0.9 0.6 
+ Comp Comp 
+ Top-1 Iter Top-1 Table 5: Ablation study on different sampling strategy to
+ RM Init RM Init 
+ form a mini-batch from sub-clusters. 
+ - - 67.5 1000 - - 44.9 
+ 0.5 DC 0.5 
+ - 68.9 350 45.9 
+ IDC - 68.1 0.5 750 - - 52.1 0.3 Sub-cluster number N 
+ 69.4 0.3 150 DSA 53.1 0.5 32 64 128 256 
+ 0.4 0.4 
+ 1 67.2 68.5 69.4 68.9 
+ 0.3 0.1 0.4 0.2 
+ Samples per 2 67.7 68.6 69.2 - 
+ 0.3 0.3 0.7 
+ absolute performance and the performance drop when ap- sub-cluster n 4 67.7 0.4 68.7 0.4 - -
+ 8 67.5 - - plying the distilled dataset on an unseen architecture. The 0.3 
+ strong cross architecture generalization capability verifies 
+ that DREAM helps build a more reasonable distilled dataset 
+ compared to random sampling. grouping different sub-cluster number and samples per sub-
+ Sampling Strategy Analysis. Representative matching cluster, we are able to obtain original image mini-batches
+ conducts clustering for each class and samples original im- different in scale and diversity. As observed in the results,
+ agesfromthesub-clusterstoformamini-batch. Weanalyze by representative matching the dataset performance is genthe influence of different sampling strategy on the train- erally stable, and receives improvements to certain extent
+ ing results in Tab. 5 and Fig. 3. Among each sub-cluster, over the baseline (67.5).
+ the top-n samples closest to the center are selected. By Compared in more detail, with a small sub-cluster num-
+
+ 
+
+ 
+
+ 
+ 160 
+ 140 
+ 120 
+ 100 
+ 80 
+ 60 
+ 40 
+ 20 
+ 0 
+ 0 5 10 15 20 25 30 35 40 
+ U H E P X 1 H O S P D 6 6 X E F O X V W H U Q X P E H U 1 
+ ' 5 ( $ 0 0 H D Q 6 W G 
+ 5 D Q G R P 0 H D Q 6 W G 5 D Q G R P V D P S O H V
+ ' 5 ( $ 0 V D P S O H V 
+ 120 
+ 100 
+ 80 
+ 60 
+ 40 
+ 20 
+ 0 
+ 0 5 10 15 20 25 30 35 40 
+ U H E P X 1 H O S P D 6 6 X E F O X V W H U Q X P E H U 1 
+ ' 5 ( $ 0 0 H D Q 6 W G 
+ 5 D Q G R P 0 H D Q 6 W G 5 D Q G R P V D P S O H V
+ ' 5 ( $ 0 V D P S O H V 
+ 80 
+ 60 
+ 40 
+ 20 
+ 0 
+ 0 5 10 15 20 25 30 35 40 
+ * U D G L H Q W 1 R U P / 
+
+ U H E P X 1 H O S P D 6 
+ timal position, and makes subsequent fine-tuning. On the
+ contrary, there are still large fluctuations for the synthetic
+ image matched with randomly sampled original images in
+ the late training period, partly due to the noisy matching
+ targets generated by uneven mini-batches.
+ Clustering Interval Sensitivity Analysis. We evaluate
+ the influence of different clustering interval I on the final int
+ dataset performance in Fig. 4b. Conducting clustering at
+ every iteration leads to the best performance, while adding
+ the clustering interval until 10 brings mild influences. As
+ there is an obvious top-1 accuracy degradation when the interval is further increased to 20, we select an interval of 10
+ 6 X E F O X V W H U Q X P E H U 1 to balance the distilled dataset performance and the extra
+ ' 5 ( $ 0 0 H D Q 6 W G calculation cost. More analysis on the computational cost
+ 5 D Q G R P 0 H D Q 6 W G 5 D Q G R P V D P S O H V of clustering is included in the supplementary material.
+ ' 5 ( $ 0 V D P S O H V Experimental results on ImageNet-1K. We compare DREAM with the current state-of-the-art method
+ TESLA [7] on ImageNet-1K in Tab. 6. The experimental
+ setting is the same as in TESLA. DREAM shows excellent
+ performance on large datasets. 
+ Figure 3: The gradient distribution comparison between 
+ random sampling and our proposed DREAM strategy un- 
+ Table 6: Results on ImageNet. 
+ der different sub-cluster sample number N. Best viewed in 
+ color. Method TESLA DREAM 
+ Acc(IPC=10) 17.8 18.5 
+ ber N = 32, the sub-cluster centers are more likely to be Differences from DC-BENCH[6]. We provide a dedistributed in areas with smaller gradients, as shown in the tailed comparison between DREAM and DC-BENCH to
+ first row of Fig. 3. As the random model M is trained, clarify their distinctions. DC-BENCH solely concentrates
+
+ these samples gradually fail to provide effective gradients on a better initialization and lacks specific designs for the
+ for supervision, resulting in a sub-optimal performance. subsequent matching-based optimization, while DREAM
+ Oppositely, a larger sub-cluster number N = 256 involves selects representative samples for matching and enables the
+ a distribution closer to random sampling, which brings a realization of a fully efficient training process for distilsmall performance drop, as shown in the last row of Fig. 3. lation. Furthermore, DREAM conducts extensive exper-
+ Due to memory limitations, it is not applicable to further iments to analyze the impact of cluster number, sample
+ increase N, but it is conceivable that the extreme condition number per cluster and clustering interval. DC-BENCH
+ should yield similar results to random sampling. On the achieves comparable performance using 30% of iterations,
+ other hand, the sample number per sub-cluster n has only whereas DREAM achieves similar results with only 10a slight effect on the results. The group of 1 center sample 20% iterations. Additionally, given sufficient training time,
+ per sub-cluster and 128 sub-clusters in total is proved to ob- DREAM further achieves up to 3.7% and 5.8% accutain the optimal gradient supervision as in the second row racy improvements for gradient matching and distribution
+ of Fig. 3, and is chosen for mini-batch composition. matching respectively which surpass DC-BENCH s 1.3%.
+ Training Stability Analysis. In order to more intu- 
+ 4.4. Visualizations 
+ itively demonstrate the effects of the proposed DREAM 
+ strategy on the training process, we visualize the feature mi- Gradient Difference Curve. As the dataset distillation
+ grationofDREAMandrandomsamplinginFig.4a. Specif- training is constrained by matching the training gradients, a
+ ically, we randomly select a synthetic image as initialization smaller gradient difference also indicates a better matching
+ and record its updated version every 10 iterations. We em- effect. Therefore, we also visualize the gradient difference
+ ploy a random network to extract the features of all images, curve of the dataset distillation in Fig. 4c, which is calcuand calculate the Euclidean distance between adjacent ver- lated by the training loss Eq. 2. We add the DREAM stratsions of images. For DREAM, at the beginning of the train- egy to DC, DSA and IDC methods. Throughout the training
+ ing process, under the direction of proper gradients, the syn- process, DREAM holds a smaller gradient difference comthetic image goes through a larger migration. Within 100 pared with the baseline methods. On the one hand, it veriiterations, the synthetic image has reached a relatively op- fies the effectiveness of DREAM on improving the training
+
+ 
+
+ 
+
+ 
+
+ 4.0 
+ 3.5 
+ 3.0 
+ 2.5 
+ 2.0 
+ 1.5 
+ 1.0 
+ 0.5 
+ 0 200 400 600 8001000 
+ , W H U D W L R Q 
+ Q R L W D U J L 0 H U X W D H ) F L P K W L U D J R / 72 2 X U V 
+ 5 D Q G R P 70 
+ 68 
+ 66 
+ 64 
+ 62 
+ 60 
+ 1 2 4 6 8 10 20 
+ & O X V W H U L Q J , Q W H U Y D O 
+ (a) 
+
+ \ F D U X F F $ S R 7 
+ 100 
+ 98 
+ 96 
+ 94 
+ 92 
+ 90 
+
+ \ F D U X F F $ S R 7 
+ 160 
+ 140 
+ 120 
+ 100 
+ 7 R S 7 R S 80 
+ 0 200 400 600 800 1000 
+ , W H U D W L R Q 
+ (b) 
+
+ $ 6 ' & ' H F Q H U H I I L ' W Q H L G D U * 12
+ 10 
+ 8 
+ 6 
+ 4 
+
+ & ' , H F Q H U H I I L ' W Q H L G D U * 80 ' & ' & ' 5 ( $ 0
+ ' 6 $ 
+ ' 6 $ ' 5 ( $ 0 
+ , ' & 60 
+ , ' & ' 5 ( $ 0 
+ 40 
+ 20 
+ 20 40 60 80 100 
+ 1 X P E H U R I F O D V V H V
+ (c) 
+ \ F D U X F F $ W V H 7
+ ' 5 ( $ 0 + H U G L Q J , ' & ' 6 $
+ , ' & 
+ (d) 
+ Figure 4: (a): The feature migration during the training process. (b): Ablation study on different clustering interval. (c): The
+ training loss curve during the training process. (d): The continual learning accuracy curve.
+ Ours Random 
+ Figure 5: The sample distribution comparison on the final 
+ distilled images (marked as red stars) between our proposed 
+ DREAM (left) and random sampling (right). 
+ efficiency to reduce the gradient difference in limited iterations. On the other hand, the large fluctuations of the baseline methods also validate the existence of noisy gradients 
+ generated by random sampling. 
+ Figure 6: The distilled dataset comparison between DC
+ Sample Distribution Visualization. In order to more 
+ (Upper row) and DC with DREAM strategy (Bottom row)
+ intuitively demonstrate the effectiveness of our proposed 
+ on CIFAR-10 (plane, car, dog, cat classes). DREAM intro-
+ DREAM on generating synthetic sets well covering the 
+ duces more obvious categorical characteristics and variety
+ original sample distribution, we visualize the t-SNE graphs 
+ to the distilled image. Best viewed in color. More visualof the synthetic images for both random sampling and 
+ ization is provided in supplementary material.
+ DREAM. As shown in Fig. 5, the final distribution constrained by DREAM strategy evenly cover the whole class, 
+ while random sampling generates biased optimization reobvious categorical characteristics. Secondly, DREAM insults. Furthermore, a large percentage of samples are pulled 
+ troduces more variety to the distilled images. With these
+ to the distribution edge in the random sampling results, 
+ two improvements, DREAM helps the distilled datasets to
+ which also validates that the matching is biased by boundobtain better validation performance. 
+ ary samples with larger gradients. By consistently providing proper gradient supervision, DREAM achieves a more 
+ 4.5. Application on Continual Learning 
+ diverse and robust distillation result. 
+ Synthetic Image Visualization. In order to more intu- Dataset distillation generates compact datasets that are
+ itively demonstrate the effects of DREAM on the distilled able to represent the original ones, which can thus be apimages, we compare the distillation results of adding the plied to continual learning problems [38, 1, 52, 25]. We
+ proposed DREAM strategy or not in Fig. 6. DREAM im- further validate the effectiveness of the proposed DREAM
+ proves the quality of the distilled datasets from two perspec- strategy on the continual learning scenarios in Fig. 4d. Foltives. Firstly, the images optimized by DREAM show more lowing the settings in [56, 25], we conduct a 5-step classincremental experiment on CIFAR-100, each step with 20 [2] David Arthur and Sergei Vassilvitskii. k-means++: The
+ classes. For better demonstrating the generalization capa- advantages of careful seeding. Technical report, Stanford,
+ bility of DREAM, the distillation synthesis is conducted on 2006. 3, 4 
+ ConvNet-3, and the validation on ResNet-10. [3] Ondrej Bohdal, Yongxin Yang, and Timothy Hospedales.
+ Flexible dataset distillation: Learn labels instead of images.
+ DREAMconsistentlymaintainsperformanceadvantages 
+ arXiv preprint arXiv:2006.08572, 2020. 13
+ over other approaches throughout the training process, and 
+ [4] George Cazenavette, Tongzhou Wang, Antonio Torralba,
+ the performance gap is further enlarged as the learnt class 
+ Alexei A Efros, and Jun-Yan Zhu. Dataset distillation by
+ number is gradually increased. It proves that better dismatching training trajectories. In CVPR, pages 4750 4759,
+ tillation quality helps the model construct clearer decision 
+ 2022. 1, 2, 3, 5, 6, 13 
+ boundaries and memorize the discriminative information. 
+ [5] CodyColeman,ChristopherYeh,StephenMussmann,BaharanMirzasoleiman,PeterBailis,PercyLiang,JureLeskovec,
+ 5. Conclusion and Matei Zaharia. Selection via proxy: Efficient data selection for deep learning. arXiv preprint arXiv:1906.11829,
+ In this paper, we propose a novel Dataset distillation 2019. 2 
+ by REpresentAtive Matching (DREAM) strategy to ad- [6] Justin Cui, Ruochen Wang, Si Si, and Cho-Jui Hsieh. Dcdress the training efficiency problem for dataset distillation. bench: Dataset condensation benchmark. In NeurIPS, 2022.
+ By only matching with the representative original images, 1, 7 
+ DREAM reduces the optimization instability, and reaches a [7] JustinCui,RuochenWang,SiSi,andCho-JuiHsieh. Scaling
+ smoother and more robust training process. It is able to be up dataset distillation to imagenet-1k with constant memory.
+ easily plugged into popular dataset distillation frameworks In International Conference on Machine Learning, pages
+ to reduce the training iterations by more than 8 times with- 6565 6590. PMLR, 2023. 7
+ out performance drop. The stable optimization also pro- [8] Martin Danelljan, Goutam Bhat, Fahad Shahbaz Khan, and
+ Michael Felsberg. Eco: Efficient convolution operators for
+ vides higher final performance and generalization capabiltracking. In CVPR, pages 6638 6646, 2017. 1
+ ity. The more efficient matching allows future works to de- 
+ [9] Zhou Daquan, Kai Wang, Jianyang Gu, Xiangyu Peng,
+ sign more complicated matching metrics. 
+ Dongze Lian, Yifan Zhang, Yang You, and Jiashi Feng.
+ Dataset quantization. In Proceedings of the IEEE/CVF In-
+ 6. Limitations and Future Works 
+ ternational Conference on Computer Vision, 2023. 1
+ [10] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li,
+ Although the proposed DREAM strategy significantly 
+ and Li Fei-Fei. Imagenet: A large-scale hierarchical image
+ improves the training efficiency of optimization-based 
+ database. In CVPR, pages 248 255. Ieee, 2009. 5, 9
+ dataset distillation methods, the calculation burden is still 
+ [11] Chris Ding and Xiaofeng He. Cluster merging and splitting
+ large when the image size and the class number increases. in hierarchical clustering algorithms. In ICDM., pages 139 
+ It is difficult for these methods to handle ultra large-scale 146. IEEE, 2002. 3
+ datasets like ImageNet [10], even if the training efficiency [12] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov,
+ has been improved by DREAM. We will explore more Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner,
+ resource-friendly ways to conduct dataset distillation in fu- Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylture works. vain Gelly, et al. An image is worth 16x16 words: Transformers for image recognition at scale. arXiv preprint
+ arXiv:2010.11929, 2020. 1 
+ Acknowledgement 
+ [13] Jiawei Du, Yidi Jiang, Vincent Y. F. Tan, Joey Tianyi Zhou,
+ This research is supported by the National Research andHaizhouLi. Minimizingtheaccumulatedtrajectoryerror
+ Foundation, Singapore under its AI Singapore Programme to improve dataset distillation. In CVPR, pages 3749 3758,
+ (AISG Award No: AISG2-PhD-2021-08- 008). Yang You s 2023. 1, 2 
+ research group is being sponsored by NUS startup grant [14] Martin Ester, Hans-Peter Kriegel, Jo rg Sander, Xiaowei Xu,
+ (Presidential Young Professorship), Singapore MOE Tier-1 et al. A density-based algorithm for discovering clusters in
+ grant, ByteDance grant, ARCTIC grant, SMI grant and Al- large spatial databases with noise. In KDD, pages 226 231,
+ ibaba grant. The research is also supported by the National 1996. 3 
+ Natural Science Foundation of China (No. 62173302). [15] Edward W Forgy. Cluster analysis of multivariate data: efficiency versus interpretability of classifications. Biometrics,
+ 21:768 769, 1965. 3, 4 
+ References [16] Spyros Gidaris and Nikos Komodakis. Dynamic few-shot
+ visual learning without forgetting. In CVPR, pages 4367 
+ [1] Rahaf Aljundi, Min Lin, Baptiste Goujaud, and Yoshua Ben- 4375, 2018. 5 
+ gio. Gradient based sample selection for online continual [17] Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing
+ learning. In NeurIPS, pages 11817 11826, 2019. 2, 8 Xu,DavidWarde-Farley,SherjilOzair,AaronCourville,and
+
+ 
+
+ 
+
+ 
+ Yoshua Bengio. Generative adversarial networks. Commu- [35] Timothy Nguyen, Roman Novak, Lechao Xiao, and Jaehoon
+ nications of the ACM, 63(11):139 144, 2020. 1 Lee. Dataset distillation with infinitely wide convolutional
+ [18] Chengcheng Guo, Bo Zhao, and Yanbing Bai. Deepcore: A networks. NeurIPS, 34:5186 5198, 2021. 2, 13
+ comprehensive library for coreset selection in deep learning. [36] Sehban Omer. fast-pytorch-kmeans, 9 2020. 4
+ arXiv preprint arXiv:2204.08499, 2022. 2 [37] Ziheng Qin, Kai Wang, Zangwei Zheng, Jianyang Gu, Xi-
+ [19] Greg Hamerly and Charles Elkan. Alternatives to the k- angyu Peng, Daquan Zhou, and Yang You. Infobatch: Lossmeans algorithm that find better clusterings. In CIKM, pages less training speed up by unbiased dynamic data pruning.
+ 600 607, 2002. 3 arXiv preprint arXiv:2303.04947, 2023. 1
+ [20] Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr [38] Sylvestre-Alvise Rebuffi, Alexander Kolesnikov, Georg
+ Dolla r,andRossGirshick. Maskedautoencodersarescalable Sperl, and Christoph H Lampert. icarl: Incremental classivision learners. In CVPR, pages 16000 16009, 2022. 1 fierandrepresentationlearning. InCVPR,pages2001 2010,
+ [21] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. 2017. 2, 8 
+ Deep residual learning for image recognition. In CVPR, 
+ [39] Joseph Redmon, Santosh Divvala, Ross Girshick, and Ali
+ pages 770 778, 2016. 1, 5 
+ Farhadi. You only look once: Unified, real-time object de-
+ [22] Gao Huang, Zhuang Liu, Laurens Van Der Maaten, and Kil- tection. In CVPR, pages 779 788, 2016. 1
+ ian Q Weinberger. Densely connected convolutional net- 
+ [40] Hajar Rehioui, Abdellah Idrissi, Manar Abourezq, and
+ works. In CVPR, pages 4700 4708, 2017. 5 
+ Faouzia Zegrari. Denclue-im: A new approach for big data
+ [23] ZixuanJiang, JiaqiGu, MingjieLiu, andDavidZPan. Delvclustering. Procedia Computer Science, 83:560 567, 2016.
+ ingintoeffectivegradientmatchingfordatasetcondensation. 
+ 3 
+ arXiv preprint arXiv:2208.00311, 2022. 2, 12 
+ [41] OzanSenerandSilvioSavarese. Activelearningforconvolu-
+ [24] Tero Karras, Miika Aittala, Janne Hellsten, Samuli Laine, 
+ tional neural networks: A core-set approach. arXiv preprint
+ Jaakko Lehtinen, and Timo Aila. Training generative adarXiv:1708.00489, 2017. 2 
+ versarial networks with limited data. NeurIPS, 33:12104 
+ [42] Sam Shleifer and Eric Prokop. Using small proxy
+ 12114, 2020. 3 
+ datasets to accelerate hyperparameter search. arXiv preprint
+ [25] Jang-Hyun Kim, Jinuk Kim, Seong Joon Oh, Sangdoo 
+ arXiv:1906.04887, 2019. 2 
+ Yun, Hwanjun Song, Joonhyun Jeong, Jung-Woo Ha, and 
+ [43] Ben Sorscher, Robert Geirhos, Shashank Shekhar, Surya
+ Hyun Oh Song. Dataset condensation via efficient synthetic- 
+ Ganguli, and Ari Morcos. Beyond neural scaling laws: beatdata parameterization. arXiv preprint arXiv:2205.14959, 
+ ing power law scaling via data pruning. Advances in Neural
+ 2022. 1, 2, 3, 5, 6, 8, 12, 13 
+ Information Processing Systems, 35:19523 19536, 2022. 1
+ [26] Alex Krizhevsky, Geoffrey Hinton, et al. Learning multiple 
+ [44] Mariya Toneva, Alessandro Sordoni, Remi Tachet des
+ layers of features from tiny images. 2009. 5, 12 
+ Combes, Adam Trischler, Yoshua Bengio, and Geof-
+ [27] Agata Lapedriza, Hamed Pirsiavash, Zoya Bylinskii, and 
+ frey J Gordon. An empirical study of example forget-
+ Antonio Torralba. Are all training examples equally valuting during deep neural network learning. arXiv preprint
+ able? arXiv preprint arXiv:1311.6510, 2013. 1, 2 
+ arXiv:1812.05159, 2018. 1, 2 
+ [28] Yann LeCun, Le on Bottou, Yoshua Bengio, and Patrick 
+ [45] Ngoc-Trung Tran, Viet-Hung Tran, Ngoc-Bao Nguyen,
+ Haffner. Gradient-basedlearningappliedtodocumentrecog- 
+ Trung-Kien Nguyen, and Ngai-Man Cheung. Towards good
+ nition. Proceedings of the IEEE, 86(11):2278 2324, 1998. 
+ practices for data augmentation in gan training. arXiv
+ 5, 12 
+ preprint arXiv:2006.05338, 2:3, 2020. 3
+ [29] Songhua Liu, Kai Wang, Xingyi Yang, Jingwen Ye, and 
+ Xinchao Wang. Dataset distillation via factorization. In [46] Yi-Hsuan Tsai, Wei-Chih Hung, Samuel Schulter, Ki-
+ NeurIPS, 2022. 2, 12, 13 hyuk Sohn, Ming-Hsuan Yang, and Manmohan Chandraker.
+ Learning to adapt structured output space for semantic seg-
+ [30] Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng 
+ mentation. In CVPR, pages 7472 7481, 2018. 1
+ Zhang, Stephen Lin, and Baining Guo. Swin transformer: 
+ Hierarchical vision transformer using shifted windows. In [47] Dmitry Ulyanov, Andrea Vedaldi, and Victor Lempitsky. In-
+ ICCV, pages 10012 10022, 2021. 1 stancenormalization: Themissingingredientforfaststyliza-
+ [31] Noel Loo, Ramin Hasani, Alexander Amini, and Daniela tion. arXiv preprint arXiv:1607.08022, 2016. 5
+ Rus. Efficient dataset distillation using random feature ap- [48] Paul Vicol, Jonathan P Lorraine, Fabian Pedregosa, David
+ proximation. In NeurIPS, 2022. 2, 12, 13 Duvenaud, and Roger B Grosse. On implicit bias in over-
+ [32] Jonathan Lorraine, Paul Vicol, and David Duvenaud. Opti- parameterized bilevel optimization. In International Conmizing millions of hyperparameters by implicit differentia- ference on Machine Learning, pages 22234 22259. PMLR,
+ tion. In International Conference on Artificial Intelligence 2022. 12 
+ and Statistics, pages 1540 1552. PMLR, 2020. 12 [49] Kai Wang, Jianyang Gu, Daquan Zhou, Zheng Zhu, Wei
+ [33] Yuval Netzer, Tao Wang, Adam Coates, Alessandro Bis- Jiang, and Yang You. Dim: Distilling dataset into generasacco, Bo Wu, and Andrew Y Ng. Reading digits in natural tive model. arXiv preprint arXiv:2303.04707, 2023. 2
+ images with unsupervised feature learning. 2011. 5, 12 [50] Kai Wang, Bo Zhao, Xiangyu Peng, Zheng Zhu, Shuo Yang,
+ [34] TimothyNguyen,ZhourongChen,andJaehoonLee. Dataset Shuo Wang, Guan Huang, Hakan Bilen, Xinchao Wang, and
+ meta-learning from kernel ridge-regression. In ICLR, 2020. Yang You. Cafe: Learning to condense dataset by aligning
+ 13 features. In CVPR, pages 12196 12205, 2022. 1, 2, 3, 6, 13
+
+ 
+
+ 
+
+ 
+ [51] Tongzhou Wang, Jun-Yan Zhu, Antonio Torralba, and 
+ Alexei A Efros. Dataset distillation. arXiv preprint 
+ arXiv:1811.10959, 2018. 1, 2, 13 
+ [52] Felix Wiewel and Bin Yang. Condensed composite memory 
+ continual learning. In IJCNN, pages 1 8. IEEE, 2021. 2, 8 
+ [53] Han Xiao, Kashif Rasul, and Roland Vollgraf. Fashionmnist: a novel image dataset for benchmarking machine 
+ learningalgorithms. arXivpreprintarXiv:1708.07747,2017. 
+ 5 
+ [54] Bo Zhao and Hakan Bilen. Dataset condensation with differentiable siamese augmentation. In ICML, pages 12674 
+ 12685. PMLR, 2021. 2, 6, 12, 13 
+ [55] Bo Zhao and Hakan Bilen. Dataset condensation with distribution matching. arXiv preprint arXiv:2110.04181, 2021. 2, 
+ 5, 6, 13 
+ [56] Bo Zhao, Konda Reddy Mopuri, and Hakan Bilen. Dataset 
+ condensation with gradient matching. In ICLR, 2020. 1, 2, 
+ 3, 5, 6, 8, 12, 13 
+ [57] Shengyu Zhao, Zhijian Liu, Ji Lin, Jun-Yan Zhu, and Song 
+ Han. Differentiable augmentation for data-efficient gan 
+ training. NeurIPS, 33:7559 7570, 2020. 3 
+ [58] Zhengli Zhao, Zizhao Zhang, Ting Chen, Sameer Singh, and 
+ Han Zhang. Image augmentations for gan training. arXiv 
+ preprint arXiv:2006.02595, 2020. 3 
+ [59] Zangwei Zheng, Mingyuan Ma, Kai Wang, Ziheng Qin, Xiangyu Yue, and Yang You. Preventing zero-shot transfer 
+ degradationincontinuallearningofvision-languagemodels. 
+ arXiv preprint arXiv:2303.06628, 2023. 1 
+ [60] Yongchao Zhou, Ehsan Nezhadarya, and Jimmy Ba. Dataset 
+ distillation using neural feature regression. In NeurIPS, 
+ 2022. 2, 13 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+ 7. Comparisons with More Methods with distribution matching. Under the setting of 10 imagesper-class on the CIFAR10 dataset, the original IDC per-
+ We compare the distilled dataset performance between 
+ forms much poorer than gradient matching, which is also
+ DREAM and more methods in Tab. 7. The experiments are 
+ stated in [25]. Applying DREAM completely reversed this
+ conducted under 1, 10, and 50 images-per-class (IPC) setsituation by improving the dataset performance by a large
+ tings on MNIST [28], SVHN [33], CIFAR-10, and CIFARmargin. Besides, itonlytakeslessthanonetenthoftheorig-
+ 100 [26] datasets. DREAM achieves SOTA results on most 
+ inal iteration number to reach the performance, as shown in
+ cases. Especially when IPC is small, DREAM has gained 
+ Fig. 7c. 
+ significant performance gap over other methods, which also 
+ validates the effectiveness of matching representative sam- 10. Distilled Dataset Visualization
+ ples. RFAD [31] employs ConvNet with 1024 convolutional channels, while our results are reported based on 128- In order to more intuitively demonstrate the effects on
+ channel ConvNet. Except for IPC=1 CIFAR-10, DREAM the distilled images, we compare the distillation results of
+ distills better synthetic images than RFAD. HaBa [29] in- adding the proposed DREAM strategy or not in Fig. 8.
+ volves a data hallucination process, which generates more DREAM improves the quality of the distilled datasets from
+ samples from base images. It holds higher performance on two perspectives. Firstly, the images optimized by DREAM
+ IPC=10 CIFAR-10 and IPC=1 CIFAR-100, while in other show more obvious categorical characteristics. Secondly,
+ circumstances, DREAM has superior performances. DREAM introduces more variety to the distilled images.
+ With these two improvements, dream brings better perfor-
+ 8. Accuracy Curve Visualization mance to the distilled datasets. 
+ We provide some extra visualizations of the distilled im-
+ We apply the DREAM strategy to more dataset distilla- ages on MNIST, FashionMNIST and SVHN in Fig. 9.
+ tion methods, such as DC [56], DSA [54], etc. In addition 
+ to stable performance improvements, we visualize the ac- 11. Differences from Related Works
+ curacy curve during training in Fig. 7. It can be observed 
+ There are some recent works focusing on improving the
+ that compared with the original methods, DREAM only reefficiency of dataset distillation. RFAD reduces the calcuquires one fifth and one tenth of the iteration number on 
+ lation of neural tangent kernel matrix in Kernel Inducing
+ the DC and DSA to achieve the original performance, re- 
+ Points (KIP) from O(|S2|) to O(|S|) by using random feaspectively. Further increasing the training time brings conture approximation [31]. It takes into account the similartinuous performance improvement, which also proves that 
+ ity between Neural Tangent Kernel (NTK) and Neural Netour method is universal and is able to be easily plugged for 
+ work Gaussian Process (NNGP) kernels. RFAD focuses
+ popular dataset distillation frameworks. The above experion reducing the calculation complexity in KIP, while our
+ ments are all based on the setting of 10 images-per-class on 
+ proposed DREAM is aiming at improving the matching ef-
+ CIFAR10. 
+ ficiency through selecting representative original images,
+ which has no contradicts. 
+ 9. DREAM on Distribution Matching 
+ Jiang et al. analyze the shortcomings of gradient matching method and propose the idea of matching multi-level
+ In addition to gradient matching, we also explore the apgradients from the angle perspective [23]. There are also
+ plicability of our method in embedding distribution matchmany other methods [32, 48], which analyze the shortcoming. For distribution matching, the optimization is conings of existing methods from the perspective of two-level
+ strained by: 
+ optimization and improve the efficiency. Comparatively,
+ S = argminD( (M (A(S))), (M (A(T )))), (3) DREAM addresses the matching efficiency problem from
+
+ S the sampling perspective for both gradient matching and
+ embedding distribution matching. DREAM is able to be
+ where represents averaging the features in the channel dieasily plugged into other dataset distillation methods to sigmension. Forgradientmatching, theboundarysamplesgennificantly reduce the required training iterations.
+ erate large gradients which bias the optimization, while for 
+ distribution matching, the boundary samples shift the aver- 
+ 12. Clustering Analysis 
+ age feature. Random sampling introduces random factors to 
+ the shifts and degrades the matching efficiency. DREAM, Wefurtheranalyzetheextratimecostcausedbythecluson the contrary, ensures the evenness and diversity of the tering process in Tab. 8. For CIFAR-10, in each inner loop,
+ original images for matching. It largely reduces the feature the matching process and image updating cost 0.2s. Every
+ shifts and consistently provide appropriate supervision for 10 inner loops, a clustering process is conducted. The clusthe optimization. We conduct the experiments on IDC [25] tering process takes 1s, so by average the clustering time for
+
+ 
+
+ 
+
+ 
+ Table 7: Top-1 accuracy of test models trained on distilled synthetic images on multiple datasets. The distillation training is
+ conducted with ConvNet-3. 
+ MNIST SVHN CIFAR10 CIFAR100 
+ Dataset 
+ 1 10 50 1 10 50 1 10 50 1 10 50 
+ DD [51] - 79.5 - - - - - 36.8 - - - - 
+ LD [3] 60.9 87.3 93.3 - - - 25.7 38.3 42.5 11.5 - - 
+ DC [56] 91.7 97.4 98.8 31.2 76.1 82.3 28.3 44.9 53.9 12.8 25.2 - 
+ DSA [54] 88.7 97.8 99.2 27.5 79.2 84.4 28.8 52.1 60.6 13.9 32.3 42.8 
+ DM [55] 89.7 97.5 98.6 - - - 26.0 48.9 63.0 11.4 29.7 43.6 
+ CAFE [50] 93.1 97.2 98.6 42.6 75.9 81.3 30.3 46.3 55.5 12.9 27.8 37.9 
+ MTT [4] - - - - - - 46.3 65.3 71.6 24.3 40.1 47.7 
+ IDC [25] 94.2 98.4 99.1 68.5 87.5 90.1 50.6 67.5 74.5 - 45.1 - 
+ KIP [34, 35] 90.1 97.5 98.3 57.3 75.0 80.5 49.9 62.7 68.6 15.7 28.3 - 
+ RFAD [31] 94.4 98.5 98.8 52.2 74.9 80.9 53.6 66.3 71.1 26.3 33.0 - 
+ HaBa [29] 92.4 97.4 98.1 69.8 83.2 88.3 48.3 69.9 74.0 33.4 40.2 47.0 
+ FRePo [60] 93.0 98.6 99.2 - - - 46.8 65.5 71.7 28.7 42.5 44.3 
+ DREAM 95.7 98.6 99.2 69.8 87.9 90.5 51.1 69.4 74.8 29.5 46.8 52.6 
+ 0.50 
+
+ 0.40 
+
+ 
+
+ 0.30 
+ 0.25 
+ 0 100 200 300 400 500 600 700 800 900 1000 
+ Iteration 
+ ycaruccA 
+ Accuracy-Iteration 
+ 0.60 
+ 0.50 
+ DC+DREAM 
+ DC 
+ 0.40 
+ 0.30 
+ 0.25 
+ 0 100 200 300 400 500 600 700 800 900 1000 
+ Iteration 
+ (a) The accuracy curve of adding DREAM 
+ strategy to DC. 
+ ycaruccA 
+ Accuracy-Iteration 
+ 70 
+ DSA+DREAM 60 
+ DSA 
+ 50 
+ 0 100 200 300 400 500 600 700 800 900 1000
+ Iteration 
+ (b) The accuracy curve of adding DREAM 
+ strategy to DSA. 
+ ycaruccA 
+ Accuracy-Iteration 
+ IDC(feat)+DREAM 
+ IDC(feat) 
+ (c) The accuracy curve of adding DREAM
+ strategy to distribution matching.
+ Figure 7: Applying the DREAM strategy brings stable performance and efficiency improvements.
+ Table 8: Time cost of adding DREAM strategy (s). efficiency and reduces the required training time for dataset
+ distillation. 
+ Update Inner 
+ Datasets Methods Clustering 
+ Images Loop 
+ IDC [25] - 0.2 0.2 
+ CIFAR-10 
+ DREAM 0.1 0.2 0.3 
+ IDC [25] - 2.0 2.0 
+ CIFAR-100 
+ DREAM 0.1 2.0 2.1 
+ each inner loop is 0.1s. The total average inner loop time 
+ is 0.3s, compared to the original 0.2s. Considering that we 
+ only need one tenth to one fifth of the iterations to obtain the 
+ original performance, we save more than 70% of the time. 
+ For CIFAR-100 with more classes, the extra clustering time 
+ is one twentieth of the original image updating time, which 
+ is negligible. DREAM significantly improves the matching 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ (a) DC (b) DC+DREAM 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ (c) DSA (d) DSA+DREAM 
+
+ Figure 8: Applying DREAM improves the image quality and sample diversity.
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+ (a) MNIST (b) FashionMNIST (c) SVHN 
+
+ Figure 9: Example visualizations of the distilled images on MNIST, FashionMNIST and SVHN.

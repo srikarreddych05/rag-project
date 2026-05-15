@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Scholar Stream{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+  <h2 class="dash-title">Evaluation Dashboard</h2>
+  <p class="dash-sub">
+    Ablation study comparing 4 retrieval conditions on {{ 200 }} Q&amp;A pairs
+    across 3 topics (CoT Reasoning, RLHF &amp; Alignment, Efficient Inference).
+  </p>
+
+  <!-- Metric cards row -->
+  <div class="metric-row" id="metricRow"></div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3 class="chart-title">Precision@5 &amp; MRR</h3>
+      <canvas id="retrievalChart"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-title">ROUGE-L &amp; BERTScore F1</h3>
+      <canvas id="generationChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Results table -->
+  <div class="table-card">
+    <h3 class="chart-title">Full Results Table</h3>
+    <table class="results-table" id="resultsTable"></table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const DATA = {{ chart_data | safe }};
+
+const COLORS = {
+  blue:   '#2E75B6',
+  teal:   '#1D9E75',
+  amber:  '#BA7517',
+  purple: '#6B4FA0',
+};
+
+// ── Build metric summary cards ──────────────────────────────────────────────
+const bestMRR = Math.max(...DATA.mrr);
+const bestP   = Math.max(...DATA.precision_at_k);
+const bestRL  = Math.max(...DATA.rouge_l);
+const bestBS  = Math.max(...DATA.bertscore_f1);
+
+document.getElementById('metricRow').innerHTML = [
+  { label: 'Best MRR',        val: bestMRR.toFixed(4), color: COLORS.blue   },
+  { label: 'Best P@5',        val: bestP.toFixed(4),   color: COLORS.teal   },
+  { label: 'Best ROUGE-L',    val: bestRL.toFixed(4),  color: COLORS.amber  },
+  { label: 'Best BERTScore',  val: bestBS.toFixed(4),  color: COLORS.purple },
+].map(m => `
+  <div class="metric-card" style="border-top: 4px solid ${m.color}">
+    <div class="metric-val">${m.val}</div>
+    <div class="metric-label">${m.label}</div>
+  </div>
+`).join('');
+
+// ── Chart defaults ──────────────────────────────────────────────────────────
+Chart.defaults.color = '#555';
+Chart.defaults.font.family = 'system-ui, sans-serif';
+
+const BAR_OPTIONS = {
+  responsive: true,
+  plugins: {
+    legend: { position: 'top' },
+    tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}` } },
+  },
+  scales: {
+    y: { beginAtZero: true, max: 1.0, grid: { color: '#eee' } },
+    x: { grid: { display: false } },
+  },
+};
+
+// ── Retrieval chart (P@5 + MRR) ────────────────────────────────────────────
+new Chart(document.getElementById('retrievalChart'), {
+  type: 'bar',
+  data: {
+    labels: DATA.conditions,
+    datasets: [
+      {
+        label: 'Precision@5',
+        data: DATA.precision_at_k,
+        backgroundColor: COLORS.blue + 'CC',
+        borderColor: COLORS.blue,
+        borderWidth: 1.5,
+      },
+      {
+        label: 'MRR',
+        data: DATA.mrr,
+        backgroundColor: COLORS.teal + 'CC',
+        borderColor: COLORS.teal,
+        borderWidth: 1.5,
+      },
+    ],
+  },
+  options: BAR_OPTIONS,
+});
+
+// ── Generation chart (ROUGE-L + BERTScore) ─────────────────────────────────
+new Chart(document.getElementById('generationChart'), {
+  type: 'bar',
+  data: {
+    labels: DATA.conditions,
+    datasets: [
+      {
+        label: 'ROUGE-L',
+        data: DATA.rouge_l,
+        backgroundColor: COLORS.amber + 'CC',
+        borderColor: COLORS.amber,
+        borderWidth: 1.5,
+      },
+      {
+        label: 'BERTScore F1',
+        data: DATA.bertscore_f1,
+        backgroundColor: COLORS.purple + 'CC',
+        borderColor: COLORS.purple,
+        borderWidth: 1.5,
+      },
+    ],
+  },
+  options: BAR_OPTIONS,
+});
+
+// ── Results table ───────────────────────────────────────────────────────────
+const headers = ['Condition', 'P@5', 'MRR', 'ROUGE-L', 'BERTScore F1'];
+const table   = document.getElementById('resultsTable');
+table.innerHTML = `
+  <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+  <tbody>
+    ${DATA.conditions.map((cond, i) => `
+      <tr>
+        <td><strong>${cond}</strong></td>
+        <td>${DATA.precision_at_k[i].toFixed(4)}</td>
+        <td>${DATA.mrr[i].toFixed(4)}</td>
+        <td>${DATA.rouge_l[i].toFixed(4)}</td>
+        <td>${DATA.bertscore_f1[i].toFixed(4)}</td>
+      </tr>
+    `).join('')}
+  </tbody>
+`;
+</script>
+{% endblock %}

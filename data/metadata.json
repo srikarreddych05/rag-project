@@ -1,6 +1,30 @@
 [
   {
-    "filename": "Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_for_Re__2503.09567v5.pdf",
+    "filename": "Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf",
+    "topic": "cot_reasoning",
+    "title": "Making Large Language Models Better Reasoners with Alignment",
+    "authors": [
+      "Peiyi Wang",
+      "Lei Li",
+      "Liang Chen",
+      "Feifan Song",
+      "Binghuai Lin",
+      "Yunbo Cao",
+      "Tianyu Liu",
+      "Zhifang Sui"
+    ],
+    "published": "2023-09-05",
+    "arxiv_id": "http://arxiv.org/abs/2309.02144v1",
+    "abstract": "Reasoning is a cognitive process of using evidence to reach a sound conclusion. The reasoning capability is essential for large language models (LLMs) to serve as the brain of the artificial general intelligence agent. Recent studies reveal that fine-tuning LLMs on data with the chain of thought (COT) reasoning process can significantly enhance their reasoning capabilities. However, we find that the fine-tuned LLMs suffer from an \\textit{Assessment Misalignment} problem, i.e., they frequently assign higher scores to subpar COTs, leading to potential limitations in their reasoning abilities. To",
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "Towards_Reasoning_Era_A_Survey_of_Long_ChainofThought_f__2503.09567v5.pdf",
+    "topic": "cot_reasoning",
     "title": "Towards Reasoning Era: A Survey of Long Chain-of-Thought for Reasoning Large Language Models",
     "authors": [
       "Qiguang Chen",
@@ -23,7 +47,214 @@
     ]
   },
   {
-    "filename": "Making_Large_Language_Models_Better_Reasoners_with_Alignment__2309.02144v1.pdf",
+    "filename": "Understanding_Reasoning_in_ChainofThought_from_the_Hopf__2410.03595v1.pdf",
+    "topic": "cot_reasoning",
+    "title": "Understanding Reasoning in Chain-of-Thought from the Hopfieldian View",
+    "authors": [
+      "Lijie Hu",
+      "Liang Liu",
+      "Shu Yang",
+      "Xin Chen",
+      "Zhen Tan",
+      "Muhammad Asif Ali",
+      "Mengdi Li",
+      "Di Wang"
+    ],
+    "published": "2024-10-04",
+    "arxiv_id": "http://arxiv.org/abs/2410.03595v1",
+    "abstract": "Large Language Models have demonstrated remarkable abilities across various tasks, with Chain-of-Thought (CoT) prompting emerging as a key technique to enhance reasoning capabilities. However, existing research primarily focuses on improving performance, lacking a comprehensive framework to explain and understand the fundamental factors behind CoT's success. To bridge this gap, we introduce a novel perspective grounded in the Hopfieldian view of cognition in cognitive neuroscience. We establish a connection between CoT reasoning and key cognitive elements such as stimuli, actions, neural popul",
+    "categories": [
+      "cs.AI",
+      "cs.CL",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "CROP_TokenEfficient_Reasoning_in_Large_Language_Models___2604.14214v1.pdf",
+    "topic": "cot_reasoning",
+    "title": "CROP: Token-Efficient Reasoning in Large Language Models via Regularized Prompt Optimization",
+    "authors": [
+      "Deep Shah",
+      "Sanket Badhe",
+      "Nehal Kathrotia",
+      "Priyanka Tiwari"
+    ],
+    "published": "2026-04-08",
+    "arxiv_id": "http://arxiv.org/abs/2604.14214v1",
+    "abstract": "Large Language Models utilizing reasoning techniques improve task performance but incur significant latency and token costs due to verbose generation. Existing automatic prompt optimization(APO) frameworks target task accuracy exclusively at the expense of generating long reasoning traces. We propose Cost-Regularized Optimization of Prompts (CROP), an APO method that introduces regularization on response length by generating textual feedback in addition to standard accuracy feedback. This forces the optimization process to produce prompts that elicit concise responses containing only critical ",
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "ARS_Adaptive_Reasoning_Suppression_for_Efficient_Large___2510.00071v2.pdf",
+    "topic": "cot_reasoning",
+    "title": "ARS: Adaptive Reasoning Suppression for Efficient Large Reasoning Language Models",
+    "authors": [
+      "Dongqi Zheng"
+    ],
+    "published": "2025-09-29",
+    "arxiv_id": "http://arxiv.org/abs/2510.00071v2",
+    "abstract": "Large Reasoning Language Models (LRLMs or LRMs) demonstrate remarkable capabilities in complex reasoning tasks, but suffer from significant computational inefficiencies due to overthinking phenomena. Existing efficient reasoning methods face the challenge of balancing reasoning quality with inference cost reduction. We propose \\textbf{Adaptive Reasoning Suppression (ARS)}, a novel training-free approach that dynamically suppresses redundant reasoning steps while preserving accuracy through adaptive certainty monitoring. ARS introduces a multi-checkpoint certainty estimation mechanism with prog",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Large_Language_Models_Reasoning_Abilities_Under_NonIdea__2508.04848v1.pdf",
+    "topic": "cot_reasoning",
+    "title": "Large Language Models Reasoning Abilities Under Non-Ideal Conditions After RL-Fine-Tuning",
+    "authors": [
+      "Chang Tian",
+      "Matthew B. Blaschko",
+      "Mingzhe Xing",
+      "Xiuxing Li",
+      "Yinliang Yue",
+      "Marie-Francine Moens"
+    ],
+    "published": "2025-08-06",
+    "arxiv_id": "http://arxiv.org/abs/2508.04848v1",
+    "abstract": "Reinforcement learning (RL) has become a key technique for enhancing the reasoning abilities of large language models (LLMs), with policy-gradient algorithms dominating the post-training stage because of their efficiency and effectiveness. However, most existing benchmarks evaluate large-language-model reasoning under idealized settings, overlooking performance in realistic, non-ideal scenarios. We identify three representative non-ideal scenarios with practical relevance: summary inference, fine-grained noise suppression, and contextual filtering. We introduce a new research direction guided ",
+    "categories": [
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "Response_Emergent_analogical_reasoning_in_large_languag__2308.16118v2.pdf",
+    "topic": "cot_reasoning",
+    "title": "Response: Emergent analogical reasoning in large language models",
+    "authors": [
+      "Damian Hodel",
+      "Jevin West"
+    ],
+    "published": "2023-08-30",
+    "arxiv_id": "http://arxiv.org/abs/2308.16118v2",
+    "abstract": "In their recent Nature Human Behaviour paper, \"Emergent analogical reasoning in large language models,\" (Webb, Holyoak, and Lu, 2023) the authors argue that \"large language models such as GPT-3 have acquired an emergent ability to find zero-shot solutions to a broad range of analogy problems.\" In this response, we provide counterexamples of the letter string analogies. In our tests, GPT-3 fails to solve simplest variations of the original tasks, whereas human performance remains consistently high across all modified versions. Zero-shot reasoning is an extraordinary claim that requires extraord",
+    "categories": [
+      "cs.CL",
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLM__2601.03559v2.pdf",
+    "topic": "cot_reasoning",
+    "title": "DiffCoT: Diffusion-styled Chain-of-Thought Reasoning in LLMs",
+    "authors": [
+      "Shidong Cao",
+      "Hongzhan Lin",
+      "Yuxuan Gu",
+      "Ziyang Luo",
+      "Jing Ma"
+    ],
+    "published": "2026-01-07",
+    "arxiv_id": "http://arxiv.org/abs/2601.03559v2",
+    "abstract": "Chain-of-Thought (CoT) reasoning improves multi-step mathematical problem solving in large language models but remains vulnerable to exposure bias and error accumulation, as early mistakes propagate irreversibly through autoregressive decoding. In this work, we propose DiffCoT, a diffusion-styled CoT framework that reformulates CoT reasoning as an iterative denoising process. DiffCoT integrates diffusion principles at the reasoning-step level via a sliding-window mechanism, enabling unified generation and retrospective correction of intermediate steps while preserving token-level autoregressio",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large__2305.17306v1.pdf",
+    "topic": "cot_reasoning",
+    "title": "Chain-of-Thought Hub: A Continuous Effort to Measure Large Language Models' Reasoning Performance",
+    "authors": [
+      "Yao Fu",
+      "Litu Ou",
+      "Mingyu Chen",
+      "Yuhao Wan",
+      "Hao Peng",
+      "Tushar Khot"
+    ],
+    "published": "2023-05-26",
+    "arxiv_id": "http://arxiv.org/abs/2305.17306v1",
+    "abstract": "As large language models (LLMs) are continuously being developed, their evaluation becomes increasingly important yet challenging. This work proposes Chain-of-Thought Hub, an open-source evaluation suite on the multi-step reasoning capabilities of large language models. We are interested in this setting for two reasons: (1) from the behavior of GPT and PaLM model family, we observe that complex reasoning is likely to be a key differentiator between weaker and stronger LLMs; (2) we envisage large language models to become the next-generation computational platform and foster an ecosystem of LLM",
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "Effectiveness_of_ChainofThought_in_Distilling_Reasoning__2511.05184v1.pdf",
+    "topic": "cot_reasoning",
+    "title": "Effectiveness of Chain-of-Thought in Distilling Reasoning Capability from Large Language Models",
+    "authors": [
+      "Cong-Thanh Do",
+      "Rama Doddipatla",
+      "Kate Knill"
+    ],
+    "published": "2025-11-07",
+    "arxiv_id": "http://arxiv.org/abs/2511.05184v1",
+    "abstract": "Chain-of-Thought (CoT) prompting is a widely used method to improve the reasoning capability of Large Language Models (LLMs). More recently, CoT has been leveraged in Knowledge Distillation (KD) to transfer reasoning capability from a larger LLM to a smaller one. This paper examines the role of CoT in distilling the reasoning capability from larger LLMs to smaller LLMs using white-box KD, analysing its effectiveness in improving the performance of the distilled models for various natural language reasoning and understanding tasks. We conduct white-box KD experiments using LLMs from the Qwen an",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Reinforcement_Learning_Meets_Large_Language_Models_A_Su__2509.16679v1.pdf",
+    "topic": "rlhf_alignment",
+    "title": "Reinforcement Learning Meets Large Language Models: A Survey of Advancements and Applications Across the LLM Lifecycle",
+    "authors": [
+      "Keliang Liu",
+      "Dingkang Yang",
+      "Ziyun Qian",
+      "Weijie Yin",
+      "Yuchi Wang",
+      "Hongsheng Li",
+      "Jun Liu",
+      "Peng Zhai",
+      "Yang Liu",
+      "Lihua Zhang"
+    ],
+    "published": "2025-09-20",
+    "arxiv_id": "http://arxiv.org/abs/2509.16679v1",
+    "abstract": "In recent years, training methods centered on Reinforcement Learning (RL) have markedly enhanced the reasoning and alignment performance of Large Language Models (LLMs), particularly in understanding human intents, following user instructions, and bolstering inferential strength. Although existing surveys offer overviews of RL augmented LLMs, their scope is often limited, failing to provide a comprehensive summary of how RL operates across the full lifecycle of LLMs. We systematically review the theoretical and practical advancements whereby RL empowers LLMs, especially Reinforcement Learning ",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Language_Alignment_via_Nashlearning_and_Adaptive_feedba__2406.15890v1.pdf",
+    "topic": "rlhf_alignment",
+    "title": "Language Alignment via Nash-learning and Adaptive feedback",
+    "authors": [
+      "Ari Azarafrooz",
+      "Farshid Faal"
+    ],
+    "published": "2024-06-22",
+    "arxiv_id": "http://arxiv.org/abs/2406.15890v1",
+    "abstract": "Recent research has shown the potential of Nash Learning via Human Feedback for large language model alignment by incorporating the notion of a preference model in a minimax game setup. We take this idea further by casting the alignment as a mirror descent algorithm against the adaptive feedback of an improved opponent, thereby removing the need for learning a preference model or the existence of an annotated dataset altogether. The resulting algorithm, which we refer to as Language Alignment via Nash-learning and Adaptive feedback (LANA), is capable of self-alignment without the need for a hu",
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "cs.CL",
+      "cs.GT"
+    ]
+  },
+  {
+    "filename": "RRHF_Rank_Responses_to_Align_Language_Models_with_Human__2304.05302v3.pdf",
+    "topic": "rlhf_alignment",
+    "title": "RRHF: Rank Responses to Align Language Models with Human Feedback without tears",
+    "authors": [
+      "Zheng Yuan",
+      "Hongyi Yuan",
+      "Chuanqi Tan",
+      "Wei Wang",
+      "Songfang Huang",
+      "Fei Huang"
+    ],
+    "published": "2023-04-11",
+    "arxiv_id": "http://arxiv.org/abs/2304.05302v3",
+    "abstract": "Reinforcement Learning from Human Feedback (RLHF) facilitates the alignment of large language models with human preferences, significantly enhancing the quality of interactions between humans and models. InstructGPT implements RLHF through several stages, including Supervised Fine-Tuning (SFT), reward model training, and Proximal Policy Optimization (PPO). However, PPO is sensitive to hyperparameters and requires multiple models in its standard implementation, making it hard to train and scale up to larger parameter counts. In contrast, we propose a novel learning paradigm called RRHF, which s",
+    "categories": [
+      "cs.CL"
+    ]
+  },
+  {
+    "filename": "Making_Large_Language_Models_Better_Reasoners_with_Alig__2309.02144v1.pdf",
+    "topic": "rlhf_alignment",
     "title": "Making Large Language Models Better Reasoners with Alignment",
     "authors": [
       "Peiyi Wang",
@@ -45,215 +276,190 @@
     ]
   },
   {
-    "filename": "DiffCoT_Diffusionstyled_ChainofThought_Reasoning_in_LLMs__2601.03559v2.pdf",
-    "title": "DiffCoT: Diffusion-styled Chain-of-Thought Reasoning in LLMs",
+    "filename": "RLHFBlender_A_Configurable_Interactive_Interface_for_Le__2308.04332v1.pdf",
+    "topic": "rlhf_alignment",
+    "title": "RLHF-Blender: A Configurable Interactive Interface for Learning from Diverse Human Feedback",
     "authors": [
-      "Shidong Cao",
-      "Hongzhan Lin",
-      "Yuxuan Gu",
-      "Ziyang Luo",
-      "Jing Ma"
+      "Yannick Metz",
+      "David Lindner",
+      "Rapha\u00ebl Baur",
+      "Daniel Keim",
+      "Mennatallah El-Assady"
     ],
-    "published": "2026-01-07",
-    "arxiv_id": "http://arxiv.org/abs/2601.03559v2",
-    "abstract": "Chain-of-Thought (CoT) reasoning improves multi-step mathematical problem solving in large language models but remains vulnerable to exposure bias and error accumulation, as early mistakes propagate irreversibly through autoregressive decoding. In this work, we propose DiffCoT, a diffusion-styled CoT framework that reformulates CoT reasoning as an iterative denoising process. DiffCoT integrates diffusion principles at the reasoning-step level via a sliding-window mechanism, enabling unified generation and retrospective correction of intermediate steps while preserving token-level autoregressio",
-    "categories": [
-      "cs.CL"
-    ]
-  },
-  {
-    "filename": "Large_Language_Models_Reasoning_Abilities_Under_NonIdeal_Con__2508.04848v1.pdf",
-    "title": "Large Language Models Reasoning Abilities Under Non-Ideal Conditions After RL-Fine-Tuning",
-    "authors": [
-      "Chang Tian",
-      "Matthew B. Blaschko",
-      "Mingzhe Xing",
-      "Xiuxing Li",
-      "Yinliang Yue",
-      "Marie-Francine Moens"
-    ],
-    "published": "2025-08-06",
-    "arxiv_id": "http://arxiv.org/abs/2508.04848v1",
-    "abstract": "Reinforcement learning (RL) has become a key technique for enhancing the reasoning abilities of large language models (LLMs), with policy-gradient algorithms dominating the post-training stage because of their efficiency and effectiveness. However, most existing benchmarks evaluate large-language-model reasoning under idealized settings, overlooking performance in realistic, non-ideal scenarios. We identify three representative non-ideal scenarios with practical relevance: summary inference, fine-grained noise suppression, and contextual filtering. We introduce a new research direction guided ",
-    "categories": [
-      "cs.AI"
-    ]
-  },
-  {
-    "filename": "ChainofThought_Hub_A_Continuous_Effort_to_Measure_Large_Lang__2305.17306v1.pdf",
-    "title": "Chain-of-Thought Hub: A Continuous Effort to Measure Large Language Models' Reasoning Performance",
-    "authors": [
-      "Yao Fu",
-      "Litu Ou",
-      "Mingyu Chen",
-      "Yuhao Wan",
-      "Hao Peng",
-      "Tushar Khot"
-    ],
-    "published": "2023-05-26",
-    "arxiv_id": "http://arxiv.org/abs/2305.17306v1",
-    "abstract": "As large language models (LLMs) are continuously being developed, their evaluation becomes increasingly important yet challenging. This work proposes Chain-of-Thought Hub, an open-source evaluation suite on the multi-step reasoning capabilities of large language models. We are interested in this setting for two reasons: (1) from the behavior of GPT and PaLM model family, we observe that complex reasoning is likely to be a key differentiator between weaker and stronger LLMs; (2) we envisage large language models to become the next-generation computational platform and foster an ecosystem of LLM",
-    "categories": [
-      "cs.CL",
-      "cs.AI",
-      "cs.LG"
-    ]
-  },
-  {
-    "filename": "CROP_TokenEfficient_Reasoning_in_Large_Language_Models_via_R__2604.14214v1.pdf",
-    "title": "CROP: Token-Efficient Reasoning in Large Language Models via Regularized Prompt Optimization",
-    "authors": [
-      "Deep Shah",
-      "Sanket Badhe",
-      "Nehal Kathrotia",
-      "Priyanka Tiwari"
-    ],
-    "published": "2026-04-08",
-    "arxiv_id": "http://arxiv.org/abs/2604.14214v1",
-    "abstract": "Large Language Models utilizing reasoning techniques improve task performance but incur significant latency and token costs due to verbose generation. Existing automatic prompt optimization(APO) frameworks target task accuracy exclusively at the expense of generating long reasoning traces. We propose Cost-Regularized Optimization of Prompts (CROP), an APO method that introduces regularization on response length by generating textual feedback in addition to standard accuracy feedback. This forces the optimization process to produce prompts that elicit concise responses containing only critical ",
-    "categories": [
-      "cs.CL",
-      "cs.AI"
-    ]
-  },
-  {
-    "filename": "Response_Emergent_analogical_reasoning_in_large_language_mod__2308.16118v2.pdf",
-    "title": "Response: Emergent analogical reasoning in large language models",
-    "authors": [
-      "Damian Hodel",
-      "Jevin West"
-    ],
-    "published": "2023-08-30",
-    "arxiv_id": "http://arxiv.org/abs/2308.16118v2",
-    "abstract": "In their recent Nature Human Behaviour paper, \"Emergent analogical reasoning in large language models,\" (Webb, Holyoak, and Lu, 2023) the authors argue that \"large language models such as GPT-3 have acquired an emergent ability to find zero-shot solutions to a broad range of analogy problems.\" In this response, we provide counterexamples of the letter string analogies. In our tests, GPT-3 fails to solve simplest variations of the original tasks, whereas human performance remains consistently high across all modified versions. Zero-shot reasoning is an extraordinary claim that requires extraord",
-    "categories": [
-      "cs.CL",
-      "cs.AI"
-    ]
-  },
-  {
-    "filename": "ChainofThought_Prompting_Elicits_Reasoning_in_Large_Language__2201.11903v6.pdf",
-    "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
-    "authors": [
-      "Jason Wei",
-      "Xuezhi Wang",
-      "Dale Schuurmans",
-      "Maarten Bosma",
-      "Brian Ichter",
-      "Fei Xia",
-      "Ed Chi",
-      "Quoc Le",
-      "Denny Zhou"
-    ],
-    "published": "2022-01-28",
-    "arxiv_id": "http://arxiv.org/abs/2201.11903v6",
-    "abstract": "We explore how generating a chain of thought -- a series of intermediate reasoning steps -- significantly improves the ability of large language models to perform complex reasoning. In particular, we show how such reasoning abilities emerge naturally in sufficiently large language models via a simple method called chain of thought prompting, where a few chain of thought demonstrations are provided as exemplars in prompting. Experiments on three large language models show that chain of thought prompting improves performance on a range of arithmetic, commonsense, and symbolic reasoning tasks. Th",
-    "categories": [
-      "cs.CL",
-      "cs.AI"
-    ]
-  },
-  {
-    "filename": "Navigating_the_State_of_Cognitive_Flow_ContextAware_AI_Inter__2504.16021v1.pdf",
-    "title": "Navigating the State of Cognitive Flow: Context-Aware AI Interventions for Effective Reasoning Support",
-    "authors": [
-      "Dinithi Dissanayake",
-      "Suranga Nanayakkara"
-    ],
-    "published": "2025-04-22",
-    "arxiv_id": "http://arxiv.org/abs/2504.16021v1",
-    "abstract": "Flow theory describes an optimal cognitive state where individuals experience deep focus and intrinsic motivation when a task's difficulty aligns with their skill level. In AI-augmented reasoning, interventions that disrupt the state of cognitive flow can hinder rather than enhance decision-making. This paper proposes a context-aware cognitive augmentation framework that adapts interventions based on three key contextual factors: type, timing, and scale. By leveraging multimodal behavioral cues (e.g., gaze behavior, typing hesitation, interaction speed), AI can dynamically adjust cognitive sup",
-    "categories": [
-      "cs.HC",
-      "cs.AI"
-    ]
-  },
-  {
-    "filename": "Soft_Inductive_Bias_Approach_via_Explicit_Reasoning_Perspect__2512.08480v1.pdf",
-    "title": "Soft Inductive Bias Approach via Explicit Reasoning Perspectives in Inappropriate Utterance Detection Using Large Language Models",
-    "authors": [
-      "Ju-Young Kim",
-      "Ji-Hong Park",
-      "Se-Yeon Lee",
-      "Sujin Park",
-      "Gun-Woo Kim"
-    ],
-    "published": "2025-12-09",
-    "arxiv_id": "http://arxiv.org/abs/2512.08480v1",
-    "abstract": "Recent incidents in certain online games and communities, where anonymity is guaranteed, show that unchecked inappropriate remarks frequently escalate into verbal abuse and even criminal behavior, raising significant social concerns. Consequently, there is a growing need for research on techniques that can detect inappropriate utterances within conversational texts to help build a safer communication environment. Although large-scale language models trained on Korean corpora and chain-of-thought reasoning have recently gained attention, research applying these approaches to inappropriate utter",
-    "categories": [
-      "cs.CL"
-    ]
-  },
-  {
-    "filename": "Beneath_the_Surface_Unveiling_Harmful_Memes_with_Multimodal___2312.05434v1.pdf",
-    "title": "Beneath the Surface: Unveiling Harmful Memes with Multimodal Reasoning Distilled from Large Language Models",
-    "authors": [
-      "Hongzhan Lin",
-      "Ziyang Luo",
-      "Jing Ma",
-      "Long Chen"
-    ],
-    "published": "2023-12-09",
-    "arxiv_id": "http://arxiv.org/abs/2312.05434v1",
-    "abstract": "The age of social media is rife with memes. Understanding and detecting harmful memes pose a significant challenge due to their implicit meaning that is not explicitly conveyed through the surface text and image. However, existing harmful meme detection approaches only recognize superficial harm-indicative signals in an end-to-end classification manner but ignore in-depth cognition of the meme text and image. In this paper, we attempt to detect harmful memes based on advanced reasoning over the interplay of multimodal information in memes. Inspired by the success of Large Language Models (LLMs",
-    "categories": [
-      "cs.CL"
-    ]
-  },
-  {
-    "filename": "Learning_From_Failure_Integrating_Negative_Examples_when_Fin__2402.11651v2.pdf",
-    "title": "Learning From Failure: Integrating Negative Examples when Fine-tuning Large Language Models as Agents",
-    "authors": [
-      "Renxi Wang",
-      "Haonan Li",
-      "Xudong Han",
-      "Yixuan Zhang",
-      "Timothy Baldwin"
-    ],
-    "published": "2024-02-18",
-    "arxiv_id": "http://arxiv.org/abs/2402.11651v2",
-    "abstract": "Large language models (LLMs) have achieved success in acting as agents, which interact with environments through tools such as search engines. However, LLMs are optimized for language generation instead of tool use during training or alignment, limiting their effectiveness as agents. To resolve this problem, previous work has first collected interaction trajectories between LLMs and environments, using only trajectories that successfully finished the task to fine-tune smaller models, making fine-tuning data scarce and acquiring it both difficult and costly. Discarding failed trajectories also ",
-    "categories": [
-      "cs.CL"
-    ]
-  },
-  {
-    "filename": "Is_ChainofThought_Reasoning_of_LLMs_a_Mirage_A_Data_Distribu__2508.01191v5.pdf",
-    "title": "Is Chain-of-Thought Reasoning of LLMs a Mirage? A Data Distribution Lens",
-    "authors": [
-      "Chengshuai Zhao",
-      "Zhen Tan",
-      "Pingchuan Ma",
-      "Dawei Li",
-      "Bohan Jiang",
-      "Yancheng Wang",
-      "Yingzhen Yang",
-      "Huan Liu"
-    ],
-    "published": "2025-08-02",
-    "arxiv_id": "http://arxiv.org/abs/2508.01191v5",
-    "abstract": "Chain-of-Thought (CoT) prompting has been shown to be effective in eliciting structured reasoning (i.e., CoT reasoning) from large language models (LLMs). Regardless of its popularity, recent studies expose its failures in some reasoning tasks, raising fundamental questions about the nature of CoT reasoning. In this work, we propose a data distribution lens to understand when and why CoT reasoning succeeds or fails. We hypothesize that CoT reasoning reflects a structured inductive bias learned from in-distribution data, enabling models to conditionally generate reasoning trajectories that appr",
-    "categories": [
-      "cs.AI",
-      "cs.CL",
-      "cs.LG"
-    ]
-  },
-  {
-    "filename": "A_Critical_Review_of_Causal_Reasoning_Benchmarks_for_Large_L__2407.08029v1.pdf",
-    "title": "A Critical Review of Causal Reasoning Benchmarks for Large Language Models",
-    "authors": [
-      "Linying Yang",
-      "Vik Shirvaikar",
-      "Oscar Clivio",
-      "Fabian Falck"
-    ],
-    "published": "2024-07-10",
-    "arxiv_id": "http://arxiv.org/abs/2407.08029v1",
-    "abstract": "Numerous benchmarks aim to evaluate the capabilities of Large Language Models (LLMs) for causal inference and reasoning. However, many of them can likely be solved through the retrieval of domain knowledge, questioning whether they achieve their purpose. In this review, we present a comprehensive overview of LLM benchmarks for causality. We highlight how recent benchmarks move towards a more thorough definition of causal reasoning by incorporating interventional or counterfactual reasoning. We derive a set of criteria that a useful benchmark or set of benchmarks should aim to satisfy. We hope ",
+    "published": "2023-08-08",
+    "arxiv_id": "http://arxiv.org/abs/2308.04332v1",
+    "abstract": "To use reinforcement learning from human feedback (RLHF) in practical applications, it is crucial to learn reward models from diverse sources of human feedback and to consider human factors involved in providing feedback of different types. However, the systematic study of learning from diverse types of feedback is held back by limited standardized tooling available to researchers. To bridge this gap, we propose RLHF-Blender, a configurable, interactive interface for learning from human feedback. RLHF-Blender provides a modular experimentation framework and implementation that enables research",
     "categories": [
       "cs.LG",
+      "cs.HC"
+    ]
+  },
+  {
+    "filename": "Reinforcement_Learning_from_Human_Feedback_Whose_Cultur__2407.17482v2.pdf",
+    "topic": "rlhf_alignment",
+    "title": "Reinforcement Learning from Human Feedback: Whose Culture, Whose Values, Whose Perspectives?",
+    "authors": [
+      "Kristian Gonz\u00e1lez Barman",
+      "Simon Lohse",
+      "Henk de Regt"
+    ],
+    "published": "2024-07-02",
+    "arxiv_id": "http://arxiv.org/abs/2407.17482v2",
+    "abstract": "We argue for the epistemic and ethical advantages of pluralism in Reinforcement Learning from Human Feedback (RLHF) in the context of Large Language Models (LLM). Drawing on social epistemology and pluralist philosophy of science, we suggest ways in which RHLF can be made more responsive to human needs and how we can address challenges along the way. The paper concludes with an agenda for change, i.e. concrete, actionable steps to improve LLM development.",
+    "categories": [
+      "cs.CY",
+      "cs.AI",
+      "cs.CL",
+      "cs.HC"
+    ]
+  },
+  {
+    "filename": "Using_Large_Language_Models_to_Provide_Explanatory_Feed__2306.15498v1.pdf",
+    "topic": "rlhf_alignment",
+    "title": "Using Large Language Models to Provide Explanatory Feedback to Human Tutors",
+    "authors": [
+      "Jionghao Lin",
+      "Danielle R. Thomas",
+      "Feifei Han",
+      "Shivang Gupta",
+      "Wei Tan",
+      "Ngoc Dang Nguyen",
+      "Kenneth R. Koedinger"
+    ],
+    "published": "2023-06-27",
+    "arxiv_id": "http://arxiv.org/abs/2306.15498v1",
+    "abstract": "Research demonstrates learners engaging in the process of producing explanations to support their reasoning, can have a positive impact on learning. However, providing learners real-time explanatory feedback often presents challenges related to classification accuracy, particularly in domain-specific environments, containing situationally complex and nuanced responses. We present two approaches for supplying tutors real-time feedback within an online lesson on how to give students effective praise. This work-in-progress demonstrates considerable accuracy in binary classification for corrective",
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.HC"
+    ]
+  },
+  {
+    "filename": "Conceptual_BeliefInformed_Reinforcement_Learning__2410.01739v4.pdf",
+    "topic": "rlhf_alignment",
+    "title": "Conceptual Belief-Informed Reinforcement Learning",
+    "authors": [
+      "Xingrui Gu",
+      "Chuyi Jiang",
+      "Laixi Shi"
+    ],
+    "published": "2024-10-02",
+    "arxiv_id": "http://arxiv.org/abs/2410.01739v4",
+    "abstract": "Reinforcement learning (RL) has achieved significant success but is hindered by inefficiency and instability, relying on large amounts of trial-and-error data and failing to efficiently use past experiences to guide decisions. However, humans achieve remarkably efficient learning from experience, attributed to abstracting concepts and updating associated probabilistic beliefs by integrating both uncertainty and prior knowledge, as observed by cognitive science. Inspired by this, we introduce Conceptual Belief-Informed Reinforcement Learning to emulate human intelligence (HI-RL), an efficient e",
+    "categories": [
+      "cs.AI",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "Value_Bonuses_using_Ensemble_Errors_for_Exploration_in___2602.12375v1.pdf",
+    "topic": "rlhf_alignment",
+    "title": "Value Bonuses using Ensemble Errors for Exploration in Reinforcement Learning",
+    "authors": [
+      "Abdul Wahab",
+      "Raksha Kumaraswamy",
+      "Martha White"
+    ],
+    "published": "2026-02-12",
+    "arxiv_id": "http://arxiv.org/abs/2602.12375v1",
+    "abstract": "Optimistic value estimates provide one mechanism for directed exploration in reinforcement learning (RL). The agent acts greedily with respect to an estimate of the value plus what can be seen as a value bonus. The value bonus can be learned by estimating a value function on reward bonuses, propagating local uncertainties around rewards. However, this approach only increases the value bonus for an action retroactively, after seeing a higher reward bonus from that state and action. Such an approach does not encourage the agent to visit a state and action for the first time. In this work, we int",
+    "categories": [
+      "cs.LG",
+      "cs.AI"
+    ]
+  },
+  {
+    "filename": "Designing_for_HumanAgent_Alignment_Understanding_what_h__2404.04289v1.pdf",
+    "topic": "rlhf_alignment",
+    "title": "Designing for Human-Agent Alignment: Understanding what humans want from their agents",
+    "authors": [
+      "Nitesh Goyal",
+      "Minsuk Chang",
+      "Michael Terry"
+    ],
+    "published": "2024-04-04",
+    "arxiv_id": "http://arxiv.org/abs/2404.04289v1",
+    "abstract": "Our ability to build autonomous agents that leverage Generative AI continues to increase by the day. As builders and users of such agents it is unclear what parameters we need to align on before the agents start performing tasks on our behalf. To discover these parameters, we ran a qualitative empirical research study about designing agents that can negotiate during a fictional yet relatable task of selling a camera online. We found that for an agent to perform the task successfully, humans/users and agents need to align over 6 dimensions: 1) Knowledge Schema Alignment 2) Autonomy and Agency A",
+    "categories": [
+      "cs.AI",
+      "cs.HC",
+      "cs.LG"
+    ]
+  },
+  {
+    "filename": "Fewer_Weights_More_Problems_A_Practical_Attack_on_LLM_P__2510.07985v3.pdf",
+    "topic": "efficient_inference",
+    "title": "Fewer Weights, More Problems: A Practical Attack on LLM Pruning",
+    "authors": [
+      "Kazuki Egashira",
+      "Robin Staab",
+      "Thibaud Gloaguen",
+      "Mark Vero",
+      "Martin Vechev"
+    ],
+    "published": "2025-10-09",
+    "arxiv_id": "http://arxiv.org/abs/2510.07985v3",
+    "abstract": "Model pruning, i.e., removing a subset of model weights, has become a prominent approach to reducing the memory footprint of large language models (LLMs) during inference. Notably, popular inference engines, such as vLLM, enable users to conveniently prune downloaded models before they are deployed. While the utility and efficiency of pruning methods have improved significantly, the security implications of pruning remain underexplored. In this work, for the first time, we show that modern LLM pruning methods can be maliciously exploited. In particular, an adversary can construct a model that ",
+    "categories": [
+      "cs.LG",
+      "cs.AI",
+      "cs.CR"
+    ]
+  },
+  {
+    "filename": "DREAM_Efficient_Dataset_Distillation_by_Representative___2302.14416v3.pdf",
+    "topic": "efficient_inference",
+    "title": "DREAM: Efficient Dataset Distillation by Representative Matching",
+    "authors": [
+      "Yanqing Liu",
+      "Jianyang Gu",
+      "Kai Wang",
+      "Zheng Zhu",
+      "Wei Jiang",
+      "Yang You"
+    ],
+    "published": "2023-02-28",
+    "arxiv_id": "http://arxiv.org/abs/2302.14416v3",
+    "abstract": "Dataset distillation aims to synthesize small datasets with little information loss from original large-scale ones for reducing storage and training costs. Recent state-of-the-art methods mainly constrain the sample synthesis process by matching synthetic images and the original ones regarding gradients, embedding distributions, or training trajectories. Although there are various matching objectives, currently the strategy for selecting original images is limited to naive random sampling.\n  We argue that random sampling overlooks the evenness of the selected sample distribution, which may res",
+    "categories": [
+      "cs.CV"
+    ]
+  },
+  {
+    "filename": "Additive_PowersofTwo_Quantization_An_Efficient_Nonunifo__1909.13144v2.pdf",
+    "topic": "efficient_inference",
+    "title": "Additive Powers-of-Two Quantization: An Efficient Non-uniform Discretization for Neural Networks",
+    "authors": [
+      "Yuhang Li",
+      "Xin Dong",
+      "Wei Wang"
+    ],
+    "published": "2019-09-28",
+    "arxiv_id": "http://arxiv.org/abs/1909.13144v2",
+    "abstract": "We propose Additive Powers-of-Two~(APoT) quantization, an efficient non-uniform quantization scheme for the bell-shaped and long-tailed distribution of weights and activations in neural networks. By constraining all quantization levels as the sum of Powers-of-Two terms, APoT quantization enjoys high computational efficiency and a good match with the distribution of weights. A simple reparameterization of the clipping function is applied to generate a better-defined gradient for learning the clipping threshold. Moreover, weight normalization is presented to refine the distribution of weights to",
+    "categories": [
+      "cs.LG",
+      "stat.ML"
+    ]
+  },
+  {
+    "filename": "Efficient_LLM_Inference_on_CPUs__2311.00502v2.pdf",
+    "topic": "efficient_inference",
+    "title": "Efficient LLM Inference on CPUs",
+    "authors": [
+      "Haihao Shen",
+      "Hanwen Chang",
+      "Bo Dong",
+      "Yu Luo",
+      "Hengyu Meng"
+    ],
+    "published": "2023-11-01",
+    "arxiv_id": "http://arxiv.org/abs/2311.00502v2",
+    "abstract": "Large language models (LLMs) have demonstrated remarkable performance and tremendous potential across a wide range of tasks. However, deploying these models has been challenging due to the astronomical amount of model parameters, which requires a demand for large memory capacity and high memory bandwidth. In this paper, we propose an effective approach that can make the deployment of LLMs more efficiently. We support an automatic INT4 weight-only quantization flow and design a special LLM runtime with highly-optimized kernels to accelerate the LLM inference on CPUs. We demonstrate the general ",
+    "categories": [
+      "cs.LG",
+      "cs.AI",
       "cs.CL"
     ]
   }

@@ -1,19 +1,32 @@
-# CS5202 Spring 2026 — Academic RAG System
-# Pin all versions for reproducibility (random seed = 42)
+# Scholar Stream — Production RAG System
+# CS5202 Spring 2026 · Domain B, Project 9
+# Install: pip install -r requirements.txt
+# Random seed: 42 (fixed in all scripts via config.py)
 
+# ── Core retrieval ─────────────────────────────────────────────────────────────
 arxiv==2.1.3
 pypdf==5.9.0
 pdfplumber==0.11.9
-sentence-transformers==3.4.1
-faiss-cpu==1.10.0
-numpy
-torch==2.6.0
-transformers==4.40.2
-rouge-score==0.1.2
-bert-score==0.3.13
-tqdm==4.66.4
+sentence-transformers>=3.4.1
+faiss-cpu>=1.10.0
+numpy>=1.26.4
 rank-bm25==0.2.2
-pandas
-matplotlib
-seaborn
 
+# ── LLM generation ─────────────────────────────────────────────────────────────
+anthropic>=0.25.0
+openai>=1.0.0
+
+# ── Evaluation metrics ─────────────────────────────────────────────────────────
+rouge-score==0.1.2
+bert-score>=0.3.13
+
+# ── Web interfaces ─────────────────────────────────────────────────────────────
+fastapi>=0.110.0
+uvicorn>=0.29.0
+jinja2>=3.1.3
+python-multipart>=0.0.9
+gradio>=4.26.0
+
+# ── ML framework ───────────────────────────────────────────────────────────────
+torch>=2.6.0
+transformers>=4.40.2
